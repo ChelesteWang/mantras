@@ -60,15 +60,16 @@ async function main() {
   // 6. Agent executes the learned Mantra with IDEContext and Rules
   try {
     const codeToFormat = 'function hello() { console.log("Hello, world!"); } // A comment\r\nlet anotherLine = true;';
-    console.log(`Agent ${agentSmith.name} will execute ${codeFormatter.name} with IDE context, rules, and code: "${codeToFormat.substring(0,30)}..."`);
-    
+    console.log(`Agent ${agentSmith.name} will execute ${codeFormatter.name} with IDE context, rules, and code: "${codeToFormat.substring(0, 30)}..."`);
+
     const formattedCode = await agentSmith.executeMantra(
       'code-formatter',
       sampleIDEContext,
       sampleRules,
       { code: codeToFormat }
     );
-    console.log(`Execution Result (Formatted Code):\n${formattedCode}`);
+    console.log(`Execution Result (Formatted Code):${formattedCode}`);
+    console.log(`Agent's last execution result property:${agentSmith.lastMantraExecutionResult}`);
 
     // Example: Execute using code from IDEContext if no direct code is passed
     console.log(`\nAgent ${agentSmith.name} will execute ${codeFormatter.name} using code from IDEContext...`);
@@ -78,7 +79,8 @@ async function main() {
       [sampleRules[1]]  // Pass only the line ending rule
       // No params.code, so it should use ideContext.currentFileContent
     );
-    console.log(`Execution Result (Formatted from Context):\n${formattedFromContext}`);
+    console.log(`Execution Result (Formatted from Context):${formattedFromContext}`);
+    console.log(`Agent's last execution result property (from context):${agentSmith.lastMantraExecutionResult}`);
 
 
   } catch (error) {

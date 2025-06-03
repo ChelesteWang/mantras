@@ -22,6 +22,11 @@ export interface IAgent {
   learnedMantras: IMantra[];
 
   /**
+   * Stores the result of the last executed Mantra.
+   */
+  lastMantraExecutionResult?: any;
+
+  /**
    * Allows the Agent to learn a new Mantra.
    * @param mantra - The Mantra to be learned.
    * @returns A promise that resolves when the Mantra is successfully learned, or rejects on failure.

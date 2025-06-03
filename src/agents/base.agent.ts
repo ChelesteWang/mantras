@@ -9,6 +9,7 @@ export class BaseAgent implements IAgent {
   public id: string;
   public name: string;
   public learnedMantras: IMantra[];
+  public lastMantraExecutionResult?: any;
   public status?: string;
   public capabilities?: string[];
 
@@ -85,6 +86,7 @@ export class BaseAgent implements IAgent {
       // Pass ideContext, rules, and params to the mantra's execute method
       const result = await mantra.execute(ideContext, rules, params);
       console.log(`Mantra ${mantra.name} executed successfully.`);
+      this.lastMantraExecutionResult = result; // Store the result
       this.status = 'idle';
       return result;
     } catch (error) {
