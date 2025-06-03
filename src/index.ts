@@ -1,3 +1,4 @@
+console.log('--- INDEX.TS IS RUNNING ---');
 // src/index.ts
 import { AgentManager } from './core/agent-manager';
 import { Logger } from './core/logger';
@@ -9,7 +10,10 @@ async function main() {
 
   // Define paths relative to the project root or a known base
   // Assuming the script is run from the project root or `src` directory
-  const projectRoot = path.resolve(__dirname, '..'); // Adjust if src/index.ts is not the entry point
+  // Determine projectRoot based on whether 'src' is in __dirname
+  const projectRoot = __dirname.includes(path.join('src'))
+    ? path.resolve(__dirname, '..') 
+    : path.resolve(__dirname, '..', '..'); // Adjusted for dist/src structure
   const agentConfigDir = path.join(projectRoot, 'config', 'agents');
   const markdownOutputDir = path.join(projectRoot, 'docs', 'agents');
 
@@ -33,9 +37,12 @@ async function main() {
 
   // 2. Get a specific agent by ID
   const sampleAgentId = 'agent-001';
+  console.log(`[IndexTS] Trying to get agent with ID: ${sampleAgentId}`);
   const sampleAgent = agentManager.getAgentById(sampleAgentId);
+  console.log('[IndexTS] sampleAgent is: ', sampleAgent);
 
   if (sampleAgent) {
+    console.log('[IndexTS] sampleAgent is TRUTHY, proceeding with execution.');
     Logger.log(`Found agent: ${sampleAgent.name} (ID: ${sampleAgent.id})`);
     Logger.log(`  Learned items: ${sampleAgent.learnedItems.map(item => item.name).join(', ')}`);
 
@@ -44,6 +51,7 @@ async function main() {
     const fileReaderItemId = 'item-002-file-reader';
 
     try {
+      console.log(`[IndexTS] Attempting to execute item: ${greeterItemId}`);
       Logger.log(`\nAttempting to execute item: ${greeterItemId}`);
       const ideContext: IDEContext = {
         user: { id: 'user-123', name: 'DemoUser' },
@@ -67,17 +75,22 @@ async function main() {
         rules,
         { userName: 'Specific Demo User' } // Params for the greeter tool
       );
+      console.log(`[IndexTS] Execution result for ${greeterItemId}:`, greetingResult);
       Logger.log(`Execution result for ${greeterItemId}: ${greetingResult}`);
 
       // Try executing an item without an executionPath (should be handled gracefully)
+      console.log(`[IndexTS] Attempting to execute item: ${fileReaderItemId}`);
       Logger.log(`\nAttempting to execute item: ${fileReaderItemId} (expected to have no execution path)`);
       const fileReaderResult = await sampleAgent.executeRegisteredItem(fileReaderItemId);
+      console.log(`[IndexTS] Execution result for ${fileReaderItemId}:`, fileReaderResult);
       Logger.log(`Execution result for ${fileReaderItemId}: ${fileReaderResult}`);
 
     } catch (error) {
+      console.error('[IndexTS] Error during item execution demo:', error);
       Logger.error(`Error during item execution demo:`, error);
     }
   } else {
+    console.log('[IndexTS] sampleAgent is FALSY.');
     Logger.warn(`Agent with ID ${sampleAgentId} not found.`);
   }
 
@@ -90,6 +103,7 @@ async function main() {
 }
 
 main().catch(error => {
+  console.error('[IndexTS] Unhandled error in main function:', error);
   Logger.error('Unhandled error in main function:', error);
   process.exit(1);
 });
