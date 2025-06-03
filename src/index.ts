@@ -1,7 +1,7 @@
 // src/index.ts
-import { mantraRegistry as registry } from './core/mantra-registry'; // Import the singleton instance
-import { BaseAgent } from './agents/base.agent';
-import { CodeFormatterMantra } from './mantras/code-formatter.mantra';
+import { registry } from './core/registry'; // Updated import for registry
+import { BaseAgent } from './agents/core/base.agent'; // Updated import path for BaseAgent
+import { CodeFormatterTool } from './tools/code-formatter.tool'; // Updated import for CodeFormatterTool
 import { IAgent, IMantra, IDEContext, IRule } from './interfaces/index';
 
 async function main() {
@@ -9,21 +9,21 @@ async function main() {
 
   // MantraRegistry is already a singleton instance, directly use it.
 
-  // 2. Create and register a Mantra instance
-  const codeFormatter = new CodeFormatterMantra();
-  registry.registerMantra(codeFormatter);
-  console.log(`Registered Mantra: ${codeFormatter.name}`);
+  // 2. Create and register a Tool instance
+  const codeFormatter = new CodeFormatterTool(); // Use new class name
+  registry.registerItem(codeFormatter); // Use new method name
+  console.log(`Registered Tool: ${codeFormatter.name}`);
 
   // 3. Create an Agent instance
   const agentSmith: IAgent = new BaseAgent('agent-007', 'Agent Smith');
   console.log(`Created Agent: ${agentSmith.name}`);
 
-  // 4. Agent learns a Mantra from the registry
-  const mantraToLearn = registry.getMantra('code-formatter');
-  if (mantraToLearn) {
-    await agentSmith.learnMantra(mantraToLearn);
+  // 4. Agent learns an Item from the registry
+  const itemToLearn = registry.getItem(codeFormatter.id); // Use new method name and correct ID
+  if (itemToLearn) {
+    await agentSmith.learnItem(itemToLearn as IMantra); // Use new method name, cast as IMantra for now
   } else {
-    console.error('Could not find code-formatter mantra in registry.');
+    console.error(`Could not find ${codeFormatter.id} item in registry.`);
     return;
   }
 
@@ -62,52 +62,52 @@ async function main() {
     const codeToFormat = 'function hello() { console.log("Hello, world!"); } // A comment\r\nlet anotherLine = true;';
     console.log(`Agent ${agentSmith.name} will execute ${codeFormatter.name} with IDE context, rules, and code: "${codeToFormat.substring(0, 30)}..."`);
 
-    const formattedCode = await agentSmith.executeMantra(
-      'code-formatter',
+    const formattedCode = await agentSmith.executeRegisteredItem( // Use new method name
+      codeFormatter.id, // Use correct ID
       sampleIDEContext,
       sampleRules,
       { code: codeToFormat }
     );
     console.log(`Execution Result (Formatted Code):${formattedCode}`);
-    console.log(`Agent's last execution result property:${agentSmith.lastMantraExecutionResult}`);
+    console.log(`Agent's last execution result property:${agentSmith.lastItemExecutionResult}`); // Use new property name
 
     // Example: Execute using code from IDEContext if no direct code is passed
     console.log(`\nAgent ${agentSmith.name} will execute ${codeFormatter.name} using code from IDEContext...`);
-    const formattedFromContext = await agentSmith.executeMantra(
-      'code-formatter',
+    const formattedFromContext = await agentSmith.executeRegisteredItem( // Use new method name
+      codeFormatter.id, // Use correct ID
       sampleIDEContext, // Pass context
       [sampleRules[1]]  // Pass only the line ending rule
       // No params.code, so it should use ideContext.currentFileContent
     );
     console.log(`Execution Result (Formatted from Context):${formattedFromContext}`);
-    console.log(`Agent's last execution result property (from context):${agentSmith.lastMantraExecutionResult}`);
+    console.log(`Agent's last execution result property (from context):${agentSmith.lastItemExecutionResult}`); // Use new property name
 
 
   } catch (error) {
     console.error(`Error during Mantra execution by ${agentSmith.name}:`, error);
   }
 
-  // ... (rest of the demo: forget mantra, try executing again, unregister)
+  // ... (rest of the demo: forget item, try executing again, unregister)
   console.log('\n--- Continuing with original demo flow ---');
   try {
-    await agentSmith.forgetMantra('code-formatter');
+    await agentSmith.forgetItem(codeFormatter.id); // Use new method name and correct ID
     console.log(`Agent ${agentSmith.name} has forgotten ${codeFormatter.name}.`);
   } catch (error) {
-    console.error(`Error while ${agentSmith.name} tried to forget a mantra:`, error);
+    console.error(`Error while ${agentSmith.name} tried to forget an item:`, error);
   }
 
-  // Try executing again (should fail)
+  // Try executing again (should fail if agent forgot it AND it's not in registry, or succeed if in registry)
   try {
-    console.log(`Agent ${agentSmith.name} will attempt to execute ${codeFormatter.name} again (should fail).`);
-    await agentSmith.executeMantra('code-formatter', sampleIDEContext, sampleRules, { code: 'let x = 1;' });
+    console.log(`Agent ${agentSmith.name} will attempt to execute ${codeFormatter.name} again (should use registry if available).`);
+    await agentSmith.executeRegisteredItem(codeFormatter.id, sampleIDEContext, sampleRules, { code: 'let x = 1;' }); // Use new method name
   } catch (error) {
-    console.error(`Expected error after forgetting Mantra:`, error);
+    console.error(`Error executing after forgetting:`, error);
   }
 
-  // Unregister Mantra
-  registry.unregisterMantra('code-formatter');
-  console.log(`Unregistered Mantra: ${codeFormatter.name}`);
-  console.log('Available Mantras after unregistering:', registry.listMantras().map((m: IMantra) => m.name));
+  // Unregister Item
+  registry.unregisterItem(codeFormatter.id); // Use new method name
+  console.log(`Unregistered Item: ${codeFormatter.name}`);
+  console.log('Available Items after unregistering:', registry.listItems().map((item: IMantra) => item.name)); // Use new method name
 
 
   console.log('Mantra system demo finished.');

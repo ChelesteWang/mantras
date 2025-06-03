@@ -1,19 +1,19 @@
-// src/mantras/code-formatter.mantra.ts
-import { IMantra, IDEContext, IRule } from '../interfaces/index';
+// src/tools/code-formatter.tool.ts
+import { IMantra, IDEContext, IRule } from '../interfaces/index'; // IMantra might be replaced by a more generic ITool later
 
 /**
- * A Mantra for formatting code.
+ * A Tool for formatting code.
  * This version can receive IDE context and rules.
  */
-export class CodeFormatterMantra implements IMantra {
-  public readonly id = 'code-formatter';
-  public readonly name = 'Code Formatter';
+export class CodeFormatterTool implements IMantra { // Implementing IMantra for now, could be ITool
+  public readonly id = 'code-formatter-tool'; // Changed ID to reflect it's a tool
+  public readonly name = 'Code Formatter Tool'; // Changed name
   public readonly description =
-    'Formats a given code string. Can utilize IDE context and adhere to rules.';
+    'Formats a given code string. Can utilize IDE context and adhere to rules. This is a tool.';
   public readonly metadata = {
-    version: '1.1.0',
+    version: '1.0.0', // Reset version for the new tool
     author: 'AI Assistant',
-    tags: ['code', 'formatting', 'utility', 'ide-aware'],
+    tags: ['code', 'formatting', 'utility', 'ide-aware', 'tool'], // Added 'tool' tag
   };
 
   /**
@@ -28,13 +28,13 @@ export class CodeFormatterMantra implements IMantra {
     rules?: IRule[],
     params?: { code?: string }
   ): Promise<string | void> {
-    console.log(`CodeFormatterMantra: Executing...`);
+    console.log(`CodeFormatterTool: Executing...`);
 
     if (ideContext) {
       console.log('Received IDE Context:', JSON.stringify(ideContext, null, 2));
       // Example: Use current file path from context if no code is passed directly
       if (!params?.code && ideContext.currentFileContent) {
-        console.log('Using code from IDE context (currentFileContent).');
+        console.log('CodeFormatterTool: Using code from IDE context (currentFileContent).');
         params = { ...params, code: ideContext.currentFileContent };
       }
     }
@@ -49,7 +49,7 @@ export class CodeFormatterMantra implements IMantra {
     }
 
     if (!params || typeof params.code !== 'string') {
-      console.warn('CodeFormatterMantra: No code provided to format.');
+      console.warn('CodeFormatterTool: No code provided to format.');
       return 'Error: No code provided or code is not a string.';
     }
 
@@ -66,10 +66,15 @@ export class CodeFormatterMantra implements IMantra {
         console.log('Applied CRLF line endings rule.');
     }
 
-    formattedCode = `// Formatted by CodeFormatterMantra (v1.1.0)\n// IDE Context Path: ${ideContext?.currentFilePath || 'N/A'}\n${formattedCode}`;
+    formattedCode = `// Formatted by CodeFormatterTool (v1.0.0)
+// IDE Context Path: ${ideContext?.currentFilePath || 'N/A'}
+${formattedCode}`;
 
     console.log(
-      `CodeFormatterMantra: Original code snippet (first 50 chars):\n"${originalCode.substring(0,50)}..."\nFormatted code snippet (first 70 chars):\n"${formattedCode.substring(0,70)}..."`
+      `CodeFormatterTool: Original code snippet (first 50 chars):
+"${originalCode.substring(0,50)}..."
+Formatted code snippet (first 70 chars):
+"${formattedCode.substring(0,70)}..."`
     );
     return formattedCode;
   }
