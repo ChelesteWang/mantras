@@ -1,5 +1,6 @@
 // src/tools/code-formatter.tool.ts
 import { IMantra, IDEContext, IRule } from '../interfaces/index'; // IMantra might be replaced by a more generic ITool later
+import { Logger } from '../core/logger'; // Import Logger
 
 /**
  * A Tool for formatting code.
@@ -28,28 +29,28 @@ export class CodeFormatterTool implements IMantra { // Implementing IMantra for 
     rules?: IRule[],
     params?: { code?: string }
   ): Promise<string | void> {
-    console.log(`CodeFormatterTool: Executing...`);
+    Logger.log(`CodeFormatterTool: Executing...`);
 
     if (ideContext) {
-      console.log('Received IDE Context:', JSON.stringify(ideContext, null, 2));
+      Logger.log('Received IDE Context:', JSON.stringify(ideContext, null, 2));
       // Example: Use current file path from context if no code is passed directly
       if (!params?.code && ideContext.currentFileContent) {
-        console.log('CodeFormatterTool: Using code from IDE context (currentFileContent).');
+        Logger.log('CodeFormatterTool: Using code from IDE context (currentFileContent).');
         params = { ...params, code: ideContext.currentFileContent };
       }
     }
 
     if (rules && rules.length > 0) {
-      console.log('Received Rules:', JSON.stringify(rules, null, 2));
+      Logger.log('Received Rules:', JSON.stringify(rules, null, 2));
       // Example: A rule could specify indentation type or max line length
       const formattingRule = rules.find(rule => rule.id === 'indentation-style');
       if (formattingRule) {
-        console.log(`Applying rule: ${formattingRule.name} - ${formattingRule.definition}`);
+        Logger.log(`Applying rule: ${formattingRule.name} - ${formattingRule.definition}`);
       }
     }
 
     if (!params || typeof params.code !== 'string') {
-      console.warn('CodeFormatterTool: No code provided to format.');
+      Logger.warn('CodeFormatterTool: No code provided to format.');
       return 'Error: No code provided or code is not a string.';
     }
 
@@ -60,17 +61,17 @@ export class CodeFormatterTool implements IMantra { // Implementing IMantra for 
     const lineEndingRule = rules?.find(rule => rule.id === 'line-ending');
     if (lineEndingRule?.definition === 'LF') {
         formattedCode = formattedCode.replace(/\r\n/g, '\n');
-        console.log('Applied LF line endings rule.');
+        Logger.log('Applied LF line endings rule.');
     } else if (lineEndingRule?.definition === 'CRLF') {
         formattedCode = formattedCode.replace(/(?:\r\n|\r|\n)/g, '\r\n');
-        console.log('Applied CRLF line endings rule.');
+        Logger.log('Applied CRLF line endings rule.');
     }
 
     formattedCode = `// Formatted by CodeFormatterTool (v1.0.0)
 // IDE Context Path: ${ideContext?.currentFilePath || 'N/A'}
 ${formattedCode}`;
 
-    console.log(
+    Logger.log(
       `CodeFormatterTool: Original code snippet (first 50 chars):
 "${originalCode.substring(0,50)}..."
 Formatted code snippet (first 70 chars):

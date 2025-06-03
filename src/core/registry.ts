@@ -1,5 +1,7 @@
 // src/core/registry.ts
-import { IMantra } from '../interfaces/mantra.interface'; // Assuming IMantra might be generalized or replaced later
+import { IMantra, IItem } from '../interfaces';
+import { IRegistry } from '../interfaces/registry.interface';
+import { Logger } from './logger';
 
 /**
  * A generic registry to manage and provide access to items (e.g., Mantras, Tools, Services).
@@ -17,7 +19,7 @@ export class Registry {
       throw new Error(`Item with ID "${item.id}" already registered.`);
     }
     this.items.set(item.id, item);
-    console.log(`Item registered: ${item.name} (ID: ${item.id})`);
+    Logger.log(`Item registered: ${item.name} (ID: ${item.id})`);
   }
 
   /**
@@ -36,9 +38,9 @@ export class Registry {
    */
   unregisterItem(itemId: string): boolean {
     if (this.items.has(itemId)) {
-      const itemName = this.items.get(itemId)?.name;
+      const itemName = this.items.get(itemId)?.name || 'Unknown Item';
       this.items.delete(itemId);
-      console.log(`Item unregistered: ${itemName} (ID: ${itemId})`);
+      Logger.log(`Item unregistered: ${itemName} (ID: ${itemId})`);
       return true;
     }
     return false;
@@ -55,9 +57,9 @@ export class Registry {
   /**
    * Clears all Mantras from the registry.
    */
-  clearAllItems(): void {
+  public clearAllItems(): void {
     this.items.clear();
-    console.log("All items cleared from registry.");
+    Logger.log("All items cleared from registry.");
   }
 }
 

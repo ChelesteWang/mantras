@@ -1,6 +1,6 @@
 // src/index.ts
 import { registry } from './core/registry'; // Updated import for registry
-import Logger from './core/logger'; // Import the new Logger
+import { Logger } from './core/logger'; // Import the new Logger using named import
 import { BaseAgent } from './agents/core/base.agent'; // Updated import path for BaseAgent
 import { CodeFormatterTool } from './tools/code-formatter.tool'; // Updated import for CodeFormatterTool
 import { IAgent, IMantra, IDEContext, IRule } from './interfaces/index';
@@ -30,13 +30,12 @@ async function main() {
 
   // 5. Define sample IDEContext and Rules
   const sampleIDEContext: IDEContext = {
-    workspaceRoot: '/Users/bytedance/Desktop/trae/mantras',
-    currentFilePath: '/Users/bytedance/Desktop/trae/mantras/src/dummy.ts',
-    currentFileLanguageId: 'typescript',
-    currentFileContent: 'const  badlyFormatted = ( arg1:string, arg2:number):void => {console.log(arg1, arg2);};',
-    selectedText: 'arg1:string, arg2:number',
-    cursorPosition: { line: 1, column: 30 },
-    customIdeProperty: 'VSCode_1.80.0'
+    currentFilePath: '/Users/bytedance/Desktop/trae/mantras/src/example.ts',
+    projectRootPath: '/Users/bytedance/Desktop/trae/mantras',
+    currentSelection: undefined,
+    currentFileContent: 'const  badlyFormatted = ( arg1:string, arg2:number):void => {Logger.log(arg1, arg2);};',
+    fileLanguage: 'typescript',
+    clipboardContent: ''
   };
 
   const sampleRules: IRule[] = [
