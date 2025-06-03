@@ -1,5 +1,5 @@
 // src/agents/base.agent.ts
-import { IAgent, IMantra, IDEContext, IRule } from '../interfaces';
+import { IAgent, IMantra, IDEContext, IRule } from '../interfaces/index';
 
 /**
  * A base implementation of the IAgent interface.

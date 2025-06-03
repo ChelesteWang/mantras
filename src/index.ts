@@ -1,14 +1,13 @@
 // src/index.ts
-import { MantraRegistry } from './core/mantra-registry';
+import { mantraRegistry as registry } from './core/mantra-registry'; // Import the singleton instance
 import { BaseAgent } from './agents/base.agent';
 import { CodeFormatterMantra } from './mantras/code-formatter.mantra';
-import { IMantra, IAgent, IDEContext, IRule } from './interfaces';
+import { IAgent, IMantra, IDEContext, IRule } from './interfaces/index';
 
 async function main() {
-  console.log('Initializing Mantra system with IDE Context and Rules support...');
+  console.log('Initializing Mantra System...');
 
-  // 1. Get the MantraRegistry instance
-  const registry = MantraRegistry.getInstance();
+  // MantraRegistry is already a singleton instance, directly use it.
 
   // 2. Create and register a Mantra instance
   const codeFormatter = new CodeFormatterMantra();
@@ -106,7 +105,7 @@ async function main() {
   // Unregister Mantra
   registry.unregisterMantra('code-formatter');
   console.log(`Unregistered Mantra: ${codeFormatter.name}`);
-  console.log('Available Mantras after unregistering:', registry.listMantras().map(m => m.name));
+  console.log('Available Mantras after unregistering:', registry.listMantras().map((m: IMantra) => m.name));
 
 
   console.log('Mantra system demo finished.');

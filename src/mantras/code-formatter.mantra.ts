@@ -1,5 +1,5 @@
 // src/mantras/code-formatter.mantra.ts
-import { IMantra, IDEContext, IRule } from '../interfaces';
+import { IMantra, IDEContext, IRule } from '../interfaces/index';
 
 /**
  * A Mantra for formatting code.
