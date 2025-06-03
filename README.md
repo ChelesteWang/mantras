@@ -2,6 +2,75 @@
 
 Mantras provides a TypeScript-based framework for building AI agents designed to operate within an Integrated Development Environment (IDE). The core philosophy is to enable agents to learn, manage, and apply a diverse set of skills or tools (referred to as "Items" or "Tools", with `IMantra` as a foundational interface). This framework emphasizes modularity, allowing for clear separation between agent logic and the tools they utilize. Agents can be dynamically configured and managed, leveraging IDE-specific context and adhering to predefined rules to perform complex, context-aware, and rule-guided tasks.
 
+## 🔖 Features
+
+- 🧩 **Modular Architecture**: Clear separation between agent logic and the tools (Mantras) they utilize, promoting reusability and maintainability.
+- ⚙️ **Dynamic Configuration & Management**: Agents and their Mantras can be configured (e.g., via YAML) and managed dynamically at runtime by the `AgentManager`.
+- 💡 **IDE Context Awareness**: Agents can leverage rich contextual information from the IDE (`IDEContext`) to perform more intelligent and relevant actions.
+- 📜 **Rule-Guided Execution**: Operations can be guided by a flexible set of rules (`IRule`) ensuring consistent behavior and adherence to specific constraints.
+- 🛠️ **Extensible Toolset (Mantras)**: Easily define and integrate new skills or tools (`IMantra`) for agents to learn and apply.
+- 🚀 **TypeScript-Powered**: Built with TypeScript, offering strong typing and a modern development experience.
+
+## 🚀 Quick Start
+
+Get your Mantras environment up and running in a few simple steps:
+
+1.  **Clone the Repository (if you haven't already)**:
+    ```bash
+    # git clone <repository-url>
+    # cd mantras
+    ```
+
+2.  **Install Dependencies**:
+    ```bash
+    npm install
+    ```
+
+3.  **Build the Project**:
+    ```bash
+    npm run build
+    ```
+    This compiles the TypeScript code from `src/` to JavaScript in the `dist/` directory.
+
+4.  **Run the Demo**:
+    ```bash
+    npm start
+    ```
+    This executes the compiled `dist/index.js` file, which demonstrates core functionalities like registering an Item/Tool, an Agent learning it, and executing it with sample `IDEContext` and `IRule` objects.
+
+    Alternatively, to run directly with `ts-node` during development (for faster iteration without manual recompilation):
+    ```bash
+    npm run dev
+    ```
+
+## 📚 Documentation
+
+Dive deeper into the Mantras framework:
+
+-   [Agent Cultivation Guide (中文)](docs/agent-cultivation-guide_zh.md) - Learn how to nurture and develop your agents.
+-   [Agent Evolution Guide](docs/agent-evolution-guide.md) - Understand how agents can learn and adapt.
+
+(More documentation will be added here as the project evolves.)
+
+## 🤔 What is Mantras?
+
+Mantras is a TypeScript-based open-source framework designed for building sophisticated AI agents that operate seamlessly within an Integrated Development Environment (IDE). The core idea is to empower agents with a diverse set of skills or tools—referred to as "Mantras" (or "Items"/"Tools", with `IMantra` as the foundational interface).
+
+The framework emphasizes:
+
+*   **Modularity**: Keeping agent logic separate from the tools they use.
+*   **Dynamic Management**: Agents can be configured and managed on the fly.
+*   **Contextual Intelligence**: Agents leverage IDE-specific information to make smart decisions.
+*   **Rule-Based Operations**: Agents follow predefined rules for consistent and predictable actions.
+
+This approach allows for the creation of powerful, context-aware, and rule-guided AI assistants that can perform complex tasks directly within your development workflow.
+
+## 🏗️ Project Structure
+
+An overview of the Mantras project directory:
+
+```
+
 The `AgentManager` is a key component responsible for loading agent configurations (e.g., from YAML files), instantiating agents, and making them available for interaction. This allows for a flexible system where agents and their capabilities can be defined and extended without modifying the core framework.
 
 ## Project Structure
@@ -71,29 +140,7 @@ The `AgentManager` is a key component responsible for loading agent configuratio
 
 - **Rule (`IRule`)**: An interface for defining specific rules, guidelines, or constraints that an Agent or Item/Tool should adhere to during execution. Defined in `src/interfaces/ide.interface.ts`.
 
-## Getting Started
 
-1.  **Install Dependencies**:
-    ```bash
-    npm install
-    ```
-
-2.  **Build the Project**:
-    ```bash
-    npm run build
-    ```
-    This compiles the TypeScript code from `src` to JavaScript in the `dist` directory.
-
-3.  **Run the Demo**:
-    ```bash
-    npm start
-    ```
-    This executes the compiled `dist/index.js` file, which demonstrates registering an Item/Tool, an Agent learning and executing it with sample `IDEContext` and `IRule` objects.
-
-    Alternatively, to run directly with `ts-node` during development:
-    ```bash
-    npm run dev
-    ```
 
 ## Next Steps & Future Enhancements
 
