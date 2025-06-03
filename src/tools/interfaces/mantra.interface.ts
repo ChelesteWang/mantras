@@ -1,5 +1,5 @@
 // src/interfaces/mantra.interface.ts
-import { IDEContext, IRule } from './ide.interface';
+import { IDEContext, IRule } from '../../interfaces/ide.interface';
 
 /**
  * Represents a "Mantra" - a specific skill, capability, or tool an Agent can learn and use.

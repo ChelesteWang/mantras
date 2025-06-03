@@ -1,12 +1,14 @@
 // src/core/agent-manager.ts
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
-import { AgentConfig, ItemConfig } from '../interfaces';
+import { AgentConfig } from '../interfaces/agent-config.interface';
+import { ItemConfig } from '../../tools/interfaces/item-config.interface';
 import { BaseAgent } from '../agents/core/base.agent';
-import { IMantra, IAgent } from '../interfaces';
+import { IMantra } from '../../tools/interfaces/mantra.interface';
+import { IAgent } from '../interfaces/agent.interface';
 import * as path from 'path'; // Added for path resolution
 import { Logger } from './logger';
-import { registry } from './registry';
+import { registry } from '../../core/registry';
 
 export class AgentManager {
   private agents: IAgent[] = [];

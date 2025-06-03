@@ -1,5 +1,5 @@
 // src/interfaces/agent-config.interface.ts
-import { ItemConfig } from './item-config.interface';
+import { ItemConfig } from '../../tools/interfaces/item-config.interface';
 
 /**
  * Represents the configuration for an Agent.

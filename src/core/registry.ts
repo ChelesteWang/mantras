@@ -1,6 +1,7 @@
 // src/core/registry.ts
-import { IMantra, IItem } from '../interfaces';
-import { IRegistry } from '../interfaces/registry.interface';
+import { IMantra } from '../tools/interfaces/mantra.interface';
+import { IItem } from '../interfaces'; // Assuming IItem is a more general interface still in src/interfaces or needs to be moved/created
+import { IRegistry } from '../interfaces/registry.interface'; // This path seems correct if IRegistry remains in src/interfaces
 import { Logger } from './logger';
 
 /**

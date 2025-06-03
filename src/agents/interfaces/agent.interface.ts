@@ -1,6 +1,6 @@
 // src/interfaces/agent.interface.ts
-import { IMantra } from './mantra.interface';
-import { IDEContext, IRule } from './ide.interface';
+import { IMantra } from '../../tools/interfaces/mantra.interface';
+import { IDEContext, IRule } from '../../interfaces/ide.interface';
 
 /**
  * Represents an "Agent" - an AI entity within the IDE capable of learning and using Mantras.

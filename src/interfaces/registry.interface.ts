@@ -1,5 +1,5 @@
 // src/interfaces/registry.interface.ts
-import { IItem } from './index'; // Or directly from './mantra.interface' if IItem is only IMantra
+import { IItem } from './index'; // This should now correctly point to the re-exported IItem from the new location
 
 /**
  * Defines the contract for a registry that manages items (Mantras, Tools, etc.).

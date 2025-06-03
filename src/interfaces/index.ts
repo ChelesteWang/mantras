@@ -1,7 +1,7 @@
-export * from './agent.interface';
+export * from '../agents/interfaces/agent.interface';
 export * from './ide.interface';
-export * from './mantra.interface';
-export { IMantra as IItem } from './mantra.interface'; // Export IMantra as IItem
+export * from '../tools/interfaces/mantra.interface';
+export { IMantra as IItem } from '../tools/interfaces/mantra.interface'; // Export IMantra as IItem
 export * from './registry.interface'; // Export IRegistry
-export * from './agent-config.interface'; // Added export for AgentConfig
-export * from './item-config.interface'; // Added export for ItemConfig
+export * from '../agents/interfaces/agent-config.interface'; // Added export for AgentConfig
+export * from '../tools/interfaces/item-config.interface'; // Added export for ItemConfig
