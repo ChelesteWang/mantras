@@ -1,118 +1,100 @@
 // src/index.ts
-import { registry } from './core/registry'; // Updated import for registry
-import { Logger } from './core/logger'; // Import the new Logger using named import
-import { BaseAgent } from './agents/core/base.agent'; // Updated import path for BaseAgent
-import { CodeFormatterTool } from './tools/code-formatter.tool'; // Updated import for CodeFormatterTool
-import { IAgent, IMantra, IDEContext, IRule } from './interfaces/index';
+import { AgentManager } from './core/agent-manager';
+import { Logger } from './core/logger';
+import { IDEContext, IRule } from './interfaces';
+import * as path from 'path';
 
 async function main() {
-  Logger.log('Initializing Mantra System...');
+  Logger.log('Starting Mantra Agent System Demo...');
 
-  // MantraRegistry is already a singleton instance, directly use it.
+  // Define paths relative to the project root or a known base
+  // Assuming the script is run from the project root or `src` directory
+  const projectRoot = path.resolve(__dirname, '..'); // Adjust if src/index.ts is not the entry point
+  const agentConfigDir = path.join(projectRoot, 'config', 'agents');
+  const markdownOutputDir = path.join(projectRoot, 'docs', 'agents');
 
-  // 2. Create and register a Tool instance
-  const codeFormatter = new CodeFormatterTool(); // Use new class name
-  registry.registerItem(codeFormatter); // Use new method name
-  Logger.log(`Registered Tool: ${codeFormatter.name}`);
+  Logger.log(`Agent Config Directory: ${agentConfigDir}`);
+  Logger.log(`Markdown Output Directory: ${markdownOutputDir}`);
 
-  // 3. Create an Agent instance
-  const agentSmith: IAgent = new BaseAgent('agent-007', 'Agent Smith');
-  Logger.log(`Created Agent: ${agentSmith.name}`);
+  // 1. Instantiate AgentManager and load agents from YAML configurations
+  const agentManager = new AgentManager(agentConfigDir);
 
-  // 4. Agent learns an Item from the registry
-  const itemToLearn = registry.getItem(codeFormatter.id); // Use new method name and correct ID
-  if (itemToLearn) {
-    await agentSmith.learnItem(itemToLearn as IMantra); // Use new method name, cast as IMantra for now
+  // List all loaded agent configurations
+  const allAgentConfigs = agentManager.getAllAgentConfigs();
+  if (allAgentConfigs.length > 0) {
+    Logger.log(`Loaded ${allAgentConfigs.length} agent configurations:`);
+    allAgentConfigs.forEach(config => {
+      Logger.log(`  - Agent: ${config.name} (ID: ${config.id})`);
+    });
   } else {
-    Logger.error(`Could not find ${codeFormatter.id} item in registry.`);
-    return;
+    Logger.warn('No agent configurations were loaded. Check the config directory and YAML files.');
+    return; // Exit if no agents loaded
   }
 
-  // 5. Define sample IDEContext and Rules
-  const sampleIDEContext: IDEContext = {
-    currentFilePath: '/Users/bytedance/Desktop/trae/mantras/src/example.ts',
-    projectRootPath: '/Users/bytedance/Desktop/trae/mantras',
-    currentSelection: undefined,
-    currentFileContent: 'const  badlyFormatted = ( arg1:string, arg2:number):void => {Logger.log(arg1, arg2);};',
-    fileLanguage: 'typescript',
-    clipboardContent: ''
-  };
+  // 2. Get a specific agent by ID
+  const sampleAgentId = 'agent-001';
+  const sampleAgent = agentManager.getAgentById(sampleAgentId);
 
-  const sampleRules: IRule[] = [
-    {
-      id: 'indentation-style',
-      name: 'Indentation Style',
-      description: 'Specifies the indentation style to be used (e.g., 2 spaces, 4 spaces, tabs).',
-      definition: { type: 'spaces', size: 2 },
-      severity: 'warning',
-      scope: 'file'
-    },
-    {
-      id: 'line-ending',
-      name: 'Line Ending Convention',
-      description: 'Specifies the line ending convention (LF or CRLF).',
-      definition: 'LF', // or 'CRLF'
-      severity: 'error',
-      scope: 'project'
+  if (sampleAgent) {
+    Logger.log(`Found agent: ${sampleAgent.name} (ID: ${sampleAgent.id})`);
+    Logger.log(`  Learned items: ${sampleAgent.learnedItems.map(item => item.name).join(', ')}`);
+
+    // 3. Try to execute an item from the agent
+    const greeterItemId = 'item-001-greet';
+    const fileReaderItemId = 'item-002-file-reader';
+
+    try {
+      Logger.log(`\nAttempting to execute item: ${greeterItemId}`);
+      const ideContext: IDEContext = {
+        user: { id: 'user-123', name: 'DemoUser' },
+        currentFile: { path: '/path/to/current/file.ts', language: 'typescript' },
+        project: { rootPath: projectRoot, name: 'MantraProject' },
+      };
+      const rules: IRule[] = [
+        {
+          id: 'rule-01', 
+          name: 'Politeness Rule',
+          description: 'Be polite',
+          definition: { type: 'behavioural', instruction: 'Always use polite language.' },
+          severity: 'info',
+          scope: 'interaction'
+        }
+      ];
+      
+      const greetingResult = await sampleAgent.executeRegisteredItem(
+        greeterItemId,
+        ideContext,
+        rules,
+        { userName: 'Specific Demo User' } // Params for the greeter tool
+      );
+      Logger.log(`Execution result for ${greeterItemId}: ${greetingResult}`);
+
+      // Try executing an item without an executionPath (should be handled gracefully)
+      Logger.log(`\nAttempting to execute item: ${fileReaderItemId} (expected to have no execution path)`);
+      const fileReaderResult = await sampleAgent.executeRegisteredItem(fileReaderItemId);
+      Logger.log(`Execution result for ${fileReaderItemId}: ${fileReaderResult}`);
+
+    } catch (error) {
+      Logger.error(`Error during item execution demo:`, error);
     }
-  ];
-
-  // 6. Agent executes the learned Mantra with IDEContext and Rules
-  try {
-    const codeToFormat = 'function hello() { console.log("Hello, world!"); } // A comment\r\nlet anotherLine = true;';
-    Logger.log(`Agent ${agentSmith.name} will execute ${codeFormatter.name} with IDE context, rules, and code: "${codeToFormat.substring(0, 30)}..."`);
-
-    const formattedCode = await agentSmith.executeRegisteredItem( // Use new method name
-      codeFormatter.id, // Use correct ID
-      sampleIDEContext,
-      sampleRules,
-      { code: codeToFormat }
-    );
-    Logger.log(`Execution Result (Formatted Code):${formattedCode}`);
-    Logger.log(`Agent's last execution result property:${agentSmith.lastItemExecutionResult}`); // Use new property name
-
-    // Example: Execute using code from IDEContext if no direct code is passed
-    Logger.log(`\nAgent ${agentSmith.name} will execute ${codeFormatter.name} using code from IDEContext...`);
-    const formattedFromContext = await agentSmith.executeRegisteredItem( // Use new method name
-      codeFormatter.id, // Use correct ID
-      sampleIDEContext, // Pass context
-      [sampleRules[1]]  // Pass only the line ending rule
-      // No params.code, so it should use ideContext.currentFileContent
-    );
-    Logger.log(`Execution Result (Formatted from Context):${formattedFromContext}`);
-    Logger.log(`Agent's last execution result property (from context):${agentSmith.lastItemExecutionResult}`); // Use new property name
-
-
-  } catch (error) {
-    Logger.error(`Error during Mantra execution by ${agentSmith.name}:`, error);
+  } else {
+    Logger.warn(`Agent with ID ${sampleAgentId} not found.`);
   }
 
-  // ... (rest of the demo: forget item, try executing again, unregister)
-  Logger.log('\n--- Continuing with original demo flow ---');
-  try {
-    await agentSmith.forgetItem(codeFormatter.id); // Use new method name and correct ID
-    Logger.log(`Agent ${agentSmith.name} has forgotten ${codeFormatter.name}.`);
-  } catch (error) {
-    Logger.error(`Error while ${agentSmith.name} tried to forget an item:`, error);
-  }
+  // 4. Generate Markdown documentation for all loaded agents
+  Logger.log(`\nGenerating Markdown documentation for all agents to: ${markdownOutputDir}`);
+  agentManager.generateAllAgentsMarkdown(markdownOutputDir);
+  Logger.log('Markdown generation complete.');
 
-  // Try executing again (should fail if agent forgot it AND it's not in registry, or succeed if in registry)
-  try {
-    Logger.log(`Agent ${agentSmith.name} will attempt to execute ${codeFormatter.name} again (should use registry if available).`);
-    await agentSmith.executeRegisteredItem(codeFormatter.id, sampleIDEContext, sampleRules, { code: 'let x = 1;' }); // Use new method name
-  } catch (error) {
-    Logger.error(`Error executing after forgetting:`, error);
-  }
-
-  // Unregister Item
-  registry.unregisterItem(codeFormatter.id); // Use new method name
-  Logger.log(`Unregistered Item: ${codeFormatter.name}`);
-  Logger.log('Available Items after unregistering:', registry.listItems().map((item: IMantra) => item.name)); // Use new method name
-
-
-  Logger.log('Mantra system demo finished.');
+  Logger.log('\nMantra Agent System Demo Finished.');
 }
 
 main().catch(error => {
-  Logger.error('Unhandled error in main:', error);
+  Logger.error('Unhandled error in main function:', error);
+  process.exit(1);
 });
+
+// Export AgentManager and other core components if this is the main library entry point
+export { AgentManager, Logger, registry } from './core';
+export * from './interfaces';
+export { BaseAgent } from './agents/core/base.agent';
