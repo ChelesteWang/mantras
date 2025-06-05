@@ -1,0 +1,38 @@
+{
+  "name": "mantras-next",
+  "version": "0.1.0",
+  "description": "一个模块化、可扩展的AI智能体框架，特别适用于IDE集成场景",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rimraf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "ide",
+    "mantras",
+    "llm",
+    "framework"
+  ],
+  "author": "Mantras Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "prettier": "^3.1.0",
+    "rimraf": "^5.0.5",
+    "turbo": "^2.0.0",
+    "typescript": "^5.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "packageManager": "pnpm@8.10.0"
+}
