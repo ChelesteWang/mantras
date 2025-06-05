@@ -13,9 +13,9 @@ import {
   AgentInput,
   AgentOutput,
   AgentStep,
-  Memory,
   StopCriteria
-} from '../interfaces';
+} from '../interfaces/agent';
+import { Memory } from '../interfaces/memory';
 import { z } from 'zod';
 
 /**

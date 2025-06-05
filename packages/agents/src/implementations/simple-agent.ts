@@ -1,6 +1,6 @@
 import { logger } from '@mantras-next/core';
 import { BaseAgent } from '../base/base-agent';
-import { AgentInput, AgentStep, StopCriteria } from '../interfaces';
+import { AgentInput, AgentStep, StopCriteria } from '../interfaces/agent';
 
 /**
  * 简单智能体

@@ -1,5 +1,5 @@
 import { logger } from '@mantras-next/core';
-import { Memory, MemoryConfig, MemoryItem } from '../interfaces';
+import { Memory, MemoryConfig, MemoryItem } from '../interfaces/memory';
 
 /**
  * 简单内存
@@ -69,8 +69,10 @@ export class SimpleMemory implements Memory {
     if (this.storage.size >= this.maxSize) {
       // 如果达到最大容量，删除最早的项
       const oldestKey = this.storage.keys().next().value;
-      this.storage.delete(oldestKey);
-      logger.debug(`[${this.name}] Maximum capacity reached, deleted oldest item: ${oldestKey}`);
+      if (oldestKey !== undefined) {
+        this.storage.delete(oldestKey);
+        logger.debug(`[${this.name}] Maximum capacity reached, deleted oldest item: ${oldestKey}`);
+      }
     }
     
     // 存储数据

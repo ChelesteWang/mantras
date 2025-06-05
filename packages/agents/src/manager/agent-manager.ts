@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 import { logger, NotFoundError, ConfigurationError } from '@mantras-next/core';
-import { Agent, AgentConfig } from '../interfaces';
+import { Agent, AgentConfig } from '../interfaces/agent';
 import { BaseAgent } from '../base/base-agent';
 import { SimpleAgent } from '../implementations/simple-agent';
 
@@ -225,7 +225,7 @@ export class AgentManager {
     }
     
     // 添加元数据
-    if (Object.keys(agent.metadata).length > 0) {
+    if (agent.metadata && Object.keys(agent.metadata).length > 0) {
       markdown += `## 元数据\n\n`;
       markdown += `\`\`\`json\n${JSON.stringify(agent.metadata, null, 2)}\n\`\`\`\n\n`;
     }
