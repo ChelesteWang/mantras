@@ -1,17 +1,22 @@
 {
   "name": "mantras",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Enhanced MCP server with Persona Summoner capabilities - dynamic persona management and intent-based personality selection",
+  "main": "dist/server.js",
+  "bin": {
+    "mantras": "dist/server.js"
+  },
   "type": "module",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
+    "start": "node dist/server.js",
     "test": "jest",
-    "build": "tsup src/server.ts src/asset-repository.ts src/asset-sources.ts src/types.ts --format esm --d dist --clean",
+    "build": "tsup src/**/*.ts --format esm --d dist --clean",
     "dev": "tsx watch src/server.ts",
-    "dev:debug": "tsx watch --inspect src/server.ts"
+    "dev:debug": "tsx watch --inspect src/server.ts",
+    "prepare": "npm run build"
   },
   "keywords": [],
   "author": "",

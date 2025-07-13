@@ -1,4 +1,4 @@
-import { RemoteAssetRepository } from "./asset-repository";
+import { RemoteAssetRepository } from "../src/asset-repository";
 
 jest.setTimeout(20000);
 
