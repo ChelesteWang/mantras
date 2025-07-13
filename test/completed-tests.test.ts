@@ -6,6 +6,7 @@ describe("Complete MCP Functionality Tests", () => {
   let transport: any;
 
   beforeAll(async () => {
+    console.log("Starting MCP server for tests...");
     transport = new StdioClientTransport({
       command: "node",
       args: ["dist/server.js", "--personas", "test/test-assets.json"]
@@ -15,14 +16,16 @@ describe("Complete MCP Functionality Tests", () => {
   }, 30000);
 
   afterAll(async () => {
+    console.log("Closing MCP server connection...");
     if (transport) await transport.close();
+    console.log("MCP server connection closed.");
   });
 
   describe("Asset Management Corner Cases", () => {
     it("should handle empty id for get_asset", async () => {
       const result = await client.callTool({
         name: "get_asset",
-        args: { assetId: "" }
+        arguments: { assetId: "" }
       });
       
       expect(result.content[0].type).toBe("text");
@@ -34,7 +37,7 @@ describe("Complete MCP Functionality Tests", () => {
     it("should handle null/undefined assetId", async () => {
       const result = await client.callTool({
         name: "get_asset",
-        args: { assetId: "does-not-exist" }
+        arguments: { assetId: "does-not-exist" }
       });
       
       expect(result.content[0].type).toBe("text");
@@ -45,7 +48,7 @@ describe("Complete MCP Functionality Tests", () => {
     it("should handle special characters in assetId", async () => {
       const result = await client.callTool({
         name: "get_asset",
-        args: { assetId: "@#$%^&*()" }
+        arguments: { assetId: "@#$%^&*()" }
       });
       
       expect(result.content[0].type).toBe("text");
@@ -74,7 +77,7 @@ describe("Complete MCP Functionality Tests", () => {
     it("should handle unicode and emoji assetIds", async () => {
       const result = await client.callTool({
         name: "get_asset",
-        args: { assetId: "🔥analyst" }
+        arguments: { assetId: "🔥analyst" }
       });
       
       expect(result.content[0].type).toBe("text");
@@ -88,7 +91,7 @@ describe("Complete MCP Functionality Tests", () => {
       for (const type of assetTypes) {
         const listResult = await client.callTool({
           name: "list_assets",
-          args: {}
+          arguments: {}
         });
         
         const assets = JSON.parse(listResult.content[0].text);
@@ -97,7 +100,7 @@ describe("Complete MCP Functionality Tests", () => {
         for (const asset of filteredAssets) {
           const result = await client.callTool({
             name: "get_asset",
-            args: { assetId: asset.id }
+            arguments: { assetId: asset.id }
           });
           
           expect(result.content[0].type).toBe("text");
@@ -113,7 +116,7 @@ describe("Complete MCP Functionality Tests", () => {
     it("should handle null/undefined personaId", async () => {
       const result = await client.callTool({
         name: "summon_persona",
-        args: {}
+        arguments: {}
       });
       
       const response = JSON.parse(result.content[0].text);
@@ -124,7 +127,7 @@ describe("Complete MCP Functionality Tests", () => {
     it("should handle empty string personaId", async () => {
       const result = await client.callTool({
         name: "summon_persona",
-        args: { personaId: "" }
+        arguments: { personaId: "" }
       });
       
       const response = JSON.parse(result.content[0].text);
@@ -136,7 +139,7 @@ describe("Complete MCP Functionality Tests", () => {
       const longIntent = "a".repeat(1000);
       const result = await client.callTool({
         name: "summon_by_intent",
-        args: { intent: longIntent }
+        arguments: { intent: longIntent }
       });
       
       const response = JSON.parse(result.content[0].text);
@@ -156,7 +159,7 @@ describe("Complete MCP Functionality Tests", () => {
       for (const intent of intents) {
         const result = await client.callTool({
           name: "summon_by_intent",
-          args: { intent }
+          arguments: { intent }
         });
         
         const response = JSON.parse(result.content[0].text);
@@ -168,7 +171,7 @@ describe("Complete MCP Functionality Tests", () => {
     it("should handle special characters in intent", async () => {
       const result = await client.callTool({
         name: "summon_by_intent",
-        args: { intent: "Code review 🔍 & debugging #${variable}" }
+        arguments: { intent: "Code review 🔍 & debugging #${variable}" }
       });
       
       const response = JSON.parse(result.content[0].text);
@@ -181,7 +184,7 @@ describe("Complete MCP Functionality Tests", () => {
       for (const intent of shortIntents) {
         const result = await client.callTool({
           name: "summon_by_intent",
-          args: { intent }
+          arguments: { intent }
         });
         
         const response = JSON.parse(result.content[0].text);
@@ -199,7 +202,7 @@ describe("Complete MCP Functionality Tests", () => {
       for (let i = 0; i < 10; i++) {
         const result = await client.callTool({
           name: "summon_persona",
-          args: { personaId: "analyst" }
+          arguments: { personaId: "analyst" }
         });
         const session = JSON.parse(result.content[0].text);
         sessions.push(session);
@@ -212,9 +215,9 @@ describe("Complete MCP Functionality Tests", () => {
 
     it("should manage multiple concurrent sessions", async () => {
       const promises = [
-        client.callTool({ name: "summon_persona", args: { personaId: "analyst" } }),
-        client.callTool({ name: "summon_persona", args: { personaId: "creative" } }),
-        client.callTool({ name: "summon_persona", args: { personaId: "tech-expert" } })
+        client.callTool({ name: "summon_persona", arguments: { personaId: "analyst" } }),
+        client.callTool({ name: "summon_persona", arguments: { personaId: "creative" } }),
+        client.callTool({ name: "summon_persona", arguments: { personaId: "tech-expert" } })
       ];
       
       const results = await Promise.all(promises);
@@ -222,7 +225,7 @@ describe("Complete MCP Functionality Tests", () => {
       
       const sessionList = await client.callTool({
         name: "list_active_sessions",
-        args: {}
+        arguments: {}
       });
       
       const sessions = JSON.parse(sessionList.content[0].text);
@@ -232,7 +235,7 @@ describe("Complete MCP Functionality Tests", () => {
     it("should prevent duplicate session releases", async () => {
       const summonResult = await client.callTool({
         name: "summon_persona",
-        args: { personaId: "analyst" }
+        arguments: { personaId: "analyst" }
       });
       
       const session = JSON.parse(summonResult.content[0].text);
@@ -240,7 +243,7 @@ describe("Complete MCP Functionality Tests", () => {
       // Release once
       const release1 = await client.callTool({
         name: "release_session",
-        args: { sessionId: session.sessionId }
+        arguments: { sessionId: session.sessionId }
       });
       
       const response1 = JSON.parse(release1.content[0].text);
@@ -249,7 +252,7 @@ describe("Complete MCP Functionality Tests", () => {
       // Release again - should fail
       const release2 = await client.callTool({
         name: "release_session",
-        args: { sessionId: session.sessionId }
+        arguments: { sessionId: session.sessionId }
       });
       
       const response2 = JSON.parse(release2.content[0].text);
@@ -259,7 +262,7 @@ describe("Complete MCP Functionality Tests", () => {
     it("should preserve session metadata across operations", async () => {
       const result = await client.callTool({
         name: "summon_persona",
-        args: {
+        arguments: {
           personaId: "analyst",
           intent: "business analysis"
         }
@@ -272,7 +275,7 @@ describe("Complete MCP Functionality Tests", () => {
       
       const retrieved = await client.callTool({
         name: "get_session",
-        args: { sessionId: session.sessionId }
+        arguments: { sessionId: session.sessionId }
       });
       
       const retrievedSession = JSON.parse(retrieved.content[0].text);
@@ -284,7 +287,7 @@ describe("Complete MCP Functionality Tests", () => {
     it("should combine capabilities correctly", async () => {
       const result = await client.callTool({
         name: "synthesize_persona",
-        args: { basePersonaIds: ["creative", "tech-expert"] }
+        arguments: { basePersonaIds: ["creative", "tech-expert"] }
       });
       
       const response = JSON.parse(result.content[0].text);
@@ -292,23 +295,23 @@ describe("Complete MCP Functionality Tests", () => {
       
       expect(synthesized.capabilities.creative).toBe(true);
       expect(synthesized.capabilities.technical).toBe(true);
-      expect(synthesized.capabilities.analysis).toBe(synthesized.persona === 'analyst');
+      expect(synthesized.capabilities.analysis).toBe(true);
     });
 
     it("should handle empty synthesis array", async () => {
       const result = await client.callTool({
         name: "synthesize_persona",
-        args: { basePersonaIds: [] }
+        arguments: { basePersonaIds: [] }
       });
-      
       const response = JSON.parse(result.content[0].text);
-      expect(response.synthesizedPersona).toBeDefined();
+      expect(response.error).toBeDefined();
+      expect(response.error).toContain("Cannot synthesize persona from an empty list of base personas.");
     });
 
     it("should handle duplicate base personas in synthesis", async () => {
       const result = await client.callTool({
         name: "synthesize_persona",
-        args: { basePersonaIds: ["creative", "creative", "creative"] }
+        arguments: { basePersonaIds: ["creative", "creative", "creative"] }
       });
       
       const response = JSON.parse(result.content[0].text);
@@ -324,7 +327,7 @@ describe("Complete MCP Functionality Tests", () => {
       const promises = Array(10).fill(null).map((_, i) => 
         client.callTool({
           name: "summon_by_intent",
-          args: { intent: `Request ${i}` }
+          arguments: { intent: `Request ${i}` }
         })
       );
       
@@ -337,10 +340,10 @@ describe("Complete MCP Functionality Tests", () => {
 
     it("should handle concurrent persona operations", async () => {
       const operations = [
-        client.callTool({ name: "list_personas", args: {} }),
-        client.callTool({ name: "summon_persona", args: { personaId: "analyst" } }),
-        client.callTool({ name: "summon_by_intent", args: { intent: "data" } }),
-        client.callTool({ name: "list_active_sessions", args: {} })
+        client.callTool({ name: "list_personas", arguments: {} }),
+        client.callTool({ name: "summon_persona", arguments: { personaId: "analyst" } }),
+        client.callTool({ name: "summon_by_intent", arguments: { intent: "data" } }),
+        client.callTool({ name: "list_active_sessions", arguments: {} })
       ];
       
       const results = await Promise.all(operations);
@@ -355,7 +358,7 @@ describe("Complete MCP Functionality Tests", () => {
       for (const invalidId of invalidIds.filter(id => typeof id === 'string')) {
         const result = await client.callTool({
           name: "get_asset",
-          args: { id: invalidId }
+          arguments: { assetId: invalidId }
         });
         
         const response = JSON.parse(result.content[0].text);
@@ -364,15 +367,15 @@ describe("Complete MCP Functionality Tests", () => {
     });
 
     it("should maintain data integrity across operations", async () => {
-      const list1 = await client.callTool({ name: "list_personas", args: {} });
+      const list1 = await client.callTool({ name: "list_personas", arguments: {} });
       const personas1 = JSON.parse(list1.content[0].text);
       
       const summonResult = await client.callTool({
         name: "summon_persona",
-        args: { personaId: "analyst" }
+        arguments: { personaId: "analyst" }
       });
       
-      const list2 = await client.callTool({ name: "list_personas", args: {} });
+      const list2 = await client.callTool({ name: "list_personas", arguments: {} });
       const personas2 = JSON.parse(list2.content[0].text);
       
       expect(personas1.length).toBe(personas2.length);

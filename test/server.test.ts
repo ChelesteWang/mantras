@@ -22,7 +22,7 @@ describe("MCP Server Integration", () => {
   it("should list all assets", async () => {
     const result = await client.callTool({
       name: "list_assets",
-      args: {}
+      arguments: {}
     });
     expect(result.content[0].type).toBe("text");
     const assets = JSON.parse(result.content[0].text);
@@ -38,7 +38,7 @@ describe("MCP Server Integration", () => {
     // Test that get_asset works with known assets
     const getResult = await client.callTool({
       name: "get_asset",
-      args: { assetId: "analyst" }
+      arguments: { assetId: "analyst" }
     });
     
     expect(getResult.content[0].type).toBe("text");
@@ -46,4 +46,4 @@ describe("MCP Server Integration", () => {
     expect(getResult.content[0].text).toBeDefined();
     expect(getResult.content[0].text.length).toBeGreaterThan(0);
   });
-}); 
+});

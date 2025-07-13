@@ -1,0 +1,32 @@
+[
+  {
+    "id": "analyst",
+    "type": "persona",
+    "name": "Local Analyst Override",
+    "description": "This persona overrides the default analyst.",
+    "systemPrompt": "You are a locally overridden analyst.",
+    "personality": {
+      "role": "Local Analyst",
+      "traits": ["local", "overridden"],
+      "communicationStyle": "concise",
+      "knowledgeDomains": ["local-data"]
+    },
+    "capabilities": {
+      "analysis": true,
+      "creative": true,
+      "technical": false,
+      "empathetic": true
+    },
+    "constraints": {}
+  },
+  {
+    "id": "new-local-persona",
+    "type": "persona",
+    "name": "New Local Persona",
+    "description": "A brand new persona from a local file.",
+    "systemPrompt": "You are a new local persona.",
+    "personality": {},
+    "capabilities": {},
+    "constraints": {}
+  }
+]

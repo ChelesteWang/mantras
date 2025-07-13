@@ -1,5 +1,6 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { Argument } from "commander";
 
 describe("Final Working MCP Tests", () => {
   let client: any;
@@ -22,7 +23,7 @@ describe("Final Working MCP Tests", () => {
     it("should list all assets", async () => {
       const result = await client.callTool({
         name: "list_assets",
-        args: {}
+        arguments: {}
       });
       expect(result.content[0].type).toBe("text");
       expect(result.content[0].text).toBeDefined();
@@ -32,7 +33,7 @@ describe("Final Working MCP Tests", () => {
     it("should list personas", async () => {
       const result = await client.callTool({
         name: "list_personas",
-        args: {}
+        arguments: {}
       });
       expect(result.content[0].type).toBe("text");
     });
@@ -40,7 +41,7 @@ describe("Final Working MCP Tests", () => {
     it("should handle get_asset responses", async () => {
       const testCase = await client.callTool({
         name: "get_asset",
-        args: { assetId: "analyst" }
+        arguments: { assetId: "analyst" }
       });
       expect(testCase.content[0].type).toBe("text");
     });
@@ -48,7 +49,7 @@ describe("Final Working MCP Tests", () => {
     it("should handle summon intents", async () => {
       const result = await client.callTool({
         name: "summon_by_intent",
-        args: { intent: "test" }
+        arguments: { intent: "test" }
       });
       expect(result.content[0].type).toBe("text");
     });
@@ -56,7 +57,7 @@ describe("Final Working MCP Tests", () => {
     it("should handle session management", async () => {
       const result = await client.callTool({
         name: "list_active_sessions",
-        args: {}
+        arguments: {}
       });
       expect(result.content[0].type).toBe("text");
     });

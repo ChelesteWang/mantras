@@ -13,6 +13,7 @@
   "scripts": {
     "start": "node dist/server.js",
     "test": "jest",
+    "coverage": "jest --coverage",
     "build": "tsup src/**/*.ts --format esm --d dist --clean",
     "dev": "tsx watch src/server.ts",
     "dev:debug": "tsx watch --inspect src/server.ts",

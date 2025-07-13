@@ -1,6 +1,5 @@
 import { RemoteAssetRepository } from './asset-repository.js';
 import { PersonaSummoner } from './persona-summoner.js';
-import { Asset } from './types.js';
 import { Command } from 'commander';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -18,74 +17,70 @@ const options = program.opts();
 const repository = new RemoteAssetRepository(options.personas);
 const personaSummoner = new PersonaSummoner();
 
-// MCP 服务器实例
+// 创建支持参数提取的MCP服务器
 const server = new McpServer({
   name: "ai-asset-manager-persona-summoner",
   version: "2.0.0"
 });
 
-// 注册工具
-server.registerTool(
+// 注册工具 - 使用registerTool with proper parameter extraction
+server.tool(
   "list_assets",
-  z.object({}),
+  "List all available assets including personas, prompts, and tools",
+  {},
   async () => {
     const assets = await repository.getAssets();
     return {
       content: [
         {
           type: "text",
-          text: JSON.stringify(assets)
+          text: JSON.stringify(assets, null, 2)
         }
       ]
     };
   }
 );
 
-server.registerTool(
+server.tool(
   "get_asset",
-  z.object({
-    assetId: z.string()
-  }),
-  async (args) => {
-    logToFile(`get_asset args: ${JSON.stringify(args)}`);
-    const id = args.assetId;
-    if (!id || typeof id !== 'string') {
+  "Get specific asset by ID",
+  { assetId: z.string().describe("Asset ID to retrieve") },
+  async ({ assetId }) => {
+    logToFile(`get_asset called with: ${JSON.stringify({ assetId })}`);
+
+    const asset = await repository.getAssetById(assetId);
+    logToFile(`Found asset: ${asset ? asset.name : 'NOT_FOUND'}`);
+
+    if (!asset) {
       return {
         content: [
           {
             type: "text",
             text: JSON.stringify({
               error: "Invalid asset ID",
-              providedId: id,
-              available: await repository.getAssets().then(a => a.map(asset => asset.id))
-            })
+              requestedAssetId: assetId,
+              available: (await repository.getAssets()).map(a => a.id)
+            }, null, 2)
           }
         ]
       };
     }
-    
-    const asset = await repository.getAssetById(id);
-    logToFile(`get_asset: ${id}\nasset: ${JSON.stringify(asset)}`);
-    
+
     return {
       content: [
         {
           type: "text",
-          text: JSON.stringify(asset || {
-            error: "Asset not found",
-            requestedId: id,
-            available: await repository.getAssets().then(a => a.map(asset => asset.id))
-          })
+          text: JSON.stringify(asset, null, 2)
         }
       ]
     };
   }
 );
 
-// Persona summoner tools
-server.registerTool(
+server.tool(
   "list_personas",
-  z.object({}),
+  "List all available persona definitions",
+  {},
   async () => {
     const personas = personaSummoner.getPersonas();
     return {
@@ -99,24 +94,23 @@ server.registerTool(
   }
 );
 
-server.registerTool(
+server.tool(
   "summon_persona",
-  z.object({
+  "Summon or activate a specific persona",
+  {
     personaId: z.string().optional().describe("Specific persona ID to summon"),
     intent: z.string().optional().describe("Intent/type of interaction (e.g., 'technical', 'creative', 'analytical')"),
-    customParams: z.object({}).optional().describe("Custom parameters for persona customization")
-  }),
-  async (args) => {
-    logToFile(`summon_persona args: ${JSON.stringify(args)}`);
-    const request = {
-      personaId: args.personaId,
-      intent: args.intent,
-      customParams: args.customParams as Record<string, any>
-    };
-    
-    const summoned = personaSummoner.summonPersona(request);
-    logToFile(`Summoned persona: ${summoned.persona.name} for intent: ${args.intent || 'default'}`);
-    
+    customParams: z.record(z.any()).optional().describe("Custom parameters for persona customization")
+  },
+  async ({ personaId, intent, customParams }) => {
+    logToFile(`summon_persona called: ${JSON.stringify({ personaId, intent })}`);
+
+    const summoned = personaSummoner.summonPersona({
+      personaId,
+      intent,
+      customParams
+    });
+
     return {
       content: [
         {
@@ -128,23 +122,24 @@ server.registerTool(
   }
 );
 
-server.registerTool(
+server.tool(
   "summon_by_intent",
-  z.object({
+  "Automatically summon the best persona for your intent",
+  {
     intent: z.string().describe("The user's intent or situation description")
-  }),
-  async (args) => {
-    const summoned = personaSummoner.summonPersona({
-      intent: args.intent
-    });
-    
+  },
+  async ({ intent }) => {
+    logToFile(`summon_by_intent called with intent: ${intent}`);
+
+    const summoned = personaSummoner.summonPersona({ intent });
+
     return {
       content: [
         {
           type: "text",
           text: JSON.stringify({
             persona: summoned.persona,
-            recommendation: `Summoned ${summoned.persona.name} persona for: ${args.intent}`,
+            recommendation: `Summoned ${summoned.persona.name} for: ${intent}`,
             confidence: summoned.metadata.confidence
           }, null, 2)
         }
@@ -153,9 +148,10 @@ server.registerTool(
   }
 );
 
-server.registerTool(
+server.tool(
   "list_active_sessions",
-  z.object({}),
+  "List all active persona sessions",
+  {},
   async () => {
     const sessions = personaSummoner.getActiveSessions();
     return {
@@ -169,21 +165,49 @@ server.registerTool(
   }
 );
 
-server.registerTool(
+
+
+server.tool(
+  "get_session",
+  "Get details of a specific session",
+  { sessionId: z.string().describe("The ID of the session to retrieve") },
+  async ({ sessionId }) => {
+    const session = personaSummoner.getSession(sessionId);
+    if (session) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(session, null, 2)
+          }
+        ]
+      };
+    } else {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({ error: "Session not found" }, null, 2)
+          }
+        ]
+      };
+    }
+  }
+);
+
+server.tool(
   "release_session",
-  z.object({
-    sessionId: z.string().describe("Session ID to release")
-  }),
-  async (args) => {
-    const released = personaSummoner.releaseSession(args.sessionId);
-    
+  "End an active persona session",
+  { sessionId: z.string().describe("Session ID to release") },
+  async ({ sessionId }) => {
+    const released = personaSummoner.releaseSession(sessionId);
     return {
       content: [
         {
           type: "text",
           text: JSON.stringify({
             success: released,
-            message: released ? `Session ${args.sessionId} released` : 'Session not found'
+            message: released ? `Session ${sessionId} released` : 'Session not found'
           }, null, 2)
         }
       ]
@@ -191,16 +215,29 @@ server.registerTool(
   }
 );
 
-server.registerTool(
+server.tool(
   "synthesize_persona",
-  z.object({
+  "Create new persona by combining existing ones",
+  {
     basePersonaIds: z.array(z.string()).describe("Array of base persona IDs to combine"),
     customName: z.string().optional().describe("Custom name for synthesized persona")
-  }),
-  async (args) => {
-    const synthesized = personaSummoner.synthesizePersona(args.basePersonaIds, args.customName);
+  },
+  async ({ basePersonaIds, customName }) => {
+    if (!basePersonaIds || basePersonaIds.length === 0) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              error: "Cannot synthesize persona from an empty list of base personas."
+            }, null, 2)
+          }
+        ]
+      };
+    }
+    const synthesized = personaSummoner.synthesizePersona(basePersonaIds, customName);
     const asset = personaSummoner.toAsset(synthesized);
-    
+
     return {
       content: [
         {
@@ -215,27 +252,8 @@ server.registerTool(
   }
 );
 
-server.registerTool(
-  "get_session",
-  z.object({
-    sessionId: z.string().describe("Session ID to retrieve")
-  }),
-  async (args) => {
-    const session = personaSummoner.getSession(args.sessionId);
-    
-    return {
-      content: [
-        {
-          type: "text",
-          text: JSON.stringify(session || { error: 'Session not found' }, null, 2)
-        }
-      ]
-    };
-  }
-);
-
-// 启动 stdio transport
+// 启动服务器
 const transport = new StdioServerTransport();
 server.connect(transport).then(() => {
-  console.log("MCP server with persona summoner is running...");
 });
+

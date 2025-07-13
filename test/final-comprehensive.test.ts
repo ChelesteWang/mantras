@@ -22,7 +22,7 @@ describe("Reliable MCP Final Tests", () => {
     it("should list all core assets successfully", async () => {
       const result = await client.callTool({
         name: "list_assets",
-        args: {}
+        arguments: {}
       });
       
       expect(result.content[0].type).toBe("text");
@@ -34,9 +34,9 @@ describe("Reliable MCP Final Tests", () => {
     it("should get valid persona by exact assetId", async () => {
       const result = await client.callTool({
         name: "get_asset",
-        args: { assetId: "analyst" }
+        arguments: { assetId: "analyst" }
       });
-      
+
       expect(result.content[0].type).toBe("text");
       
       try {
@@ -55,7 +55,7 @@ describe("Reliable MCP Final Tests", () => {
     it("should list available personas", async () => {
       const result = await client.callTool({
         name: "list_personas",
-        args: {}
+        arguments: {}
       });
       
       const personas = JSON.parse(result.content[0].text);
@@ -66,7 +66,7 @@ describe("Reliable MCP Final Tests", () => {
     it("should summon analyst for data intent", async () => {
       const result = await client.callTool({
         name: "summon_by_intent",
-        args: { intent: "analyze data" }
+        arguments: { intent: "analyze data" }
       });
       
       const response = JSON.parse(result.content[0].text);
@@ -76,9 +76,9 @@ describe("Reliable MCP Final Tests", () => {
 
     it("should handle empty parameters gracefully", async () => {
       const results = await Promise.allSettled([
-        client.callTool({ name: "summon_persona", args: {} }),
-        client.callTool({ name: "summon_by_intent", args: {} }),
-        client.callTool({ name: "get_asset", args: { id: "" } })
+        client.callTool({ name: "summon_persona", arguments: {} }),
+        client.callTool({ name: "summon_by_intent", arguments: { intent: "" } }),
+        client.callTool({ name: "get_asset", arguments: { assetId: "" } })
       ]);
       
       results.forEach(result => {
@@ -89,7 +89,7 @@ describe("Reliable MCP Final Tests", () => {
     it("should manage session lifecycle", async () => {
       const summonResult = await client.callTool({
         name: "summon_persona",
-        args: { personaId: "creative" }
+        arguments: { personaId: "creative" }
       });
       
       const session = JSON.parse(summonResult.content[0].text);
@@ -97,44 +97,61 @@ describe("Reliable MCP Final Tests", () => {
       
       const sessionResult = await client.callTool({
         name: "get_session",
-        args: { sessionId: session.sessionId }
+        arguments: { sessionId: session.sessionId }
       });
       
       expect(sessionResult.content[0].type).toBe("text");
     });
 
-    it("should synthesize personas correctly", async () => {
-      const result = await client.callTool({
+    it("should synthesize personas correctly and verify addition", async () => {
+      // Synthesize a new persona
+      const synthesisResult = await client.callTool({
         name: "synthesize_persona",
-        args: { basePersonaIds: ["creative", "tech-expert"] }
+        arguments: { 
+          basePersonaIds: ["creative", "tech-expert"],
+          customName: "Creative Tech Expert"
+        }
       });
       
-      expect(result.content[0].type).toBe("text");
-      const response = result.content[0].text;
-      expect(response.length).toBeGreaterThan(0);
+      expect(synthesisResult.content[0].type).toBe("text");
+      const synthesisResponse = JSON.parse(synthesisResult.content[0].text);
+      const newPersona = synthesisResponse.synthesizedPersona;
+
+      // Verify the synthesized persona's properties
+      expect(newPersona).toBeDefined();
+      expect(newPersona.id).toBeDefined();
+      expect(newPersona.name).toBe("Creative Tech Expert");
+
+      // Verify the new persona is now in the list of all personas
+      const listResult = await client.callTool({
+        name: "list_personas",
+        arguments: {}
+      });
+      const allPersonas = JSON.parse(listResult.content[0].text);
+      const foundPersona = allPersonas.find((p: any) => p.id === newPersona.id);
+      expect(foundPersona).toBeDefined();
+      expect(foundPersona.name).toBe("Creative Tech Expert");
     });
   });
 
   describe("Error Handling and Robustness", () => {
     it("should handle malformed parameters gracefully", async () => {
       const testCases = [
-        { name: "get_asset", args: {} },
-        { name: "get_asset", args: { id: null } },
-        { name: "summon_by_intent", args: {} }
+        { name: "get_asset", arguments: {} },
+        { name: "get_asset", arguments: { assetId: null } },
+        { name: "summon_by_intent", arguments: { intent: null } }
       ];
 
       for (const testCase of testCases) {
-        const result = await client.callTool(testCase);
-        expect(result.content[0].type).toBe("text");
-        expect(result.content[0].text).toBeDefined();
+        await expect(client.callTool(testCase)).rejects.toThrow('MCP error -32602');
       }
     });
 
     it("should maintain performance under concurrent calls", async () => {
       const promises = [
-        client.callTool({ name: "list_assets", args: {} }),
-        client.callTool({ name: "list_personas", args: {} }),
-        client.callTool({ name: "summon_by_intent", args: { intent: "test" } })
+        client.callTool({ name: "list_assets", arguments: {} }),
+        client.callTool({ name: "list_personas", arguments: {} }),
+        client.callTool({ name: "summon_by_intent", arguments: { intent: "test" } })
       ];
 
       const results = await Promise.all(promises);

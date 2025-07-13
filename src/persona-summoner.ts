@@ -150,7 +150,6 @@ export class PersonaSummoner {
 
     personas.forEach(persona => {
       this.personas.set(persona.id, persona);
-      logToFile(`Registered persona: ${persona.name} (${persona.id})`);
     });
   }
 
@@ -184,7 +183,6 @@ export class PersonaSummoner {
     };
     
     this.activeSessions.set(sessionId, summonedPersona);
-    logToFile(`Summoned persona: ${persona.name} (session: ${sessionId})`);
     
     return summonedPersona;
   }

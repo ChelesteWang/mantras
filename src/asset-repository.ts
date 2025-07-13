@@ -1,7 +1,6 @@
 import { Asset, AssetRepository } from './types';
 import { ASSET_SOURCES, defaultAssets } from './asset-sources';
 import * as fs from 'fs/promises';
-import { logToFile } from './log-to-file';
 
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5分钟
 
@@ -18,57 +17,57 @@ export class RemoteAssetRepository implements AssetRepository {
     if (this.isCacheValid()) {
       return Array.from(this.cache.values());
     }
-    let assets: Asset[] = [];
-    // 1. 远程拉取
-    for (const url of ASSET_SOURCES) {
-      try {
-        const res = await fetch(url);
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data)) {
-            assets = data;
-            break;
-          }
+
+    let remoteAssets: Asset[] = [];
+    let fetchSuccess = false;
+    if (ASSET_SOURCES.length > 0) {
+        for (const url of ASSET_SOURCES) {
+            try {
+                const res = await fetch(url);
+                if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data)) {
+                    remoteAssets = data;
+                    fetchSuccess = true;
+                    break;
+                }
+                }
+            } catch (e) {
+                // continue to next source
+            }
         }
-      } catch (e) {
-        // 跳过失败，尝试下一个
-      }
     }
-    // 2. 远程失败用默认
-    if (assets.length === 0) {
-      assets = [...defaultAssets];
-    }
-    // 3. 合并本地（本地优先覆盖）
+
+    const baseAssets = fetchSuccess ? remoteAssets : defaultAssets;
+    const assetMap = new Map(baseAssets.map(a => [a.id, a]));
+
     if (this.localFilePath) {
       try {
         const file = await fs.readFile(this.localFilePath, 'utf-8');
         const localAssets = JSON.parse(file);
         if (Array.isArray(localAssets)) {
-          // 用本地覆盖同 id
-          const map = new Map(assets.map(a => [a.id, a]));
-          for (const la of localAssets) {
-            map.set(la.id, la);
+          for (const localAsset of localAssets) {
+            assetMap.set(localAsset.id, localAsset);
           }
-          assets = Array.from(map.values());
         }
       } catch (e) {
-        // 本地文件无效或不存在，忽略
+        // ignore if local file is invalid or not found
       }
     }
-    // 4. 缓存
+
+    const finalAssets = Array.from(assetMap.values());
+
     this.cache.clear();
-    for (const asset of assets) {
+    for (const asset of finalAssets) {
       this.cache.set(asset.id, asset);
     }
     this.lastFetch = Date.now();
-    return assets;
+    return finalAssets;
   }
 
   async getAssetById(id: string): Promise<Asset | undefined> {
       const assets = await this.getAssets();
       const asset = assets.find(a => a.id === id);
-      logToFile(`getAssetById: ${id}
-asset: ${JSON.stringify(asset)}`);
       return asset;
   }
 
