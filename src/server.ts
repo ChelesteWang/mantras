@@ -1,10 +1,9 @@
-import { RemoteAssetRepository } from './asset-repository.js';
-import { PersonaSummoner } from './persona-summoner.js';
+import { RemoteAssetRepository } from './asset-repository';
+import { PersonaSummoner } from './persona-summoner';
 import { Command } from 'commander';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
-import { logToFile } from './log-to-file';
 
 // 解析命令行参数
 const program = new Command();
@@ -46,10 +45,10 @@ server.tool(
   "Get specific asset by ID",
   { assetId: z.string().describe("Asset ID to retrieve") },
   async ({ assetId }) => {
-    logToFile(`get_asset called with: ${JSON.stringify({ assetId })}`);
+    // logToFile(`get_asset called with: ${JSON.stringify({ assetId })}`);
 
     const asset = await repository.getAssetById(assetId);
-    logToFile(`Found asset: ${asset ? asset.name : 'NOT_FOUND'}`);
+    // logToFile(`Found asset: ${asset ? asset.name : 'NOT_FOUND'}`);
 
     if (!asset) {
       return {
@@ -103,7 +102,7 @@ server.tool(
     customParams: z.record(z.any()).optional().describe("Custom parameters for persona customization")
   },
   async ({ personaId, intent, customParams }) => {
-    logToFile(`summon_persona called: ${JSON.stringify({ personaId, intent })}`);
+    // logToFile(`summon_persona called: ${JSON.stringify({ personaId, intent })}`);
 
     const summoned = personaSummoner.summonPersona({
       personaId,
@@ -129,7 +128,7 @@ server.tool(
     intent: z.string().describe("The user's intent or situation description")
   },
   async ({ intent }) => {
-    logToFile(`summon_by_intent called with intent: ${intent}`);
+    // logToFile(`summon_by_intent called with intent: ${intent}`);
 
     const summoned = personaSummoner.summonPersona({ intent });
 

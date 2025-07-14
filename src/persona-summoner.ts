@@ -1,48 +1,6 @@
-import { Asset, AssetType } from './types';
-import { logToFile } from './log-to-file';
-
-// Persona summoning system inspired by persona-summoner
-export interface Persona {
-  id: string;
-  name: string;
-  description: string;
-  systemPrompt: string;
-  personality: {
-    role: string;
-    traits: string[];
-    communicationStyle: string;
-    knowledgeDomains: string[];
-  };
-  capabilities: {
-    analysis: boolean;
-    creative: boolean;
-    technical: boolean;
-    empathetic: boolean;
-  };
-  constraints: {
-    maxResponseLength: number;
-    tone: 'formal' | 'casual' | 'technical' | 'empathetic';
-    allowedTopics: string[];
-  };
-}
-
-export interface SummonRequest {
-  personaId?: string;
-  intent?: string;
-  context?: Record<string, any>;
-  customParams?: Record<string, any>;
-}
-
-export interface SummonedPersona {
-  persona: Persona;
-  sessionId: string;
-  timestamp: string;
-  metadata: {
-    summonerIntent: string;
-    confidence: number;
-    customized: boolean;
-  };
-}
+import { Asset, AssetType, Persona, SummonRequest, SummonedPersona } from './types';
+import { logger } from './logger';
+import { SessionMemory } from './memory';
 
 export class PersonaSummoner {
   private personas: Map<string, Persona> = new Map();
@@ -178,6 +136,7 @@ export class PersonaSummoner {
       persona: customizedPersona,
       sessionId,
       timestamp: new Date().toISOString(),
+      memory: new SessionMemory(), // Create a new memory instance for the session
       metadata: {
         summonerIntent: request.intent || 'default',
         confidence: this.calculateConfidence(persona, request),
@@ -251,7 +210,7 @@ export class PersonaSummoner {
   public releaseSession(sessionId: string): boolean {
     const released = this.activeSessions.delete(sessionId);
     if (released) {
-      logToFile(`Released session: ${sessionId}`);
+      logger.info(`Released session: ${sessionId}`);
     }
     return released;
   }
@@ -298,7 +257,7 @@ export class PersonaSummoner {
     };
     
     this.personas.set(synthesized.id, synthesized);
-    logToFile(`Synthesized persona: ${synthesized.name}`);
+    logger.info(`Synthesized persona: ${synthesized.name}`);
     
     return synthesized;
   }

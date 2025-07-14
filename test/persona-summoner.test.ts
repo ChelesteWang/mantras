@@ -1,15 +1,20 @@
 import { PersonaSummoner } from '../src/persona-summoner';
-import * as logFunctions from '../src/log-to-file';
 import { SummonRequest, SummonedPersona } from '../src/types';
+import { logger } from '../src/logger';
 
-// Mock the log-to-file module
-jest.mock('../src/log-to-file', () => ({
-  logToFile: jest.fn(),
+// Mock the logger module
+jest.mock('../src/logger', () => ({
+  logger: {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn(),
+  },
 }));
 
 describe('PersonaSummoner', () => {
   let summoner: PersonaSummoner;
-  const logToFileMock = logFunctions.logToFile as jest.Mock;
+  const loggerMock = logger as jest.Mocked<typeof logger>;
 
   beforeEach(() => {
     // Clear all mocks before each test
@@ -116,13 +121,13 @@ describe('PersonaSummoner', () => {
       const result = summoner.releaseSession(summoned.sessionId);
       expect(result).toBe(true);
       expect(summoner.getActiveSessions().length).toBe(0);
-      expect(logToFileMock).toHaveBeenCalledWith(`Released session: ${summoned.sessionId}`);
+      expect(loggerMock.info).toHaveBeenCalledWith(`Released session: ${summoned.sessionId}`);
     });
 
     it('should return false when trying to release a non-existent session', () => {
       const result = summoner.releaseSession('non-existent-session-id');
       expect(result).toBe(false);
-      expect(logToFileMock).not.toHaveBeenCalled();
+      expect(loggerMock.info).not.toHaveBeenCalled();
     });
   });
 
@@ -138,7 +143,7 @@ describe('PersonaSummoner', () => {
     it('should synthesize a persona with a default name if no custom name is provided', () => {
       const synthesized = summoner.synthesizePersona(['analyst', 'creative']);
       expect(synthesized.name).toBe('Synthesized (Data Analyst + Creative Writer)');
-      expect(logToFileMock).toHaveBeenCalledWith('Synthesized persona: Synthesized (Data Analyst + Creative Writer)');
+      expect(loggerMock.info).toHaveBeenCalledWith('Synthesized persona: Synthesized (Data Analyst + Creative Writer)');
     });
 
     it('should throw an error if synthesizing with non-existent persona IDs', () => {

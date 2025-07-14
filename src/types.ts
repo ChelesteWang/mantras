@@ -46,13 +46,23 @@ export interface SummonRequest {
   customParams?: Record<string, any>;
 }
 
+import { SessionMemory } from './memory';
+
 export interface SummonedPersona {
   persona: Persona;
   sessionId: string;
   timestamp: string;
+  memory: SessionMemory; // Add memory to the session
   metadata: {
     summonerIntent: string;
     confidence: number;
     customized: boolean;
   };
+}
+
+export interface ActionableTool {
+  name: string;
+  description: string;
+  parameters: object; // JSON Schema
+  execute(args: any): Promise<any>;
 }
