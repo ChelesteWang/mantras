@@ -114,4 +114,65 @@ describe('RemoteAssetRepository', () => {
     expect(localAsset).toBeDefined();
     expect(localAsset?.name).toBe('Local Asset 1'); // Check that local version is used
   });
+
+  it('should get an asset by its ID', async () => {
+    const { RemoteAssetRepository } = require('../src/asset-repository');
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => mockRemoteAssets,
+    } as Response);
+
+    const repo = new RemoteAssetRepository();
+    const asset = await repo.getAssetById('remote-1');
+    expect(asset).toBeDefined();
+    expect(asset?.id).toBe('remote-1');
+
+    const notFoundAsset = await repo.getAssetById('non-existent-id');
+    expect(notFoundAsset).toBeUndefined();
+  });
+
+  it('should log an error when remote fetch fails with an Error instance', async () => {
+    const { RemoteAssetRepository } = require('../src/asset-repository');
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(global, 'fetch').mockRejectedValue(new Error('Network failure'));
+
+    const repo = new RemoteAssetRepository();
+    await repo.getAssets();
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Failed to fetch remote assets from http://fake-url.com/assets.json: Network failure'
+    );
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should log an unknown error when remote fetch fails with a non-Error', async () => {
+    const { RemoteAssetRepository } = require('../src/asset-repository');
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(global, 'fetch').mockRejectedValue('some string error');
+
+    const repo = new RemoteAssetRepository();
+    await repo.getAssets();
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'An unknown error occurred while fetching remote assets from http://fake-url.com/assets.json'
+    );
+    consoleErrorSpy.mockRestore();
+  });
+
+  it('should log an error when reading local assets fails', async () => {
+    const fs = require('fs/promises');
+    const { RemoteAssetRepository } = require('../src/asset-repository');
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(global, 'fetch').mockResolvedValue({ ok: true, json: async () => [] } as Response);
+    fs.readFile.mockRejectedValue(new Error('Read error'));
+
+    const repo = new RemoteAssetRepository(localFilePath);
+    await repo.getAssets();
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      `Failed to read or parse local assets from ${localFilePath}:`,
+      expect.any(Error)
+    );
+    consoleErrorSpy.mockRestore();
+  });
 });

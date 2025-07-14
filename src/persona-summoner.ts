@@ -155,18 +155,21 @@ export class PersonaSummoner {
 
   public summonPersona(request: SummonRequest): SummonedPersona {
     let persona: Persona | undefined;
-    
+
     if (request.personaId) {
       persona = this.personas.get(request.personaId);
+      if (!persona) {
+        throw new Error(`Persona with ID ${request.personaId} not found.`);
+      }
     } else if (request.intent) {
       persona = this.resolvePersonaByIntent(request.intent);
     }
-    
+
     if (!persona) {
       // Default to analyst persona
       persona = this.personas.get('analyst')!;
     }
-    
+
     // Customize based on parameters
     const customizedPersona = this.customizePersona(persona, request.customParams);
     
@@ -237,6 +240,10 @@ export class PersonaSummoner {
     return Array.from(this.personas.values());
   }
 
+  public getPersonaById(id: string): Persona | undefined {
+    return this.personas.get(id);
+  }
+
   public getActiveSessions(): SummonedPersona[] {
     return Array.from(this.activeSessions.values());
   }
@@ -254,7 +261,17 @@ export class PersonaSummoner {
   }
 
   public synthesizePersona(bases: string[], customName?: string): Persona {
-    const basePersonas = bases.map(id => this.personas.get(id)).filter(Boolean) as Persona[];
+    if (!bases || bases.length === 0) {
+      throw new Error('At least one base persona ID is required for synthesis.');
+    }
+
+    const basePersonas = bases.map(id => {
+      const persona = this.personas.get(id);
+      if (!persona) {
+        throw new Error(`Base persona with ID ${id} not found.`);
+      }
+      return persona;
+    });
     
     const synthesized: Persona = {
       id: `synthesized_${Date.now()}`,

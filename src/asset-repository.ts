@@ -33,7 +33,11 @@ export class RemoteAssetRepository implements AssetRepository {
                 }
                 }
             } catch (e) {
-                // continue to next source
+                if (e instanceof Error) {
+                    console.error(`Failed to fetch remote assets from ${url}: ${e.message}`);
+                } else {
+                    console.error(`An unknown error occurred while fetching remote assets from ${url}`);
+                }
             }
         }
     }
@@ -51,7 +55,7 @@ export class RemoteAssetRepository implements AssetRepository {
           }
         }
       } catch (e) {
-        // ignore if local file is invalid or not found
+        console.error(`Failed to read or parse local assets from ${this.localFilePath}:`, e);
       }
     }
 
