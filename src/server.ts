@@ -1,5 +1,6 @@
 import { RemoteAssetRepository } from './asset-repository';
 import { PersonaSummoner } from './persona-summoner';
+import { PROMPT_TEMPLATES } from './prompt-templates';
 import { Command } from 'commander';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -245,6 +246,208 @@ server.tool(
             synthesizedPersona: asset,
             message: `Created synthesized persona: ${synthesized.name}`
           }, null, 2)
+        }
+      ]
+    };
+  }
+);
+
+// 提示工程增强功能
+server.tool(
+  "list_mantras",
+  "List all available Mantra templates",
+  {
+    category: z.string().optional().describe("Filter by category")
+  },
+  async ({ category }) => {
+    let templates = PROMPT_TEMPLATES;
+    
+    if (category) {
+      templates = templates.filter(template => template.category === category);
+    }
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify({
+            templates: templates.map(t => ({
+              id: t.id,
+              name: t.name,
+              description: t.description,
+              technique: t.technique,
+              category: t.category,
+              parameters: t.parameters
+            })),
+            availableCategories: [...new Set(PROMPT_TEMPLATES.map(t => t.category))]
+          }, null, 2)
+        }
+      ]
+    };
+  }
+);
+
+server.tool(
+  "apply_mantra",
+  "Apply a Mantra template with user inputs",
+  {
+    templateName: z.string().describe("Name of the Mantra template to apply"),
+    inputs: z.record(z.string()).describe("User inputs for the template slots")
+  },
+  async ({ templateName, inputs }) => {
+    // 支持通过 name 或 id 查找模板
+    const template = PROMPT_TEMPLATES.find(t => 
+      t.id === templateName || t.name === templateName
+    );
+    
+    if (!template) {
+      throw new Error(`Template "${templateName}" not found. Available templates: ${PROMPT_TEMPLATES.map(t => t.id).join(', ')}`);
+    }
+    
+    // 检查必需参数
+    const missingParams = template.parameters.filter(param => !inputs[param]);
+    if (missingParams.length > 0) {
+      throw new Error(`Missing required parameters: ${missingParams.join(', ')}. Required: ${template.parameters.join(', ')}`);
+    }
+    
+    // 应用模板
+    let result = template.template;
+    template.parameters.forEach(param => {
+      const value = inputs[param] || '';
+      result = result.replace(new RegExp(`{${param}}`, 'g'), value);
+    });
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify({
+            appliedTemplate: {
+              id: template.id,
+              name: template.name,
+              technique: template.technique,
+              category: template.category
+            },
+            prompt: result,
+            usedInputs: inputs
+          }, null, 2)
+        }
+      ]
+    };
+  }
+);
+
+server.tool(
+  "create_execution_plan",
+  "Create an execution plan for a complex task",
+  {
+    userRequest: z.string().describe("The user's request or task description"),
+    includeContext: z.boolean().optional().describe("Whether to include project context")
+  },
+  async ({ userRequest, includeContext = false }) => {
+    // 简化的执行计划生成
+    const planId = `plan_${Date.now()}`;
+    
+    // 基于用户请求分析任务类型
+    const taskType = userRequest.toLowerCase().includes('debug') ? 'debugging' :
+                    userRequest.toLowerCase().includes('refactor') ? 'refactoring' :
+                    userRequest.toLowerCase().includes('implement') ? 'implementation' :
+                    userRequest.toLowerCase().includes('review') ? 'code-review' : 'general';
+    
+    // 推荐相关的提示模板
+    const relevantTemplates = PROMPT_TEMPLATES.filter(t => 
+      t.category === taskType || 
+      userRequest.toLowerCase().includes(t.technique.replace('_', ' '))
+    );
+    
+    const plan = {
+      id: planId,
+      userRequest,
+      taskType,
+      recommendedTemplates: relevantTemplates.map(t => ({
+        id: t.id,
+        name: t.name,
+        technique: t.technique,
+        description: t.description
+      })),
+      steps: [
+        "1. 分析问题和需求",
+        "2. 选择合适的提示模板",
+        "3. 准备必要的输入参数",
+        "4. 应用模板生成提示",
+        "5. 执行和验证结果"
+      ],
+      createdAt: new Date().toISOString()
+    };
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(plan, null, 2)
+        }
+      ]
+    };
+  }
+);
+
+server.tool(
+  "execute_plan",
+  "Execute a previously created execution plan",
+  {
+    planId: z.string().describe("The ID of the plan to execute")
+  },
+  async ({ planId }) => {
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify({
+            message: `Plan ${planId} execution started. Please use the recommended templates from the plan.`,
+            status: "ready_for_template_application"
+          }, null, 2)
+        }
+      ]
+    };
+  }
+);
+
+server.tool(
+  "get_project_context",
+  "Collect and return project context information",
+  {
+    includeFileStructure: z.boolean().optional().describe("Include file structure in context"),
+    maxRelevantFiles: z.number().optional().describe("Maximum number of relevant files to include")
+  },
+  async ({ includeFileStructure = true, maxRelevantFiles = 10 }) => {
+    // 简化的项目上下文收集
+    const allAssets = await repository.getAssets();
+    const personas = allAssets.filter(asset => asset.type === 'persona');
+    const tools = allAssets.filter(asset => asset.type === 'tool');
+    
+    const context = {
+      projectType: "Mantras MCP Server",
+      mainLanguage: "TypeScript",
+      framework: "Model Context Protocol",
+      keyFeatures: [
+        "Asset Management",
+        "Persona Summoning", 
+        "Prompt Engineering Templates",
+        "Session Management"
+      ],
+      availableAssets: {
+        personas: personas.length,
+        promptTemplates: PROMPT_TEMPLATES.length,
+        tools: tools.length
+      },
+      contextCollectedAt: new Date().toISOString()
+    };
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(context, null, 2)
         }
       ]
     };

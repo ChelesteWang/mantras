@@ -14,6 +14,7 @@ export class PersonaSummoner {
     const personas: Persona[] = [
       {
         id: 'analyst',
+        type: 'persona',
         name: 'Data Analyst',
         description: 'Professional data analyst focused on insights and clarity',
         systemPrompt: 'You are a professional data analyst. Always provide clear, data-driven insights with actionable recommendations. Use charts and metrics where relevant.',
@@ -37,6 +38,7 @@ export class PersonaSummoner {
       },
       {
         id: 'creative',
+        type: 'persona',
         name: 'Creative Writer',
         description: 'Creative content writer with imaginative storytelling abilities',
         systemPrompt: 'You are a creative writer. Craft engaging, imaginative content while maintaining clarity and readability. Use vivid descriptions and compelling narratives.',
@@ -60,6 +62,7 @@ export class PersonaSummoner {
       },
       {
         id: 'tech-expert',
+        type: 'persona',
         name: 'Technical Expert',
         description: 'Deep technical specialist with comprehensive system knowledge',
         systemPrompt: 'You are a senior technical expert. Provide detailed, accurate technical explanations. Break down complex concepts and provide code examples when relevant.',
@@ -83,6 +86,7 @@ export class PersonaSummoner {
       },
       {
         id: 'therapist',
+        type: 'persona',
         name: 'Supportive Listener',
         description: 'Empathetic support system focused on well-being and understanding',
         systemPrompt: 'You are an empathetic listener. Provide supportive, understanding responses with genuine care. Focus on emotional well-being and practical advice.',
@@ -234,6 +238,7 @@ export class PersonaSummoner {
     
     const synthesized: Persona = {
       id: `synthesized_${Date.now()}`,
+      type: 'persona',
       name: customName || `Synthesized (${basePersonas.map(p => p.name).join(' + ')})`,
       description: `Synthesized persona combining ${basePersonas.map(p => p.name).join(' and ')}`,
       systemPrompt: basePersonas.map(p => p.systemPrompt).join('\\n\\n---\\n\\n'),

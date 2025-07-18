@@ -1,4 +1,5 @@
 import { Asset } from './types.js';
+import { PROMPT_TEMPLATES } from './prompt-templates';
 
 // 远程资产源 URL 列表
 export const ASSET_SOURCES: string[] = [
@@ -136,5 +137,7 @@ export const defaultAssets: Asset[] = [
       intent: 'string?',
       options: 'object?'
     }
-  }
+  },
+  // 添加提示工程模板
+  ...PROMPT_TEMPLATES
 ];

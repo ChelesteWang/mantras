@@ -1,5 +1,5 @@
 // 资产类型
-export type AssetType = 'persona' | 'prompt' | 'tool';
+export type AssetType = 'persona' | 'prompt' | 'tool' | 'prompt-template';
 
 // 资产结构
 export interface Asset {
@@ -10,16 +10,23 @@ export interface Asset {
   [key: string]: any; // 允许扩展字段
 }
 
+// 提示模板接口
+export interface PromptTemplate extends Asset {
+  type: 'prompt-template';
+  technique: string;        // 对应手册中的技巧
+  template: string;         // 模板内容
+  parameters: string[];     // 参数列表
+  category: string;         // 分类
+}
+
 // 资产仓库接口
 export interface AssetRepository {
   getAssets(): Promise<Asset[]>;
   getAssetById(id: string): Promise<Asset | undefined>;
 }
 
-export interface Persona {
-  id: string;
-  name: string;
-  description: string;
+export interface Persona extends Asset {
+  type: 'persona';
   systemPrompt: string;
   personality: {
     role: string;
@@ -60,9 +67,8 @@ export interface SummonedPersona {
   };
 }
 
-export interface ActionableTool {
-  name: string;
-  description: string;
+export interface ActionableTool extends Asset {
+  type: 'tool';
   parameters: object; // JSON Schema
   execute(args: any): Promise<any>;
 }

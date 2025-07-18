@@ -1,7 +1,9 @@
 import { ActionableTool } from '../types.js';
 
 export const calculatorTool: ActionableTool = {
-  name: 'calculator',
+  id: 'calculator',
+  type: 'tool',
+  name: 'Calculator',
   description: 'Performs basic arithmetic operations. Currently only supports addition.',
   parameters: {
     type: 'object',

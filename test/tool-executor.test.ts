@@ -10,7 +10,8 @@ describe('ToolExecutor', () => {
   it('should register and list the calculator tool', () => {
     const tools = toolExecutor.listTools();
     expect(tools).toHaveLength(1);
-    expect(tools[0].name).toBe('calculator');
+    expect(tools[0].name).toBe('Calculator');
+    expect(tools[0].id).toBe('calculator');
   });
 
   it('should execute the calculator tool with valid arguments', async () => {

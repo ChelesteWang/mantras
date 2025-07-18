@@ -1,68 +1,157 @@
-# AI Asset Manager
+# Mantras MCP 服务器
 
-## 1. Project Overview
+一个强大的 Model Context Protocol (MCP) 服务器，提供 AI 资产管理、Persona 召唤和**提示工程增强功能**。
 
-AI Asset Manager is a versatile MCP (Model Context Protocol) server designed to manage a wide range of AI-related assets, including prompts, personas, and tool definitions. It allows users to fetch, cache, and utilize these assets through simple commands, providing a centralized repository for AI development resources.
+## 🚀 核心功能
 
-## 2. Key Features
+### 1. AI 资产管理
+- 统一管理 Personas、Prompts 和 Tools
+- 支持远程和本地资产源
+- 智能缓存和更新机制
 
-- **Generic Asset Support**: Manages different types of assets, such as `persona`, `prompt`, and `tool`, not just personas.
-- **Multi-Source Federation**: Aggregates assets from remote URLs, local files, and a set of built-in defaults.
-- **Local Override**: Assets defined in a local file take precedence, allowing for easy customization and development.
-- **Caching Mechanism**: Caches fetched assets to improve performance and reduce network latency.
-- **Command-Line Integration**: Can be run as a command-line tool and easily integrated with any MCP-compatible client.
+### 2. Persona 召唤系统
+- 动态 Persona 创建和管理
+- 基于意图的智能推荐
+- 会话状态管理和记忆功能
+- Persona 合成和定制
 
-## 3. Project Structure
+### 3. 🎯 提示工程增强功能 (新增)
+基于《程序员的提示工程实战手册》的10大核心技巧：
 
+- **角色提示** - 设定专家角色获得高质量建议
+- **明确上下文** - 清晰框定问题避免模糊回答  
+- **输入输出示例** - 通过具体示例展示意图
+- **迭代式链条** - 将复杂任务分解成连续小步骤
+- **模拟调试** - 让AI模拟代码运行时行为
+- **功能蓝图** - 借助AI主导的规划和脚手架能力
+- **重构指导** - 确保重构与核心目标对齐
+- **寻求替代方案** - 探索多种不同的实现路径
+- **小黄鸭调试法** - 通过解释来挑战理解并发现逻辑矛盾
+- **约束锚定** - 给AI设定明确的边界和限制
+
+## 📋 可用的 MCP 工具
+
+### 资产管理
+- `list_assets` - 列出所有可用资产
+- `get_asset` - 根据ID获取特定资产
+
+### Persona 管理
+- `list_personas` - 列出所有可用的 Persona 定义
+- `summon_persona` - 召唤或激活特定 Persona
+- `summon_by_intent` - 根据意图自动召唤最佳 Persona
+- `list_active_sessions` - 列出所有活跃的 Persona 会话
+- `get_session` - 获取特定会话的详细信息
+- `release_session` - 结束活跃的 Persona 会话
+- `synthesize_persona` - 通过组合现有 Persona 创建新的
+
+### 🎯 提示工程功能 (新增)
+- `list_mantras` - 列出所有可用的 Mantra 模板
+- `apply_mantra` - 应用 Mantra 模板并填入用户输入
+- `create_execution_plan` - 为复杂任务创建执行计划
+- `execute_plan` - 执行之前创建的执行计划
+- `get_project_context` - 收集并返回项目上下文信息
+
+## 🎯 提示工程使用示例
+
+### 代码审查
+```bash
+mantras__apply_mantra {
+  "templateName": "role-prompting",
+  "inputs": {
+    "language": "TypeScript",
+    "goal": "安全性检查",
+    "code": "function authenticate(token: string) { return token === 'admin'; }"
+  }
+}
 ```
-ai-asset-manager/
-├── src/
-│   ├── server.ts           # Main MCP server entry point
-│   ├── asset-repository.ts # Asset data repository
-│   ├── asset-sources.ts    # Defines remote and default assets
-│   └── types.ts            # TypeScript type definitions
-├── package.json
-└── ...
+
+### 调试问题
+```bash
+mantras__apply_mantra {
+  "templateName": "explicit-context",
+  "inputs": {
+    "problem": "函数返回错误结果",
+    "code": "function add(a, b) { return a + b; }",
+    "expected": "数字相加",
+    "actual": "字符串拼接"
+  }
+}
 ```
 
-## 4. Core Module Analysis
+### 性能优化
+```bash
+mantras__apply_mantra {
+  "templateName": "constraint-anchoring",
+  "inputs": {
+    "avoid": "递归",
+    "constraints": "ES6语法，不使用外部库",
+    "optimization_target": "内存占用",
+    "code": "function fibonacci(n) { if(n<=1) return n; return fibonacci(n-1) + fibonacci(n-2); }"
+  }
+}
+```
 
-### 4.1. `server.ts`
+## 🛠️ 安装和使用
 
-This is the project's core, responsible for:
-- Initializing and starting an MCP server.
-- Registering available tools like `list_assets` and `get_asset`.
-- Handling tool call requests from the MCP client and dispatching them to the appropriate functions.
+### 安装依赖
+```bash
+npm install
+```
 
-### 4.2. `asset-repository.ts`
+### 构建项目
+```bash
+npm run build
+```
 
-This module is the heart of data management, responsible for:
-- Fetching asset data from remote URLs defined in `asset-sources.ts`.
-- Loading assets from a local JSON file if specified.
-- Implementing a cache layer to avoid redundant requests.
-- Falling back to default assets when remote sources are unavailable.
-- Merging remote, local, and default assets, with local assets having the highest priority.
+### 运行测试
+```bash
+npm test
+```
 
-### 4.3. `asset-sources.ts`
+### 启动服务器
+```bash
+npm start
+```
 
-This file defines:
-- A list of remote URLs for asset sources.
-- A default list of built-in assets (`Asset[]`) that serve as a fallback.
+### 演示提示工程功能
+```bash
+node demo-prompt-engineering.js
+```
 
-### 4.4. `types.ts`
+## MCP 配置
 
-Defines the key TypeScript interfaces used in the project, primarily `Asset`, `AssetType`, and `AssetRepository`.
+```json
+{
+  "mcpServers": {
+    "mantras": {
+      "command": "node",
+      "args": ["/path/to/mantras/dist/server.js"]
+    }
+  }
+}
+```
 
-## 5. Usage Flow
+## 📚 文档
 
-1.  The user configures the AI Asset Manager server in their MCP client.
-2.  The client runs the server, potentially with a `--personas` argument pointing to a local `assets.json` file.
-3.  `server.ts` starts and initializes the `RemoteAssetRepository`.
-4.  The repository attempts to fetch assets from remote URLs, falling back to default assets on failure.
-5.  If a local asset file is provided, it's loaded and merged, overriding any existing assets with the same `id`.
-6.  The user calls `list_assets` or `get_asset` from the client.
-7.  `server.ts` receives the request, uses the repository to fulfill it, and returns the result to the client.
+- [架构文档](./ARCHITECTURE.md)
+- [提示工程使用指南](./PROMPT_ENGINEERING_GUIDE.md)
+- [精简实施方案](./PROMPT_ENGINEERING_MINIMAL.md)
 
-## 6. Conclusion
+## 🎯 设计原则
 
-AI Asset Manager is a well-structured and extensible MCP server. Its layered design (Server, Repository, Sources) promotes separation of concerns, making it easy to maintain and expand. By supporting various asset types and multiple data sources, it offers developers a high degree of flexibility and customization for their AI-powered workflows.
+- **如无必要，勿增实体** - 最小化原则，只添加真正必要的功能
+- **零技术债务** - 完全复用现有架构
+- **渐进增强** - 先让用户用起来，再根据反馈优化
+- **类型安全** - TypeScript 确保代码质量
+
+## 🚀 快速开始
+
+1. 克隆项目并安装依赖
+2. 运行 `npm run build` 构建项目
+3. 运行 `node demo-prompt-engineering.js` 查看演示
+4. 使用 MCP 工具开始体验提示工程功能
+
+## 📈 版本历史
+
+- **v2.0.0** - 添加提示工程增强功能，集成10大核心技巧
+- **v1.x** - 基础 Persona 召唤和资产管理功能
