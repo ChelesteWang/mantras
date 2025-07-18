@@ -1,0 +1,36 @@
+{
+  "id": "debug-simulation",
+  "type": "prompt-template",
+  "name": "模拟调试",
+  "description": "让AI模拟代码运行时行为",
+  "technique": "debug_simulation",
+  "template": "请逐行过一遍这个函数。每个变量的值是什么？代码最有可能在哪里出错？\n\n{code}\n\n特别关注：{focus_area}",
+  "parameters": [
+    "code",
+    "focus_area"
+  ],
+  "category": "debugging",
+  "version": "1.0.0",
+  "author": "mantras-team",
+  "tags": [
+    "debugging",
+    "troubleshooting"
+  ],
+  "examples": [
+    {
+      "name": "循环逻辑检查",
+      "inputs": {
+        "code": "for(let i = 0; i <= 10; i++) { console.log(i); }",
+        "focus_area": "循环边界条件"
+      },
+      "expectedOutput": "逐步执行分析和潜在问题识别"
+    }
+  ],
+  "metadata": {
+    "created": "2025-01-18",
+    "lastModified": "2025-01-18",
+    "usageCount": 0,
+    "rating": 4.8,
+    "difficulty": "intermediate"
+  }
+}

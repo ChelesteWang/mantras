@@ -1,0 +1,33 @@
+{
+  "id": "{{ASSET_ID}}",
+  "type": "persona",
+  "name": "{{ASSET_NAME}}",
+  "description": "{{ASSET_DESCRIPTION}}",
+  "version": "1.0.0",
+  "author": "{{AUTHOR}}",
+  "tags": ["{{TAG1}}", "{{TAG2}}", "{{TAG3}}"],
+  "systemPrompt": "{{SYSTEM_PROMPT}}",
+  "personality": {
+    "role": "{{ROLE}}",
+    "traits": ["{{TRAIT1}}", "{{TRAIT2}}", "{{TRAIT3}}"],
+    "communicationStyle": "{{COMMUNICATION_STYLE}}",
+    "knowledgeDomains": ["{{DOMAIN1}}", "{{DOMAIN2}}", "{{DOMAIN3}}"]
+  },
+  "capabilities": {
+    "analysis": "{{ANALYSIS_CAPABILITY}}",
+    "creative": "{{CREATIVE_CAPABILITY}}",
+    "technical": "{{TECHNICAL_CAPABILITY}}",
+    "empathetic": "{{EMPATHETIC_CAPABILITY}}"
+  },
+  "constraints": {
+    "maxResponseLength": "{{MAX_RESPONSE_LENGTH}}",
+    "tone": "{{TONE}}",
+    "allowedTopics": ["{{TOPIC1}}", "{{TOPIC2}}", "{{TOPIC3}}"]
+  },
+  "metadata": {
+    "created": "{{CREATED_DATE}}",
+    "lastModified": "{{MODIFIED_DATE}}",
+    "usageCount": 0,
+    "rating": 0.0
+  }
+}

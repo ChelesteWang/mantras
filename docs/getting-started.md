@@ -1,160 +1,192 @@
-# Mantras-Next 入门指南
+# 🚀 快速开始指南
 
-## 简介
+欢迎使用 Mantras MCP！这个5分钟指南将帮助您快速上手。
 
-Mantras-Next是一个模块化、可扩展的AI智能体框架，特别适用于IDE集成场景。它提供了丰富的功能和灵活的扩展机制，帮助开发者构建智能的代码辅助工具。
+## 📋 前置要求
 
-## 安装
+- Node.js 18+ 
+- npm 或 yarn
+- 基本的命令行操作知识
 
-### 使用pnpm（推荐）
+## ⚡ 快速安装
 
+### 1. 克隆和安装
 ```bash
-# 安装所有依赖
-pnpm install
+# 克隆项目
+git clone <repository-url>
+cd mantras
 
-# 构建所有包
-pnpm build
-```
-
-### 使用npm
-
-```bash
-# 安装所有依赖
+# 安装依赖
 npm install
 
-# 构建所有包
+# 构建项目
 npm run build
 ```
 
-## 基本概念
+### 2. 验证安装
+```bash
+# 检查资产状态
+npm run assets:validate
 
-### 智能体（Agent）
-
-智能体是框架的核心概念，它负责协调工具执行和处理任务。智能体可以学习和使用各种工具，根据任务需求选择合适的工具执行。
-
-### 工具（Tool）
-
-工具是智能体可以使用的功能单元，每个工具都有特定的功能和用途。框架提供了丰富的内置工具，如代码格式化工具、文件读取工具等，同时也支持自定义工具。
-
-### 记忆（Memory）
-
-记忆系统用于存储和检索上下文信息，提高智能体的连续交互能力。框架支持短期记忆和长期记忆，可以根据需要选择合适的记忆系统。
-
-### IDE上下文（IDEContext）
-
-IDE上下文是框架的特色功能，它提供了IDE环境的上下文信息，如当前文件、选中的代码、项目结构等，帮助智能体更好地理解和处理任务。
-
-## 快速开始
-
-### 创建一个简单的智能体
-
-```typescript
-import { logger } from '@mantras-next/core';
-import { CodeFormatterTool, FileReaderTool } from '@mantras-next/tools';
-import { SimpleAgent, SimpleMemory } from '@mantras-next/agents';
-
-// 创建工具
-const codeFormatter = new CodeFormatterTool();
-const fileReader = new FileReaderTool();
-
-// 创建记忆系统
-const memory = new SimpleMemory({
-  id: 'memory-001',
-  name: '简单记忆',
-  maxSize: 100
-});
-
-// 创建智能体
-const agent = new SimpleAgent({
-  id: 'agent-001',
-  name: '代码助手',
-  description: '帮助格式化和阅读代码的智能体',
-  tools: [codeFormatter, fileReader],
-  memory
-});
-
-// 执行智能体
-async function run() {
-  const result = await agent.call({
-    task: '格式化当前文件中的代码',
-    ideContext: {
-      currentFile: {
-        path: '/path/to/file.ts',
-        language: 'typescript',
-        content: 'console.log("Hello");'
-      }
-    }
-  });
-  
-  logger.info('执行结果:', result);
-}
-
-run().catch(console.error);
+# 查看资产列表
+npm run assets:list
 ```
 
-### 使用声明式组合
-
-```typescript
-import { Compose } from '@mantras-next/core';
-import { CodeFormatterTool, FileReaderTool } from '@mantras-next/tools';
-
-// 创建工具
-const codeFormatter = new CodeFormatterTool();
-const fileReader = new FileReaderTool();
-
-// 创建组合链
-const chain = Compose.sequence(
-  fileReader,
-  Compose.condition(
-    (result) => result.info.fileType === 'ts' || result.info.fileType === 'js',
-    codeFormatter,
-    // 如果不是TS/JS文件，则直接返回原内容
-    {
-      id: 'passthrough',
-      name: 'Passthrough',
-      description: '直接传递输入',
-      async call(input) {
-        return input;
-      }
-    }
-  )
-);
-
-// 执行链
-async function run() {
-  const result = await chain.call({
-    filePath: '/path/to/file.ts'
-  });
-  
-  console.log('处理结果:', result);
-}
-
-run().catch(console.error);
+如果看到类似输出，说明安装成功：
+```
+✅ 有效: 17
+❌ 无效: 0
+总计: 17 个资产
 ```
 
-### 从配置文件加载智能体
+## 🎭 第一次体验
 
-```typescript
-import { AgentManager } from '@mantras-next/agents';
+### 方式一：可视化管理中心（推荐新手）
+```bash
+npm run prompt:center
+```
+这将打开一个可视化界面，您可以：
+- 了解所有功能
+- 可视化创建模板
+- 查看使用示例
 
-// 创建智能体管理器
-const agentManager = new AgentManager('./configs');
+### 方式二：命令行体验
+```bash
+# 查看系统概览
+npm run assets:stats
 
-// 获取智能体
-const agent = agentManager.getAgent('sample-agent-001');
+# 创建第一个模板
+npm run prompt:create
 
-if (agent) {
-  // 执行智能体
-  const result = await agent.call({
-    task: '分析当前项目结构'
-  });
-  
-  console.log('执行结果:', result);
-}
+# 分析现有模板
+npm run prompt:analyze
 ```
 
-## 下一步
+## 🎯 核心功能体验
 
-- 查看[API参考文档](./api-reference.md)了解详细的API说明
-- 查看[示例](../examples)获取更多使用示例
-- 查看[架构设计](../architecture-design.md)了解框架的设计理念和实现细节
+### 1. 资产管理
+```bash
+# 查看所有资产
+npm run assets:list
+
+# 按类型查看
+npm run assets:list --type persona
+
+# 搜索资产
+npm run assets:search "调试"
+
+# 备份资产
+npm run assets:backup
+```
+
+### 2. 提示模板管理
+```bash
+# 统一管理器
+npm run prompt:manage
+
+# 交互式创建
+npm run prompt:create
+
+# Web编辑器
+npm run prompt:editor
+
+# 质量检查
+npm run prompt:quality
+```
+
+### 3. MCP工具使用
+```bash
+# 启动MCP服务器
+npm start
+
+# 在另一个终端测试MCP工具
+# (需要配置MCP客户端)
+```
+
+## 🎓 学习路径
+
+### 👶 新手推荐路径
+1. **了解概念** - 阅读 [核心概念](./core-concepts.md)
+2. **可视化体验** - 运行 `npm run prompt:center`
+3. **创建模板** - 运行 `npm run prompt:create`
+4. **查看文档** - 浏览 [功能指南](./guides/)
+
+### 👨‍💻 开发者路径
+1. **架构理解** - 阅读 [架构文档](./architecture/)
+2. **代码分析** - 查看 `src/` 目录
+3. **测试运行** - 运行 `npm test`
+4. **扩展开发** - 参考 [开发指南](./development/)
+
+## 🔧 常见问题
+
+### Q: 构建失败怎么办？
+```bash
+# 清理并重新安装
+rm -rf node_modules package-lock.json
+npm install
+npm run build
+```
+
+### Q: 资产验证失败？
+```bash
+# 查看详细错误
+npm run assets:validate
+
+# 修复常见问题
+npm run prompt:quality
+```
+
+### Q: 如何添加新的提示模板？
+```bash
+# 使用交互式向导
+npm run prompt:create
+
+# 或使用Web编辑器
+npm run prompt:editor
+```
+
+### Q: 如何备份我的资产？
+```bash
+# 创建备份
+npm run assets:backup
+
+# 导出特定类型
+npm run assets:export
+```
+
+## 🎯 下一步
+
+根据您的需求选择：
+
+### 📝 内容创作者
+- 学习 [提示工程基础](./prompt-engineering/basics.md)
+- 掌握 [10大核心技巧](./prompt-engineering/techniques.md)
+- 使用 [模板管理工具](./guides/prompt-management.md)
+
+### 🛠️ 开发者
+- 了解 [系统架构](./architecture/)
+- 设置 [开发环境](./development/setup.md)
+- 查看 [API参考](./development/api-reference.md)
+
+### 🚀 运维人员
+- 阅读 [部署指南](./operations/deployment.md)
+- 配置 [监控系统](./operations/monitoring.md)
+- 学习 [故障排除](./operations/troubleshooting.md)
+
+## 💡 小贴士
+
+- 使用 `npm run prompt:center` 作为主要入口
+- 定期运行 `npm run assets:validate` 检查资产健康度
+- 查看 `npm run prompt:analyze` 了解使用统计
+- 遇到问题先查看 [故障排除指南](./operations/troubleshooting.md)
+
+## 🆘 获取帮助
+
+- 📖 查看完整文档：[docs/](./README.md)
+- 🐛 报告问题：创建 GitHub Issue
+- 💬 讨论交流：参与社区讨论
+- 📧 联系我们：mantras-team@example.com
+
+---
+
+🎉 **恭喜！** 您已经完成了快速开始。现在可以开始探索 Mantras MCP 的强大功能了！

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mantras 提示编辑器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: #f5f7fa; 
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .editor { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .panel { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .form-group { margin-bottom: 15px; }
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: 500; 
+            color: #374151;
+        }
+        input, textarea, select { 
+            width: 100%; 
+            padding: 8px 12px; 
+            border: 1px solid #d1d5db; 
+            border-radius: 6px; 
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        textarea { 
+            min-height: 120px; 
+            font-family: 'Monaco', 'Menlo', monospace; 
+            resize: vertical;
+        }
+        .template-area { min-height: 200px; }
+        .preview { 
+            background: #f8fafc; 
+            padding: 15px; 
+            border-radius: 6px; 
+            border: 1px solid #e5e7eb;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .btn { 
+            background: #3b82f6; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            margin-right: 10px;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        .btn:hover { background: #2563eb; }
+        .btn-secondary { 
+            background: #6b7280; 
+        }
+        .btn-secondary:hover { background: #4b5563; }
+        .parameters { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+            margin-top: 10px; 
+        }
+        .parameter-tag { 
+            background: #dbeafe; 
+            color: #1e40af;
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 12px;
+            font-family: 'Monaco', 'Menlo', monospace;
+        }
+        .tabs { 
+            display: flex; 
+            margin-bottom: 20px; 
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .tab { 
+            padding: 12px 24px; 
+            background: none;
+            border: none; 
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab.active { 
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .success { color: #059669; }
+        .error { color: #dc2626; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Mantras 提示编辑器</h1>
+            <p>快速创建和编辑提示工程模板</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('basic')">基础信息</button>
+            <button class="tab" onclick="switchTab('template')">模板内容</button>
+            <button class="tab" onclick="switchTab('preview')">预览导出</button>
+        </div>
+
+        <div id="basic" class="tab-content active">
+            <div class="editor">
+                <div class="panel">
+                    <h3>📝 基础信息</h3>
+                    <div class="form-group">
+                        <label>模板ID *</label>
+                        <input type="text" id="templateId" placeholder="kebab-case格式，如：my-template">
+                    </div>
+                    <div class="form-group">
+                        <label>模板名称 *</label>
+                        <input type="text" id="templateName" placeholder="如：我的模板">
+                    </div>
+                    <div class="form-group">
+                        <label>描述</label>
+                        <textarea id="templateDesc" placeholder="简短描述模板的用途和效果"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>分类</label>
+                        <select id="templateCategory">
+                            <option value="debugging">调试</option>
+                            <option value="refactoring">重构</option>
+                            <option value="architecture">架构</option>
+                            <option value="optimization">优化</option>
+                            <option value="code-review">代码审查</option>
+                            <option value="planning">规划</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h3>🏷️ 元数据</h3>
+                    <div class="form-group">
+                        <label>技术名称</label>
+                        <input type="text" id="templateTechnique" placeholder="snake_case格式">
+                    </div>
+                    <div class="form-group">
+                        <label>标签</label>
+                        <input type="text" id="templateTags" placeholder="用逗号分隔，如：debugging,analysis">
+                    </div>
+                    <div class="form-group">
+                        <label>难度</label>
+                        <select id="templateDifficulty">
+                            <option value="beginner">初级</option>
+                            <option value="intermediate">中级</option>
+                            <option value="advanced">高级</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="template" class="tab-content">
+            <div class="editor">
+                <div class="panel">
+                    <h3>📋 模板内容</h3>
+                    <div class="form-group">
+                        <label>模板文本 (使用 {参数名} 表示参数) *</label>
+                        <textarea id="templateContent" class="template-area" 
+                                placeholder="输入模板内容，使用 {参数名} 表示可替换的参数&#10;&#10;示例：&#10;你是一位资深的 {role} 专家。&#10;请帮我 {action} 这段代码：&#10;&#10;{code}"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>检测到的参数</label>
+                        <div id="detectedParams" class="parameters"></div>
+                    </div>
+                </div>
+                <div class="panel">
+                    <h3>💡 使用示例</h3>
+                    <div class="form-group">
+                        <label>示例名称</label>
+                        <input type="text" id="exampleName" placeholder="如：JavaScript代码审查">
+                    </div>
+                    <div class="form-group">
+                        <label>示例描述</label>
+                        <textarea id="exampleDesc" placeholder="描述这个示例的使用场景"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="preview" class="tab-content">
+            <div class="editor">
+                <div class="panel">
+                    <h3>📄 JSON 预览</h3>
+                    <pre id="jsonPreview" class="preview"></pre>
+                    <button class="btn" onclick="downloadJSON()">下载 JSON</button>
+                    <button class="btn btn-secondary" onclick="copyJSON()">复制 JSON</button>
+                </div>
+                <div class="panel">
+                    <h3>📝 Markdown 预览</h3>
+                    <pre id="markdownPreview" class="preview"></pre>
+                    <button class="btn" onclick="downloadMarkdown()">下载 Markdown</button>
+                    <button class="btn btn-secondary" onclick="copyMarkdown()">复制 Markdown</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // 隐藏所有标签页
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 显示选中的标签页
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // 如果是预览页，更新预览内容
+            if (tabName === 'preview') {
+                updatePreview();
+            }
+        }
+
+        function updateParameters() {
+            const content = document.getElementById('templateContent').value;
+            const params = [...new Set((content.match(/\{(\w+)\}/g) || []).map(match => match.slice(1, -1)))];
+            
+            const container = document.getElementById('detectedParams');
+            container.innerHTML = params.map(param => 
+                `<span class="parameter-tag">{${param}}</span>`
+            ).join('');
+        }
+
+        function updatePreview() {
+            const data = collectFormData();
+            
+            // 更新JSON预览
+            document.getElementById('jsonPreview').textContent = JSON.stringify(data, null, 2);
+            
+            // 更新Markdown预览
+            const markdown = generateMarkdown(data);
+            document.getElementById('markdownPreview').textContent = markdown;
+        }
+
+        function collectFormData() {
+            const content = document.getElementById('templateContent').value;
+            const params = [...new Set((content.match(/\{(\w+)\}/g) || []).map(match => match.slice(1, -1)))];
+            
+            const example = {
+                name: document.getElementById('exampleName').value || "基础示例",
+                description: document.getElementById('exampleDesc').value || "模板使用示例"
+            };
+            
+            return {
+                id: document.getElementById('templateId').value || 'new-template',
+                type: 'prompt-template',
+                name: document.getElementById('templateName').value || '新模板',
+                description: document.getElementById('templateDesc').value || '模板描述',
+                version: '1.0.0',
+                author: 'mantras-team',
+                tags: document.getElementById('templateTags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+                technique: document.getElementById('templateTechnique').value || 'new_technique',
+                template: content,
+                parameters: params,
+                category: document.getElementById('templateCategory').value,
+                examples: example.name ? [example] : [],
+                metadata: {
+                    created: new Date().toISOString().split('T')[0],
+                    lastModified: new Date().toISOString().split('T')[0],
+                    usageCount: 0,
+                    rating: 0.0,
+                    difficulty: document.getElementById('templateDifficulty').value
+                }
+            };
+        }
+
+        function generateMarkdown(data) {
+            return `---
+id: ${data.id}
+type: ${data.type}
+name: ${data.name}
+description: ${data.description}
+version: ${data.version}
+author: ${data.author}
+tags: [${data.tags.join(', ')}]
+technique: ${data.technique}
+category: ${data.category}
+parameters: [${data.parameters.join(', ')}]
+difficulty: ${data.metadata.difficulty}
+rating: ${data.metadata.rating}
+---
+
+# ${data.name}
+
+## 📝 模板内容
+
+\`\`\`
+${data.template}
+\`\`\`
+
+## 💡 使用说明
+
+${data.description}
+
+## 🎯 参数说明
+
+${data.parameters.map(param => `- **{${param}}**: 请描述此参数的用途`).join('\n')}
+
+## 📊 元数据
+
+- **创建时间**: ${data.metadata.created}
+- **难度等级**: ${data.metadata.difficulty}
+- **分类**: ${data.category}`;
+        }
+
+        function downloadJSON() {
+            const data = collectFormData();
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${data.id}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadMarkdown() {
+            const data = collectFormData();
+            const markdown = generateMarkdown(data);
+            const blob = new Blob([markdown], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${data.id}.md`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function copyJSON() {
+            const data = collectFormData();
+            navigator.clipboard.writeText(JSON.stringify(data, null, 2)).then(() => {
+                showMessage('JSON已复制到剪贴板', 'success');
+            });
+        }
+
+        function copyMarkdown() {
+            const data = collectFormData();
+            const markdown = generateMarkdown(data);
+            navigator.clipboard.writeText(markdown).then(() => {
+                showMessage('Markdown已复制到剪贴板', 'success');
+            });
+        }
+
+        function showMessage(text, type) {
+            const msg = document.createElement('div');
+            msg.textContent = text;
+            msg.className = type;
+            msg.style.cssText = 'position:fixed;top:20px;right:20px;padding:10px 20px;border-radius:6px;background:white;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:1000;';
+            document.body.appendChild(msg);
+            setTimeout(() => msg.remove(), 3000);
+        }
+
+        // 事件监听
+        document.getElementById('templateContent').addEventListener('input', updateParameters);
+        document.getElementById('templateId').addEventListener('input', () => {
+            const id = document.getElementById('templateId').value;
+            if (id && !document.getElementById('templateTechnique').value) {
+                document.getElementById('templateTechnique').value = id.replace(/-/g, '_');
+            }
+        });
+        
+        // 初始化
+        updateParameters();
+    </script>
+</body>
+</html>

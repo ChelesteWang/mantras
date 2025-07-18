@@ -1,0 +1,26 @@
+[
+  {
+    "id": "test-analyst",
+    "type": "persona",
+    "name": "Test Data Analyst",
+    "description": "Test persona for validation",
+    "systemPrompt": "Sample system prompt",
+    "personality": {
+      "role": "Test Analyst",
+      "traits": ["analytical"],
+      "communicationStyle": "direct",
+      "knowledgeDomains": ["testing"]
+    },
+    "capabilities": {
+      "analysis": true,
+      "creative": false,
+      "technical": true,
+      "empathetic": false
+    },
+    "constraints": {
+      "maxResponseLength": 100,
+      "tone": "formal",
+      "allowedTopics": ["testing"]
+    }
+  }
+]

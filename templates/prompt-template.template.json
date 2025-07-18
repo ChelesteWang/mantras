@@ -1,0 +1,30 @@
+{
+  "id": "{{TEMPLATE_ID}}",
+  "type": "prompt-template",
+  "name": "{{TEMPLATE_NAME}}",
+  "description": "{{TEMPLATE_DESCRIPTION}}",
+  "version": "1.0.0",
+  "author": "{{AUTHOR}}",
+  "tags": ["{{TAG1}}", "{{TAG2}}", "{{TAG3}}"],
+  "technique": "{{TECHNIQUE}}",
+  "template": "{{TEMPLATE_CONTENT}}",
+  "parameters": ["{{PARAM1}}", "{{PARAM2}}", "{{PARAM3}}"],
+  "category": "{{CATEGORY}}",
+  "examples": [
+    {
+      "name": "{{EXAMPLE_NAME}}",
+      "inputs": {
+        "{{PARAM1}}": "{{EXAMPLE_VALUE1}}",
+        "{{PARAM2}}": "{{EXAMPLE_VALUE2}}"
+      },
+      "expectedOutput": "{{EXPECTED_OUTPUT}}"
+    }
+  ],
+  "metadata": {
+    "created": "{{CREATED_DATE}}",
+    "lastModified": "{{MODIFIED_DATE}}",
+    "usageCount": 0,
+    "rating": 0.0,
+    "difficulty": "{{DIFFICULTY}}"
+  }
+}

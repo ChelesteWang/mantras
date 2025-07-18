@@ -1,0 +1,39 @@
+{
+  "id": "iterative-chaining",
+  "type": "prompt-template",
+  "name": "迭代式链条",
+  "description": "将复杂任务分解成连续小步骤",
+  "technique": "iterative_chaining",
+  "template": "第一步，{step1}。下一步，{step2}。最后，{step3}。\n\n当前需要处理：{current_step}",
+  "parameters": [
+    "step1",
+    "step2",
+    "step3",
+    "current_step"
+  ],
+  "category": "planning",
+  "version": "1.0.0",
+  "author": "mantras-team",
+  "tags": [
+    "planning"
+  ],
+  "examples": [
+    {
+      "name": "基础示例",
+      "inputs": {
+        "step1": "示例step1",
+        "step2": "示例step2",
+        "step3": "示例step3",
+        "current_step": "示例current_step"
+      },
+      "expectedOutput": "根据模板生成的专业建议"
+    }
+  ],
+  "metadata": {
+    "created": "2025-01-18",
+    "lastModified": "2025-01-18",
+    "usageCount": 0,
+    "rating": 4.8,
+    "difficulty": "advanced"
+  }
+}
