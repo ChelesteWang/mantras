@@ -1,10 +1,10 @@
 {
   "name": "mantras",
   "version": "2.0.0",
-  "description": "Enhanced MCP server with Persona Summoner capabilities - dynamic persona management and intent-based personality selection",
+  "description": "企业级 MCP 服务器：AI 资产管理、Persona 召唤和提示工程增强功能。包含17个已验证资产、专业CLI工具和完整的质量控制系统。",
   "main": "dist/server.js",
   "bin": {
-    "mantras": "dist/server.js"
+    "mantras": "bin/mantras.js"
   },
   "type": "module",
   "directories": {
@@ -13,11 +13,19 @@
   "scripts": {
     "start": "node dist/server.js",
     "test": "jest",
-    "coverage": "jest --coverage",
     "build": "tsup",
     "dev": "tsx watch src/server.ts",
-    "dev:debug": "tsx watch --inspect src/server.ts",
-    "prepare": "npm run build"
+    "assets:list": "node bin/mantras-cli.js list",
+    "assets:validate": "node bin/mantras-cli.js validate",
+    "assets:stats": "node bin/mantras-cli.js stats",
+    "assets:backup": "node bin/mantras-cli.js backup ./backups",
+    "assets:sync": "node bin/sync-assets.js",
+    "prompt:center": "open tools/management-center.html",
+    "prompt:editor": "open tools/prompt-editor.html",
+    "prompt:create": "node bin/create-prompt-wizard.js",
+    "prompt:manage": "node bin/unified-prompt-manager.js",
+    "prompt:analyze": "node bin/smart-assistant.js analyze",
+    "prompt:quality": "node bin/smart-assistant.js quality"
   },
   "keywords": [],
   "author": "",

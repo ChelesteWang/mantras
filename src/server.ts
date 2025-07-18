@@ -1,6 +1,7 @@
 import { RemoteAssetRepository } from './asset-repository';
 import { PersonaSummoner } from './persona-summoner';
 import { PROMPT_TEMPLATES } from './prompt-templates';
+import { initTool } from './tools/init.tool';
 import { Command } from 'commander';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -22,6 +23,27 @@ const server = new McpServer({
   name: "ai-asset-manager-persona-summoner",
   version: "2.0.0"
 });
+
+// 注册 init 工具 - 系统初始化和概览
+server.tool(
+  "init",
+  "Initialize and provide comprehensive overview of the Mantra MCP system for AI agents",
+  {
+    includeExamples: z.boolean().optional().describe("Whether to include usage examples"),
+    includeArchitecture: z.boolean().optional().describe("Whether to include system architecture details")
+  },
+  async ({ includeExamples, includeArchitecture }) => {
+    const result = await initTool.execute({ includeExamples, includeArchitecture });
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(result, null, 2)
+        }
+      ]
+    };
+  }
+);
 
 // 注册工具 - 使用registerTool with proper parameter extraction
 server.tool(

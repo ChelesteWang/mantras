@@ -1,11 +1,13 @@
 import { ActionableTool } from './types';
 import { calculatorTool } from './tools/calculator.tool';
+import { initTool } from './tools/init.tool';
 
 export class ToolExecutor {
   private tools: Map<string, ActionableTool> = new Map();
 
   constructor() {
     this.registerTool(calculatorTool);
+    this.registerTool(initTool);
   }
 
   private registerTool(tool: ActionableTool) {

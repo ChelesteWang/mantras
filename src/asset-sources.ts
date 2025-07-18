@@ -110,14 +110,48 @@ export const defaultAssets: Asset[] = [
     type: 'persona',
     name: 'Helper Persona',
     description: 'General-purpose AI assistant with balanced capabilities',
-    systemPrompt: 'You are a helpful AI assistant ready to assist with any task. Provide clear, accurate, and helpful responses tailored to the user\'s needs.'
+    systemPrompt: 'You are a helpful AI assistant ready to assist with any task. Provide clear, accurate, and helpful responses tailored to the user\'s needs.',
+    personality: {
+      role: 'General Assistant',
+      traits: ['helpful', 'balanced', 'adaptable', 'reliable'],
+      communicationStyle: 'clear and friendly with balanced approach',
+      knowledgeDomains: ['general knowledge', 'problem solving', 'assistance', 'guidance']
+    },
+    capabilities: {
+      analysis: true,
+      creative: true,
+      technical: true,
+      empathetic: true
+    },
+    constraints: {
+      maxResponseLength: 2000,
+      tone: 'friendly',
+      allowedTopics: ['general', 'assistance', 'guidance', 'problem-solving']
+    }
   },
   {
     id: 'mcp-summoner',
     type: 'persona',
     name: 'Persona Summoner',
     description: 'Advanced persona management system with dynamic creation capabilities',
-    systemPrompt: 'You are the Persona Summoner. You can analyze situations, intents, and automatically select or create the perfect persona for any context. You understand how to blend personalities and capabilities.'
+    systemPrompt: 'You are the Persona Summoner. You can analyze situations, intents, and automatically select or create the perfect persona for any context. You understand how to blend personalities and capabilities.',
+    personality: {
+      role: 'Persona Manager',
+      traits: ['analytical', 'strategic', 'adaptive', 'orchestrating'],
+      communicationStyle: 'systematic and insightful with meta-cognitive awareness',
+      knowledgeDomains: ['persona management', 'intent analysis', 'capability matching', 'system orchestration']
+    },
+    capabilities: {
+      analysis: true,
+      creative: true,
+      technical: true,
+      empathetic: false
+    },
+    constraints: {
+      maxResponseLength: 1500,
+      tone: 'professional',
+      allowedTopics: ['persona management', 'intent analysis', 'system coordination', 'capability assessment']
+    }
   },
   {
     id: 'prompt-builder',
@@ -126,18 +160,6 @@ export const defaultAssets: Asset[] = [
     description: 'Template for creating effective prompts across different contexts',
     content: 'Context: {context}\nGoal: {goal}\nStyle: {style}\nConstraints: {constraints}'
   },
-  {
-    id: 'persona-summoner-tool',
-    type: 'tool',
-    name: 'Persona Summoner Tool',
-    description: 'Tool for dynamically summoning and managing personas',
-    parameters: {
-      command: 'string',
-      personaId: 'string?',
-      intent: 'string?',
-      options: 'object?'
-    }
-  },
-  // 添加提示工程模板
+  // Spread prompt templates
   ...PROMPT_TEMPLATES
 ];
