@@ -1,7 +1,7 @@
-import { Asset, AssetType, Persona, PromptTemplate, ActionableTool, AssetRepository } from './types';
+import { Asset, AssetRepository, AssetType, Persona, PromptTemplate, ActionableTool } from '../../types';
 import { AssetFactory } from './asset-factory';
 import { AssetLoader, AssetSerializer } from './asset-loader';
-import { logger } from './logger';
+import { logger } from '../../infrastructure/logging';
 
 /**
  * 统一资产管理器 - 管理所有类型的资产（人格、提示模板、工具）

@@ -1,9 +1,9 @@
-import { PersonaSummoner } from '../src/persona-summoner';
+import { PersonaSummoner } from '../src/core/personas/persona-summoner';
 import { SummonRequest, SummonedPersona } from '../src/types';
-import { logger } from '../src/logger';
+import { logger } from '../src/infrastructure/logging/logger';
 
 // Mock the logger module
-jest.mock('../src/logger', () => ({
+jest.mock('../src/infrastructure/logging/logger', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),

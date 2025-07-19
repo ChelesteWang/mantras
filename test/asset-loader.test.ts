@@ -1,5 +1,5 @@
-import { AssetLoader, AssetSerializer } from '../src/asset-loader';
-import { AssetFactory } from '../src/asset-factory';
+import { AssetLoader, AssetSerializer } from '../src/core/assets/asset-loader';
+import { AssetFactory } from '../src/core/assets/asset-factory';
 import { Asset, Persona, PromptTemplate, ActionableTool } from '../src/types';
 import * as fs from 'fs/promises';
 import * as path from 'path';

@@ -1,11 +1,11 @@
-import { UnifiedAssetManager } from '../src/unified-asset-manager';
-import { AssetFactory } from '../src/asset-factory';
-import { AssetLoader, AssetSerializer } from '../src/asset-loader';
-import { RemoteAssetRepository } from '../src/asset-repository';
+import { UnifiedAssetManager } from '../src/core/assets/unified-asset-manager';
+import { AssetFactory } from '../src/core/assets/asset-factory';
+import { AssetLoader, AssetSerializer } from '../src/core/assets/asset-loader';
+import { RemoteAssetRepository } from '../src/core/assets/asset-repository';
 import { Asset, Persona, PromptTemplate, ActionableTool } from '../src/types';
 
 // Mock dependencies
-jest.mock('../src/asset-loader');
+jest.mock('../src/core/assets/asset-loader');
 const MockAssetLoader = AssetLoader as jest.Mocked<typeof AssetLoader>;
 const MockAssetSerializer = AssetSerializer as jest.Mocked<typeof AssetSerializer>;
 

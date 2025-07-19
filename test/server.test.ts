@@ -9,7 +9,7 @@ describe("MCP Server Integration", () => {
     // 由 SDK 自动启动 server 进程（用编译后的 JS 文件）
     transport = new StdioClientTransport({
       command: "node",
-      args: ["dist/server.js"]
+      args: ["dist/infrastructure/server/server.js"]
     });
     client = new Client({ name: "test-client", version: "1.0.0" });
     await client.connect(transport);

@@ -5,8 +5,8 @@
  * 展示 agent 记忆能力的各种功能
  */
 
-import { PersonaSummoner } from '../src/persona-summoner.js';
-import { SessionMemory, PersistentMemoryManager } from '../src/memory.js';
+import { PersonaSummoner } from '../src/core/personas/persona-summoner.js';
+import { SessionMemory, PersistentMemoryManager } from '../src/core/memory/memory.js';
 
 async function demonstrateMemorySystem() {
   console.log('🧠 Mantra MCP 记忆系统演示\n');

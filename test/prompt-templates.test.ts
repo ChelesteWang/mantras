@@ -1,4 +1,4 @@
-import { PROMPT_TEMPLATES, getTemplatesByCategory, getTemplateByTechnique } from '../src/prompt-templates';
+import { PROMPT_TEMPLATES, getTemplatesByCategory, getTemplateByTechnique } from '../src/core/templates/prompt-templates';
 import { PromptTemplate } from '../src/types';
 
 describe('Prompt Engineering Templates', () => {
@@ -72,7 +72,7 @@ describe('Prompt Engineering Templates', () => {
 
   test('should have proper parameter placeholders in templates', () => {
     PROMPT_TEMPLATES.forEach(template => {
-      template.parameters.forEach(param => {
+      template.parameters.forEach((param: string) => {
         expect(template.template).toContain(`{${param}}`);
       });
     });
@@ -89,7 +89,7 @@ describe('Prompt Engineering Templates', () => {
     };
     
     let result = template!.template;
-    template!.parameters.forEach(param => {
+    template!.parameters.forEach((param: string) => {
       result = result.replace(new RegExp(`{${param}}`, 'g'), inputs[param as keyof typeof inputs] || '');
     });
     

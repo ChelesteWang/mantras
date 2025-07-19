@@ -5,9 +5,9 @@
 ### ✅ **已完成的架构替换**
 
 #### 1. **启动脚本更新**
-- ❌ 旧默认：`"start": "node dist/server.js"`
+- ❌ 旧默认：`"start": "node dist/infrastructure/server/server.js"`
 - ✅ 新默认：`"start": "node dist/server-refactored.js"`
-- 🔄 备用：`"start:legacy": "node dist/server.js"`
+- 🔄 备用：`"start:legacy": "node dist/infrastructure/server/server.js"`
 
 #### 2. **重构服务器完善**
 - ✅ 完整的工具注册系统

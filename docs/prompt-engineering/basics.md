@@ -96,7 +96,7 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
 
 ```typescript
 // 在 server.ts 中添加
-import { PROMPT_TEMPLATES } from './prompt-templates';
+import { PROMPT_TEMPLATES } from '../../src/core/templates/prompt-templates';
 
 server.tool(
   "apply_prompt_template",

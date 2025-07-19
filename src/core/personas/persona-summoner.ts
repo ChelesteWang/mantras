@@ -1,6 +1,6 @@
-import { Asset, AssetType, Persona, SummonRequest, SummonedPersona } from './types';
-import { logger } from './logger';
-import { SessionMemory, PersistentMemoryManager } from './memory';
+import { Asset, AssetType, Persona, SummonRequest, SummonedPersona } from '../../types';
+import { logger } from '../../infrastructure/logging';
+import { SessionMemory, PersistentMemoryManager } from '../memory/memory';
 
 export class PersonaSummoner {
   private personas: Map<string, Persona> = new Map();

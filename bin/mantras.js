@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Load the MCP server
-const serverPath = join(__dirname, '..', 'dist', 'server.js');
+const serverPath = join(__dirname, '..', 'dist', 'infrastructure', 'server', 'server.js');
 
 console.log('🎭 Starting Mantras MCP Server...');
 

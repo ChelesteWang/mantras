@@ -17,12 +17,17 @@ export const initTool: ActionableTool = {
         type: 'boolean', 
         description: 'Whether to include system architecture details',
         default: false
+      },
+      includePhilosophy: {
+        type: 'boolean',
+        description: 'Whether to include design philosophy and principles',
+        default: true
       }
     },
     required: []
   },
-  async execute(args: { includeExamples?: boolean; includeArchitecture?: boolean }): Promise<any> {
-    const { includeExamples = true, includeArchitecture = false } = args;
+  async execute(args: { includeExamples?: boolean; includeArchitecture?: boolean; includePhilosophy?: boolean }): Promise<any> {
+    const { includeExamples = true, includeArchitecture = false, includePhilosophy = true } = args;
 
     const systemOverview = {
       name: "Mantra MCP (Model Context Protocol) System",
@@ -120,6 +125,110 @@ export const initTool: ActionableTool = {
       timestamp: new Date().toISOString(),
       overview: systemOverview
     };
+
+    // 融入设计哲学理念
+    if (includePhilosophy) {
+      result.designPhilosophy = {
+        coreMantra: "🌟 简约而不简单，智慧而不复杂 🌟",
+        
+        foundationalPrinciples: {
+          occamsRazor: {
+            principle: "如无必要，勿增实体 (Occam's Razor)",
+            manifestation: "每个人格、工具和功能都有其独特价值，避免冗余和复杂性",
+            implementation: [
+              "🎭 8个精心设计的人格，各司其职，互不重叠",
+              "🛠️ 最小化工具集，每个工具都有明确目的",
+              "🧠 简洁的API设计，一个调用解决一个问题",
+              "💡 智能推荐系统，自动选择最合适的工具"
+            ],
+            wisdom: "复杂性是设计的敌人，简约是智慧的体现"
+          },
+          
+          designFirst: {
+            principle: "设计先行 (Design First)",
+            manifestation: "深思熟虑的架构设计，而非功能堆砌",
+            implementation: [
+              "🎯 意图分析驱动的交互模式",
+              "🏗️ 模块化架构，清晰的职责分离",
+              "🔄 可扩展的人格系统，支持动态组合",
+              "📐 一致的接口设计，降低学习成本"
+            ],
+            wisdom: "好的设计是看不见的，用户只会感受到流畅和自然"
+          },
+          
+          dualThinking: {
+            principle: "快慢思考 (Fast & Slow Thinking)",
+            manifestation: "系统一思维的快速响应 + 系统二思维的深度分析",
+            implementation: [
+              "⚡ 快速模式：即时人格召唤，直觉式工具推荐",
+              "🧠 慢速模式：深度意图分析，复杂任务规划",
+              "🔀 智能切换：根据任务复杂度自动选择思维模式",
+              "🎭 人格协作：不同人格代表不同思维方式"
+            ],
+            wisdom: "有时需要闪电般的直觉，有时需要深海般的思考"
+          },
+          
+          emergentComplexity: {
+            principle: "涌现复杂性 (Emergent Complexity)",
+            manifestation: "简单组件的智能组合产生复杂能力",
+            implementation: [
+              "🧩 人格合成：组合多个简单人格创造新能力",
+              "🔗 工具链：简单工具的有序组合解决复杂问题",
+              "🌊 上下文感知：系统随着使用变得更加智能",
+              "🎨 创意涌现：不同领域知识的交叉融合"
+            ],
+            wisdom: "真正的智能不是预编程的，而是从交互中涌现的"
+          }
+        },
+        
+        practicalWisdom: {
+          userExperience: {
+            principle: "用户体验至上",
+            practices: [
+              "🎯 一次调用，精准满足需求",
+              "🤖 智能推荐，减少选择负担",
+              "💬 自然对话，降低技术门槛",
+              "🔄 渐进式披露，避免信息过载"
+            ]
+          },
+          
+          systemResilience: {
+            principle: "系统韧性设计",
+            practices: [
+              "🛡️ 优雅降级，核心功能始终可用",
+              "🔧 自我修复，智能错误处理",
+              "📊 持续学习，从使用中优化",
+              "🌐 分布式思维，避免单点故障"
+            ]
+          },
+          
+          cognitiveErgonomics: {
+            principle: "认知工效学",
+            practices: [
+              "🧠 符合人类思维模式的交互设计",
+              "⚖️ 认知负荷的合理分配",
+              "🎭 人格化交互，增强情感连接",
+              "🔍 渐进式探索，支持不同熟练度用户"
+            ]
+          }
+        },
+        
+        designMetaphors: {
+          orchestra: "🎼 系统如交响乐团，每个人格都是专业乐手，协调演奏",
+          garden: "🌱 功能如花园生态，简单元素组合成复杂美景",
+          conversation: "💬 交互如深度对话，理解、共鸣、创造价值",
+          journey: "🗺️ 使用如探索之旅，系统是智慧向导，用户是勇敢探险家"
+        },
+        
+        philosophicalQuotes: [
+          "💫 '简约是复杂的终极形式' - 达芬奇",
+          "🎯 '设计不是外观，设计是工作原理' - 乔布斯",
+          "🧠 '我们的思维有两套系统：快思考和慢思考' - 卡尼曼",
+          "🌊 '整体大于部分之和' - 亚里士多德",
+          "🎭 '技术的最高境界是让人忘记技术的存在' - 老子"
+        ]
+      };
+    }
 
     if (includeExamples) {
       result.examples = {

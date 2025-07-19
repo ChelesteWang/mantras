@@ -1,6 +1,6 @@
-import { UnifiedAssetManager } from './unified-asset-manager.js';
-import { Asset, AssetType } from './types.js';
-import { logger } from './logger.js';
+import { UnifiedAssetManager } from './unified-asset-manager';
+import { Asset, AssetType } from '../../types';
+import { logger } from '../../infrastructure/logging';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 

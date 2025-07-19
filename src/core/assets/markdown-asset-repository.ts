@@ -1,7 +1,7 @@
-import { Asset, AssetRepository } from './types';
+import { Asset, AssetRepository } from '../../types';
 import { AssetLoader } from './asset-loader';
 import { defaultAssets } from './asset-sources';
-import { logger } from './logger';
+import { logger } from '../../infrastructure/logging';
 import * as path from 'path';
 
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5分钟

@@ -1,5 +1,5 @@
-import { Asset } from './types.js';
-import { PROMPT_TEMPLATES } from './prompt-templates';
+import { Asset } from '../../types';
+import { PROMPT_TEMPLATES } from '../templates/prompt-templates';
 
 // 远程资产源 URL 列表
 export const ASSET_SOURCES: string[] = [

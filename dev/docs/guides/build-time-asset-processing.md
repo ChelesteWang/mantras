@@ -102,7 +102,7 @@ export const ASSET_IDS = {
 # 使用 Markdown 文件 (实时更新)
 npm run dev
 # 或
-node dist/server.js --assets-dir ./assets
+node dist/infrastructure/server/server.js --assets-dir ./assets
 ```
 
 ### 2. 生产模式
@@ -111,13 +111,13 @@ node dist/server.js --assets-dir ./assets
 npm run build
 npm start
 # 或
-node dist/server.js --use-build-assets
+node dist/infrastructure/server/server.js --use-build-assets
 ```
 
 ### 3. 混合模式
 ```bash
 # 优先使用构建时资产，回退到 Markdown
-node dist/server.js --use-build-assets --assets-dir ./assets
+node dist/infrastructure/server/server.js --use-build-assets --assets-dir ./assets
 ```
 
 ## 📈 性能对比

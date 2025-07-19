@@ -1,4 +1,4 @@
-import { AssetLoader } from '../src/asset-loader';
+import { AssetLoader } from '../src/core/assets/asset-loader';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
@@ -180,12 +180,19 @@ description: "A persona without explicit ID"
 # No ID Persona`;
 
       const noIdPath = path.join(testDir, 'inferred-id.md');
-      await fs.writeFile(noIdPath, contentWithoutId, 'utf-8');
-      
-      const asset = await AssetLoader.loadFromMarkdown(noIdPath);
-      expect(asset.id).toBe('inferred-id');
-      
-      await fs.unlink(noIdPath);
+      try {
+        await fs.writeFile(noIdPath, contentWithoutId, 'utf-8');
+        
+        const asset = await AssetLoader.loadFromMarkdown(noIdPath);
+        expect(asset.id).toBe('inferred-id');
+      } finally {
+        // 确保清理临时文件
+        try {
+          await fs.unlink(noIdPath);
+        } catch (error) {
+          // 忽略删除错误
+        }
+      }
     });
   });
 });

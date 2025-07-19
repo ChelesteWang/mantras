@@ -9,7 +9,7 @@ describe("Final Working MCP Tests", () => {
   beforeAll(async () => {
     transport = new StdioClientTransport({
       command: "node",
-      args: ["dist/server.js"]
+      args: ["dist/infrastructure/server/server.js"]
     });
     client = new Client({ name: "test-final", version: "2.0.0" });
     await client.connect(transport);

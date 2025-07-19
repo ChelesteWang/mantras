@@ -9,7 +9,7 @@ describe("Complete MCP Functionality Tests", () => {
     console.log("Starting MCP server for tests...");
     transport = new StdioClientTransport({
       command: "node",
-      args: ["dist/server.js", "--assets-dir", "./assets"]
+      args: ["dist/infrastructure/server/server.js", "--assets-dir", "./assets"]
     });
     client = new Client({ name: "test-client", version: "2.0.0" });
     await client.connect(transport);

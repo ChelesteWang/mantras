@@ -5,7 +5,7 @@
  * 展示基于性格特质的人格系统
  */
 
-import { PersonaSummoner } from '../src/persona-summoner.js';
+import { PersonaSummoner } from '../src/core/personas/persona-summoner.js';
 
 async function demonstrateNewPersonas() {
   console.log('🎭 新人格类型演示\n');

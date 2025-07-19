@@ -1,6 +1,6 @@
-import { UnifiedAssetManager } from '../src/unified-asset-manager';
-import { AssetFactory } from '../src/asset-factory';
-import { RemoteAssetRepository } from '../src/asset-repository';
+import { UnifiedAssetManager } from '../src/core/assets/unified-asset-manager';
+import { AssetFactory } from '../src/core/assets/asset-factory';
+import { RemoteAssetRepository } from '../src/core/assets/asset-repository';
 
 describe('UnifiedAssetManager - Final Coverage', () => {
   let manager: UnifiedAssetManager;

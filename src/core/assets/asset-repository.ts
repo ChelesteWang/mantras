@@ -1,4 +1,4 @@
-import { Asset, AssetRepository } from './types';
+import { Asset, AssetRepository } from '../../types';
 import { ASSET_SOURCES, defaultAssets } from './asset-sources';
 import * as fs from 'fs/promises';
 

@@ -1,4 +1,4 @@
-import { Asset, AssetType, Persona, PromptTemplate, ActionableTool } from './types';
+import { Asset, AssetType, Persona, PromptTemplate, ActionableTool } from '../../types';
 
 /**
  * 资产工厂 - 负责创建和验证不同类型的资产

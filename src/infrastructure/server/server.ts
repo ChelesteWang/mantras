@@ -3,22 +3,22 @@
  * 支持依赖注入、配置管理、错误处理和监控
  */
 
-import { BuildOptimizedAssetRepository } from './build-optimized-asset-repository';
-import { MarkdownAssetRepository } from './markdown-asset-repository';
-import { PersonaSummoner } from './persona-summoner';
-import { PROMPT_TEMPLATES } from './prompt-templates';
-import { initTool } from './tools/init.tool';
-import { MemoryManagementTool, MemoryAnalysisTool } from './tools/memory.tool';
-import { createImprovedIntentAnalysisTools } from './tools/improved-intent-analysis';
+import { BuildOptimizedAssetRepository } from '../../core/assets/build-optimized-asset-repository';
+import { MarkdownAssetRepository } from '../../core/assets/markdown-asset-repository';
+import { PersonaSummoner } from '../../core/personas/persona-summoner';
+import { PROMPT_TEMPLATES } from '../../core/templates/prompt-templates';
+import { initTool } from '../../tools/init.tool';
+import { MemoryManagementTool, MemoryAnalysisTool } from '../../tools/memory.tool';
+import { createImprovedIntentAnalysisTools } from '../../tools/improved-intent-analysis';
 import { Command } from 'commander';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 
 // 导入重构后的架构组件
-import { DIContainer } from './shared/container/di-container';
-import { ConfigManager } from './config/environment';
-import { GlobalErrorHandler, createErrorContext } from './shared/errors/error-handler';
+import { DIContainer } from '../../shared/container/di-container';
+import { ConfigManager } from '../config/environment';
+import { GlobalErrorHandler, createErrorContext } from '../../shared/errors/error-handler';
 
 /**
  * 应用程序类 - 封装服务器逻辑
@@ -582,14 +582,14 @@ class MantrasApplication {
         }
         
         // 检查必需参数
-        const missingParams = template.parameters.filter(param => !inputs[param]);
+        const missingParams = template.parameters.filter((param: string) => !inputs[param]);
         if (missingParams.length > 0) {
           throw new Error(`Missing required parameters: ${missingParams.join(', ')}. Required: ${template.parameters.join(', ')}`);
         }
         
         // 应用模板
         let result = template.template;
-        template.parameters.forEach(param => {
+        template.parameters.forEach((param: string) => {
           const value = inputs[param] || '';
           result = result.replace(new RegExp(`{${param}}`, 'g'), value);
         });

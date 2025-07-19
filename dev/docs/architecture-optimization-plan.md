@@ -345,7 +345,7 @@ export class MetricsCollector {
     "build:code:prod": "tsup --minify --treeshake",
     "analyze": "npm run build && bundlesize",
     "benchmark": "node scripts/benchmark.js",
-    "profile": "clinic doctor -- node dist/server.js"
+    "profile": "clinic doctor -- node dist/infrastructure/server/server.js"
   }
 }
 ```

@@ -1,6 +1,6 @@
-import { Asset, AssetType } from './types';
+import { Asset, AssetType, Persona, PromptTemplate, ActionableTool } from '../../types';
 import { AssetFactory } from './asset-factory';
-import { logger } from './logger';
+import { logger } from '../../infrastructure/logging';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 

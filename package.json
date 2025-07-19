@@ -2,7 +2,7 @@
   "name": "mantras",
   "version": "2.0.0",
   "description": "企业级 MCP 服务器：AI 资产管理、Persona 召唤和提示工程增强功能。包含17个已验证资产、专业CLI工具和完整的质量控制系统。",
-  "main": "dist/server.js",
+  "main": "index.js",
   "bin": {
     "mantras": "bin/mantras.js"
   },
@@ -11,7 +11,9 @@
     "doc": "docs"
   },
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node index.js",
+    "start:mcp": "node index.js",
+    "start:server": "node dist/infrastructure/server/server.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -20,7 +22,7 @@
     "build:assets": "node scripts/build-assets.cjs",
     "build:code": "tsup",
     "build:dev": "npm run build:code",
-    "dev": "tsx watch src/server.ts",
+    "dev": "tsx watch src/infrastructure/server/server.ts",
     "lint": "eslint src/**/*.ts test/**/*.ts --fix",
     "lint:check": "eslint src/**/*.ts test/**/*.ts",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

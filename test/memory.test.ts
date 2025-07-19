@@ -1,4 +1,4 @@
-import { SessionMemory } from '../src/memory';
+import { SessionMemory } from '../src/core/memory/memory';
 
 describe('SessionMemory', () => {
   let memory: SessionMemory;

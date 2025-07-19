@@ -1,4 +1,4 @@
-import { PROMPT_TEMPLATES } from '../src/prompt-templates';
+import { PROMPT_TEMPLATES } from '../src/core/templates/prompt-templates';
 
 describe('Prompt Templates - Complete Coverage', () => {
   describe('Template Structure', () => {
@@ -41,7 +41,7 @@ describe('Prompt Templates - Complete Coverage', () => {
   describe('Template Content Validation', () => {
     it('should have templates with parameter placeholders', () => {
       PROMPT_TEMPLATES.forEach(template => {
-        template.parameters.forEach(param => {
+        template.parameters.forEach((param: string) => {
           expect(template.template).toContain(`{${param}}`);
         });
       });
@@ -136,7 +136,7 @@ describe('Prompt Templates - Complete Coverage', () => {
 
     it('should have meaningful parameter names', () => {
       PROMPT_TEMPLATES.forEach(template => {
-        template.parameters.forEach(param => {
+        template.parameters.forEach((param: string) => {
           expect(typeof param).toBe('string');
           expect(param.length).toBeGreaterThan(0);
           expect(param).not.toContain(' '); // No spaces in parameter names

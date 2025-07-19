@@ -1,4 +1,4 @@
-import { SessionMemory, PersistentMemoryManager, MemoryEntry, ConversationEntry, ContextMemory } from '../src/memory';
+import { SessionMemory, PersistentMemoryManager, MemoryEntry, ConversationEntry, ContextMemory } from '../src/core/memory/memory';
 
 describe('Enhanced SessionMemory', () => {
   let memory: SessionMemory;

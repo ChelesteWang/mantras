@@ -1,4 +1,4 @@
-import { PromptTemplate } from './types';
+import { PromptTemplate } from '../../types';
 
 /**
  * 基于《程序员的提示工程实战手册》的10大核心技巧模板
