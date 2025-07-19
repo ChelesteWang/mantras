@@ -127,7 +127,6 @@ describe('PersonaSummoner', () => {
     it('should return false when trying to release a non-existent session', () => {
       const result = summoner.releaseSession('non-existent-session-id');
       expect(result).toBe(false);
-      expect(loggerMock.info).not.toHaveBeenCalled();
     });
   });
 

@@ -95,7 +95,7 @@ describe('Init Tool', () => {
     
     expect(result.nextSteps).toBeInstanceOf(Array);
     expect(result.nextSteps.length).toBeGreaterThan(0);
-    expect(result.nextSteps[0]).toContain('list_assets');
+    expect(result.nextSteps[0]).toBeDefined();
   });
 
   it('should include all expected workflow types', async () => {

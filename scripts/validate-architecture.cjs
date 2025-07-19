@@ -48,7 +48,7 @@ class ArchitectureValidator {
       'src/presentation/mcp/tool-registry.ts',
       'src/shared/errors/error-handler.ts',
       'src/config/environment.ts',
-      'src/server-refactored.ts',
+      'src/server.ts',
       'docs/architecture-optimization-plan.md',
       'docs/implementation-guide.md'
     ];

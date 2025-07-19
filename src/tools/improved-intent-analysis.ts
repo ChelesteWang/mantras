@@ -173,13 +173,58 @@ export function createImprovedIntentAnalysisTools(): ToolDefinition[] {
 function performIntentAnalysis(userInput: string, context: string, depth: string) {
   const input = userInput.toLowerCase();
   
-  // 意图识别
+  // 扩展的意图识别模式，支持多语言
   const intentPatterns = {
-    technical: ['代码', '编程', '技术', '架构', '开发', 'code', 'programming', 'technical', 'bug'],
-    creative: ['创意', '写作', '文案', '故事', '营销', 'creative', 'writing', '内容'],
-    analytical: ['分析', '数据', '统计', '报告', '洞察', 'analysis', 'data'],
-    supportive: ['帮助', '支持', '理解', '困惑', 'help', 'support'],
-    planning: ['计划', '规划', '步骤', '流程', 'plan', 'planning']
+    technical: [
+      // 英文
+      'code', 'programming', 'technical', 'bug', 'debug', 'software', 'development', 'architecture',
+      // 中文
+      '代码', '编程', '技术', '架构', '开发', '调试', '软件', '程序', '系统',
+      // 西班牙语
+      'código', 'programación', 'técnico', 'desarrollo', 'software',
+      // 日语
+      'コード', 'プログラミング', '技術', '開発', 'ソフトウェア'
+    ],
+    creative: [
+      // 英文
+      'creative', 'writing', 'content', 'story', 'marketing', 'design', 'art',
+      // 中文
+      '创意', '写作', '文案', '故事', '营销', '设计', '艺术', '内容',
+      // 西班牙语
+      'creativo', 'escritura', 'contenido', 'historia', 'marketing',
+      // 日语
+      'クリエイティブ', '書く', 'コンテンツ', '物語', 'マーケティング'
+    ],
+    analytical: [
+      // 英文
+      'analysis', 'data', 'statistics', 'report', 'insights', 'analytics',
+      // 中文
+      '分析', '数据', '统计', '报告', '洞察', '分析师',
+      // 西班牙语
+      'análisis', 'datos', 'estadísticas', 'informe',
+      // 日语
+      '分析', 'データ', '統計', 'レポート', '洞察'
+    ],
+    supportive: [
+      // 英文
+      'help', 'support', 'understand', 'confused', 'assistance', 'guide',
+      // 中文
+      '帮助', '支持', '理解', '困惑', '协助', '指导', '需要',
+      // 西班牙语
+      'ayuda', 'apoyo', 'entender', 'confundido', 'asistencia',
+      // 日语
+      '助け', 'サポート', '理解', '困惑', 'アシスタンス', '必要'
+    ],
+    planning: [
+      // 英文
+      'plan', 'planning', 'steps', 'process', 'strategy', 'organize',
+      // 中文
+      '计划', '规划', '步骤', '流程', '策略', '组织',
+      // 西班牙语
+      'plan', 'planificación', 'pasos', 'proceso', 'estrategia',
+      // 日语
+      '計画', 'プランニング', 'ステップ', 'プロセス', '戦略'
+    ]
   };
 
   let primaryIntent = 'general';
@@ -191,12 +236,17 @@ function performIntentAnalysis(userInput: string, context: string, depth: string
     const score = matches.length / keywords.length;
     
     if (score > maxScore) {
-      if (maxScore > 0.1) secondaryIntents.push(primaryIntent);
+      if (maxScore > 0.05) secondaryIntents.push(primaryIntent);
       primaryIntent = intent;
       maxScore = score;
-    } else if (score > 0.1) {
+    } else if (score > 0.05) {
       secondaryIntents.push(intent);
     }
+  }
+
+  // 如果没有匹配到任何关键词，设置最小 confidence
+  if (maxScore === 0) {
+    maxScore = 0.1; // 设置最小 confidence 为 0.1
   }
 
   // 情感分析
