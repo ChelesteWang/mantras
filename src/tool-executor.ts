@@ -1,6 +1,8 @@
 import { ActionableTool } from './types';
 import { calculatorTool } from './tools/calculator.tool';
 import { initTool } from './tools/init.tool';
+import { intentAnalyzerTool } from './tools/intent-analyzer.tool';
+import { smartRecommenderTool } from './tools/smart-recommender.tool';
 
 export class ToolExecutor {
   private tools: Map<string, ActionableTool> = new Map();
@@ -8,6 +10,8 @@ export class ToolExecutor {
   constructor() {
     this.registerTool(calculatorTool);
     this.registerTool(initTool);
+    this.registerTool(intentAnalyzerTool);
+    this.registerTool(smartRecommenderTool);
   }
 
   private registerTool(tool: ActionableTool) {

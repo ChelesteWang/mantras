@@ -2,6 +2,7 @@ import { RemoteAssetRepository } from './asset-repository';
 import { PersonaSummoner } from './persona-summoner';
 import { PROMPT_TEMPLATES } from './prompt-templates';
 import { initTool } from './tools/init.tool';
+import { MemoryManagementTool, MemoryAnalysisTool } from './tools/memory.tool';
 import { Command } from 'commander';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -17,6 +18,10 @@ const options = program.opts();
 // 实例化资产仓库和persona召唤器
 const repository = new RemoteAssetRepository(options.personas);
 const personaSummoner = new PersonaSummoner();
+
+// 实例化记忆工具
+const memoryManagementTool = new MemoryManagementTool(personaSummoner);
+const memoryAnalysisTool = new MemoryAnalysisTool(personaSummoner);
 
 // 创建支持参数提取的MCP服务器
 const server = new McpServer({
@@ -470,6 +475,63 @@ server.tool(
         {
           type: "text",
           text: JSON.stringify(context, null, 2)
+        }
+      ]
+    };
+  }
+);
+
+// 注册记忆管理工具
+server.tool(
+  "manage_memory",
+  "Manage agent memory including conversations, context, and long-term memories",
+  {
+    action: z.enum(['add_memory', 'search_memories', 'get_stats', 'add_conversation', 'get_conversation_history', 'set_context', 'get_context']).describe("Action to perform"),
+    sessionId: z.string().optional().describe("Session ID for session-specific operations"),
+    memoryType: z.enum(['conversation', 'context', 'preference', 'fact', 'task']).optional().describe("Type of memory to add"),
+    content: z.any().optional().describe("Content to store in memory"),
+    importance: z.number().min(1).max(10).optional().describe("Importance score (1-10)"),
+    tags: z.array(z.string()).optional().describe("Tags for categorizing memory"),
+    query: z.string().optional().describe("Search query for finding memories"),
+    role: z.enum(['user', 'assistant', 'system']).optional().describe("Role for conversation entries"),
+    limit: z.number().optional().describe("Limit for returned results"),
+    contextUpdates: z.record(z.any()).optional().describe("Context updates to apply"),
+    metadata: z.record(z.any()).optional().describe("Additional metadata")
+  },
+  async (args) => {
+    const result = await memoryManagementTool.execute(args);
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(result, null, 2)
+        }
+      ]
+    };
+  }
+);
+
+// 注册记忆分析工具
+server.tool(
+  "analyze_memory",
+  "Analyze and provide insights about agent memory patterns and content",
+  {
+    action: z.enum(['analyze_patterns', 'get_insights', 'find_connections', 'memory_timeline']).describe("Analysis action to perform"),
+    sessionId: z.string().optional().describe("Session ID for session-specific analysis"),
+    timeRange: z.object({
+      start: z.string().optional().describe("Start time for analysis range"),
+      end: z.string().optional().describe("End time for analysis range")
+    }).optional().describe("Time range for analysis"),
+    minImportance: z.number().min(1).max(10).optional().describe("Minimum importance level for analysis"),
+    tags: z.array(z.string()).optional().describe("Tags to focus analysis on")
+  },
+  async (args) => {
+    const result = await memoryAnalysisTool.execute(args);
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(result, null, 2)
         }
       ]
     };

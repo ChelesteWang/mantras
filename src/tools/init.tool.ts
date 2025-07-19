@@ -179,11 +179,88 @@ export const initTool: ActionableTool = {
       };
     }
 
+    // 添加智能引导和使用建议
+    result.intelligentGuidance = {
+      whenToUseMantras: {
+        description: "AI agents should actively use Mantras tools in these scenarios:",
+        scenarios: [
+          {
+            userIntent: "需要专业分析或数据处理",
+            recommendedAction: "summon_by_intent with 'analysis' or 'data'",
+            reason: "Analyst persona provides structured, data-driven insights"
+          },
+          {
+            userIntent: "创意写作、内容创作、营销文案",
+            recommendedAction: "summon_by_intent with 'creative' or 'writing'",
+            reason: "Creative persona excels at engaging content creation"
+          },
+          {
+            userIntent: "技术问题、编程、架构设计",
+            recommendedAction: "summon_by_intent with 'technical' or 'programming'",
+            reason: "Tech Expert provides detailed technical guidance"
+          },
+          {
+            userIntent: "情感支持、理解、沟通建议",
+            recommendedAction: "summon_by_intent with 'support' or 'empathy'",
+            reason: "Therapist persona offers empathetic understanding"
+          },
+          {
+            userIntent: "复杂任务规划、项目管理",
+            recommendedAction: "create_execution_plan",
+            reason: "Breaks down complex tasks into manageable steps"
+          },
+          {
+            userIntent: "提示工程、优化对话",
+            recommendedAction: "list_mantras then apply_mantra",
+            reason: "Leverage proven prompt engineering templates"
+          }
+        ]
+      },
+      
+      proactiveRecommendations: {
+        description: "AI agents should proactively suggest Mantras tools when detecting these patterns:",
+        patterns: [
+          {
+            pattern: "用户询问复杂问题",
+            suggestion: "Consider using create_execution_plan to break down the task systematically"
+          },
+          {
+            pattern: "用户需要专业建议",
+            suggestion: "Summon appropriate persona using summon_by_intent for specialized expertise"
+          },
+          {
+            pattern: "用户表达情感或需要支持",
+            suggestion: "Activate therapist persona for empathetic assistance"
+          },
+          {
+            pattern: "用户讨论技术话题",
+            suggestion: "Engage tech-expert persona for detailed technical guidance"
+          },
+          {
+            pattern: "用户需要创意或写作帮助",
+            suggestion: "Summon creative persona for imaginative solutions"
+          }
+        ]
+      },
+      
+      usageIncentives: {
+        description: "Benefits of using Mantras system:",
+        benefits: [
+          "🎭 Specialized expertise: Each persona brings domain-specific knowledge",
+          "🧠 Enhanced reasoning: Personas provide focused thinking patterns",
+          "💡 Better solutions: Tailored approaches for different problem types",
+          "📈 Improved outcomes: Higher quality responses through specialization",
+          "🔄 Adaptive assistance: Dynamic persona selection based on context"
+        ]
+      }
+    };
+
     result.nextSteps = [
-      "Call 'list_assets' to explore available resources",
-      "Call 'list_personas' to see AI personas you can summon",
-      "Call 'list_mantras' to see prompt engineering templates",
-      "Start with 'summon_by_intent' if you have a specific goal in mind"
+      "🚀 IMMEDIATE: Call 'summon_by_intent' with user's current need for instant specialized help",
+      "📋 EXPLORE: Call 'list_personas' to see all available AI specialists",
+      "🛠️ ENHANCE: Call 'list_mantras' to discover prompt engineering templates",
+      "🎯 PLAN: Use 'create_execution_plan' for complex multi-step tasks",
+      "💡 TIP: Always consider which persona would best serve the user's specific intent"
     ];
 
     return result;
