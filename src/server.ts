@@ -4,6 +4,7 @@ import { PersonaSummoner } from './persona-summoner';
 import { PROMPT_TEMPLATES } from './prompt-templates';
 import { initTool } from './tools/init.tool';
 import { MemoryManagementTool, MemoryAnalysisTool } from './tools/memory.tool';
+import { createImprovedIntentAnalysisTools } from './tools/improved-intent-analysis';
 import { Command } from 'commander';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -156,25 +157,85 @@ server.tool(
 );
 
 server.tool(
-  "summon_by_intent",
-  "Automatically summon the best persona for your intent",
+  "analyze_user_intent",
+  "深度分析用户意图，提供多维度洞察数据供 AI 自主决策使用",
   {
-    intent: z.string().describe("The user's intent or situation description")
+    userInput: z.string().describe("用户的输入内容"),
+    context: z.string().optional().describe("对话上下文"),
+    analysisDepth: z.enum(['basic', 'detailed', 'comprehensive']).default('detailed').describe("分析深度")
   },
-  async ({ intent }) => {
-    // logToFile(`summon_by_intent called with intent: ${intent}`);
-
-    const summoned = personaSummoner.summonPersona({ intent });
-
+  async ({ userInput, context, analysisDepth }) => {
+    const improvedTools = createImprovedIntentAnalysisTools();
+    const analyzeIntentTool = improvedTools.find(tool => tool.name === 'analyze_user_intent');
+    
+    if (!analyzeIntentTool) {
+      throw new Error('analyze_user_intent tool not found');
+    }
+    
+    const result = await analyzeIntentTool.handler({ userInput, context, analysisDepth });
+    
     return {
       content: [
         {
           type: "text",
-          text: JSON.stringify({
-            persona: summoned.persona,
-            recommendation: `Summoned ${summoned.persona.name} for: ${intent}`,
-            confidence: summoned.metadata.confidence
-          }, null, 2)
+          text: JSON.stringify(result, null, 2)
+        }
+      ]
+    };
+  }
+);
+
+server.tool(
+  "get_persona_options",
+  "获取所有可用人格的详细信息，供 AI 选择使用",
+  {
+    includeCapabilities: z.boolean().default(true).describe("是否包含能力信息"),
+    filterByDomain: z.string().optional().describe("按领域筛选")
+  },
+  async ({ includeCapabilities, filterByDomain }) => {
+    const improvedTools = createImprovedIntentAnalysisTools();
+    const getPersonaOptionsTool = improvedTools.find(tool => tool.name === 'get_persona_options');
+    
+    if (!getPersonaOptionsTool) {
+      throw new Error('get_persona_options tool not found');
+    }
+    
+    const result = await getPersonaOptionsTool.handler({ includeCapabilities, filterByDomain });
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(result, null, 2)
+        }
+      ]
+    };
+  }
+);
+
+server.tool(
+  "evaluate_persona_match",
+  "评估特定人格与用户需求的匹配度",
+  {
+    personaId: z.string().describe("人格ID"),
+    userIntent: z.string().describe("用户意图"),
+    requirements: z.array(z.string()).optional().describe("特定要求")
+  },
+  async ({ personaId, userIntent, requirements }) => {
+    const improvedTools = createImprovedIntentAnalysisTools();
+    const evaluateMatchTool = improvedTools.find(tool => tool.name === 'evaluate_persona_match');
+    
+    if (!evaluateMatchTool) {
+      throw new Error('evaluate_persona_match tool not found');
+    }
+    
+    const result = await evaluateMatchTool.handler({ personaId, userIntent, requirements });
+    
+    return {
+      content: [
+        {
+          type: "text",
+          text: JSON.stringify(result, null, 2)
         }
       ]
     };

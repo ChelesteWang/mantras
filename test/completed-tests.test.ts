@@ -135,60 +135,60 @@ describe("Complete MCP Functionality Tests", () => {
       expect(response.persona.id).toBeDefined();
     });
 
-    it("should handle very long intent strings", async () => {
-      const longIntent = "a".repeat(1000);
+    it("should handle very long user input strings", async () => {
+      const longInput = "a".repeat(1000);
       const result = await client.callTool({
-        name: "summon_by_intent",
-        arguments: { intent: longIntent }
+        name: "analyze_user_intent",
+        arguments: { userInput: longInput }
       });
       
       const response = JSON.parse(result.content[0].text);
-      expect(response.persona).toBeDefined();
-      expect(response.confidence).toBeGreaterThanOrEqual(0);
-      expect(response.confidence).toBeLessThanOrEqual(1);
+      expect(response.intentAnalysis).toBeDefined();
+      expect(response.intentAnalysis.confidence).toBeGreaterThanOrEqual(0);
+      expect(response.intentAnalysis.confidence).toBeLessThanOrEqual(1);
     });
 
-    it("should handle international languages in intent", async () => {
-      const intents = [
+    it("should handle international languages in user input", async () => {
+      const inputs = [
         '数据分析需求',
         'crear contenido creativo',
-        '咕術情報が必要です',
+        '技術情報が必要です',
         'help with technical stuff'
       ];
       
-      for (const intent of intents) {
+      for (const userInput of inputs) {
         const result = await client.callTool({
-          name: "summon_by_intent",
-          arguments: { intent }
+          name: "analyze_user_intent",
+          arguments: { userInput }
         });
         
         const response = JSON.parse(result.content[0].text);
-        expect(response.persona).toBeDefined();
-        expect(response.confidence).toBeGreaterThan(0);
+        expect(response.intentAnalysis).toBeDefined();
+        expect(response.intentAnalysis.confidence).toBeGreaterThan(0);
       }
     });
 
-    it("should handle special characters in intent", async () => {
+    it("should handle special characters in user input", async () => {
       const result = await client.callTool({
-        name: "summon_by_intent",
-        arguments: { intent: "Code review 🔍 & debugging #${variable}" }
+        name: "analyze_user_intent",
+        arguments: { userInput: "Code review 🔍 & debugging #${variable}" }
       });
       
       const response = JSON.parse(result.content[0].text);
-      expect(response.persona).toBeDefined();
+      expect(response.intentAnalysis).toBeDefined();
     });
 
-    it("should handle extremely short intents", async () => {
-      const shortIntents = ['a', 'x', '1'];
+    it("should handle extremely short user inputs", async () => {
+      const shortInputs = ['a', 'x', '1'];
       
-      for (const intent of shortIntents) {
+      for (const userInput of shortInputs) {
         const result = await client.callTool({
-          name: "summon_by_intent",
-          arguments: { intent }
+          name: "analyze_user_intent",
+          arguments: { userInput }
         });
         
         const response = JSON.parse(result.content[0].text);
-        expect(response.persona).toBeDefined();
+        expect(response.intentAnalysis).toBeDefined();
       }
     });
   });
@@ -326,8 +326,8 @@ describe("Complete MCP Functionality Tests", () => {
       
       const promises = Array(10).fill(null).map((_, i) => 
         client.callTool({
-          name: "summon_by_intent",
-          arguments: { intent: `Request ${i}` }
+          name: "analyze_user_intent",
+          arguments: { userInput: `Request ${i}` }
         })
       );
       
@@ -342,7 +342,7 @@ describe("Complete MCP Functionality Tests", () => {
       const operations = [
         client.callTool({ name: "list_personas", arguments: {} }),
         client.callTool({ name: "summon_persona", arguments: { personaId: "analyst" } }),
-        client.callTool({ name: "summon_by_intent", arguments: { intent: "data" } }),
+        client.callTool({ name: "analyze_user_intent", arguments: { userInput: "data analysis" } }),
         client.callTool({ name: "list_active_sessions", arguments: {} })
       ];
       

@@ -3,6 +3,8 @@
  */
 
 import { z } from 'zod';
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
 
 // 环境类型
 export type Environment = 'development' | 'production' | 'test';
@@ -359,12 +361,9 @@ export class ConfigManager {
   private loadFromFile(): Partial<Config> {
     try {
       // 尝试加载 config.json
-      const fs = require('fs');
-      const path = require('path');
-      
-      const configPath = path.join(process.cwd(), 'config.json');
-      if (fs.existsSync(configPath)) {
-        const configContent = fs.readFileSync(configPath, 'utf8');
+      const configPath = join(process.cwd(), 'config.json');
+      if (existsSync(configPath)) {
+        const configContent = readFileSync(configPath, 'utf8');
         return JSON.parse(configContent);
       }
     } catch (error) {

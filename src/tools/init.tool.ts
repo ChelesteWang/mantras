@@ -47,7 +47,9 @@ export const initTool: ActionableTool = {
           tools: [
             "list_personas",
             "summon_persona", 
-            "summon_by_intent",
+            "analyze_user_intent",
+            "get_persona_options",
+            "evaluate_persona_match",
             "list_active_sessions",
             "get_session",
             "release_session",
@@ -79,7 +81,7 @@ export const initTool: ActionableTool = {
       quickStart: {
         step1: "Use 'list_assets' to see all available resources",
         step2: "Use 'list_personas' to see available AI personas", 
-        step3: "Use 'summon_persona' or 'summon_by_intent' to activate a persona",
+        step3: "Use 'analyze_user_intent' to analyze needs, then 'summon_persona' to activate a persona",
         step4: "Use 'list_mantras' to see available prompt templates",
         step5: "Use 'apply_mantra' to generate optimized prompts"
       },
@@ -89,7 +91,7 @@ export const initTool: ActionableTool = {
           name: "Persona-based Interaction",
           steps: [
             "1. Call list_personas to see available personas",
-            "2. Call summon_persona with specific personaId or summon_by_intent with your goal",
+            "2. Call analyze_user_intent to understand requirements, then summon_persona with specific personaId",
             "3. Use the summoned persona for specialized tasks",
             "4. Call release_session when done"
           ]
@@ -186,22 +188,22 @@ export const initTool: ActionableTool = {
         scenarios: [
           {
             userIntent: "需要专业分析或数据处理",
-            recommendedAction: "summon_by_intent with 'analysis' or 'data'",
+            recommendedAction: "analyze_user_intent then summon_persona with 'analyst'",
             reason: "Analyst persona provides structured, data-driven insights"
           },
           {
             userIntent: "创意写作、内容创作、营销文案",
-            recommendedAction: "summon_by_intent with 'creative' or 'writing'",
+            recommendedAction: "analyze_user_intent then summon_persona with 'creative'",
             reason: "Creative persona excels at engaging content creation"
           },
           {
             userIntent: "技术问题、编程、架构设计",
-            recommendedAction: "summon_by_intent with 'technical' or 'programming'",
+            recommendedAction: "analyze_user_intent then summon_persona with 'tech-expert'",
             reason: "Tech Expert provides detailed technical guidance"
           },
           {
             userIntent: "情感支持、理解、沟通建议",
-            recommendedAction: "summon_by_intent with 'support' or 'empathy'",
+            recommendedAction: "analyze_user_intent then summon_persona with 'therapist'",
             reason: "Therapist persona offers empathetic understanding"
           },
           {
@@ -226,7 +228,7 @@ export const initTool: ActionableTool = {
           },
           {
             pattern: "用户需要专业建议",
-            suggestion: "Summon appropriate persona using summon_by_intent for specialized expertise"
+            suggestion: "Use analyze_user_intent to understand needs, then summon appropriate persona for specialized expertise"
           },
           {
             pattern: "用户表达情感或需要支持",
@@ -256,11 +258,11 @@ export const initTool: ActionableTool = {
     };
 
     result.nextSteps = [
-      "🚀 IMMEDIATE: Call 'summon_by_intent' with user's current need for instant specialized help",
+      "🚀 IMMEDIATE: Call 'analyze_user_intent' to understand needs, then 'summon_persona' for specialized help",
       "📋 EXPLORE: Call 'list_personas' to see all available AI specialists",
       "🛠️ ENHANCE: Call 'list_mantras' to discover prompt engineering templates",
       "🎯 PLAN: Use 'create_execution_plan' for complex multi-step tasks",
-      "💡 TIP: Always consider which persona would best serve the user's specific intent"
+      "💡 TIP: Always analyze intent first, then choose the most suitable persona"
     ];
 
     return result;

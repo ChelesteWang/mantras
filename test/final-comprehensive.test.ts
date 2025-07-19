@@ -63,21 +63,21 @@ describe("Reliable MCP Final Tests", () => {
       expect(personas.length).toBeGreaterThan(3);
     });
 
-    it("should summon analyst for data intent", async () => {
+    it("should analyze user intent correctly", async () => {
       const result = await client.callTool({
-        name: "summon_by_intent",
-        arguments: { intent: "analyze data" }
+        name: "analyze_user_intent",
+        arguments: { userInput: "analyze data", analysisDepth: "detailed" }
       });
       
       const response = JSON.parse(result.content[0].text);
-      expect(response.persona).toBeDefined();
-      expect(response.confidence).toBeGreaterThan(0.5);
+      expect(response.intentAnalysis).toBeDefined();
+      expect(response.availableResources.personas).toBeDefined();
     });
 
     it("should handle empty parameters gracefully", async () => {
       const results = await Promise.allSettled([
         client.callTool({ name: "summon_persona", arguments: {} }),
-        client.callTool({ name: "summon_by_intent", arguments: { intent: "" } }),
+        client.callTool({ name: "analyze_user_intent", arguments: { userInput: "" } }),
         client.callTool({ name: "get_asset", arguments: { assetId: "" } })
       ]);
       
@@ -139,7 +139,7 @@ describe("Reliable MCP Final Tests", () => {
       const testCases = [
         { name: "get_asset", arguments: {} },
         { name: "get_asset", arguments: { assetId: null } },
-        { name: "summon_by_intent", arguments: { intent: null } }
+        { name: "analyze_user_intent", arguments: { userInput: null } }
       ];
 
       for (const testCase of testCases) {
@@ -151,7 +151,7 @@ describe("Reliable MCP Final Tests", () => {
       const promises = [
         client.callTool({ name: "list_assets", arguments: {} }),
         client.callTool({ name: "list_personas", arguments: {} }),
-        client.callTool({ name: "summon_by_intent", arguments: { intent: "test" } })
+        client.callTool({ name: "analyze_user_intent", arguments: { userInput: "test" } })
       ];
 
       const results = await Promise.all(promises);

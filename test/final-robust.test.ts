@@ -46,10 +46,10 @@ describe("Final Working MCP Tests", () => {
       expect(testCase.content[0].type).toBe("text");
     });
 
-    it("should handle summon intents", async () => {
+    it("should handle intent analysis", async () => {
       const result = await client.callTool({
-        name: "summon_by_intent",
-        arguments: { intent: "test" }
+        name: "analyze_user_intent",
+        arguments: { userInput: "test" }
       });
       expect(result.content[0].type).toBe("text");
     });
