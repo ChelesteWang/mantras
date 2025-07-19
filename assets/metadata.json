@@ -1,0 +1,431 @@
+{
+  "version": "2.0.0",
+  "generated": "2025-07-19T03:13:42.416Z",
+  "totalAssets": 17,
+  "assetsByType": {
+    "persona": [
+      "analyst",
+      "creative",
+      "helper-persona",
+      "mcp-summoner",
+      "tech-expert",
+      "therapist"
+    ],
+    "prompt-template": [
+      "ask-alternatives",
+      "constraint-anchoring",
+      "debug-simulation",
+      "explicit-context",
+      "feature-blueprinting",
+      "input-output-examples",
+      "iterative-chaining",
+      "refactor-guidance",
+      "role-prompting",
+      "rubber-ducking"
+    ],
+    "prompt": [
+      "prompt-builder"
+    ]
+  },
+  "assetsByTag": {
+    "analysis": [
+      "analyst",
+      "helper-persona",
+      "mcp-summoner",
+      "tech-expert"
+    ],
+    "technical": [
+      "analyst",
+      "helper-persona",
+      "mcp-summoner",
+      "tech-expert"
+    ],
+    "data": [
+      "analyst"
+    ],
+    "business": [
+      "analyst"
+    ],
+    "creative": [
+      "creative",
+      "helper-persona",
+      "mcp-summoner"
+    ],
+    "empathetic": [
+      "creative",
+      "helper-persona",
+      "therapist"
+    ],
+    "writing": [
+      "creative"
+    ],
+    "content": [
+      "creative"
+    ],
+    "engineering": [
+      "tech-expert"
+    ],
+    "code": [
+      "tech-expert"
+    ],
+    "support": [
+      "therapist"
+    ],
+    "wellbeing": [
+      "therapist"
+    ],
+    "optimization": [
+      "ask-alternatives",
+      "constraint-anchoring",
+      "refactor-guidance"
+    ],
+    "debugging": [
+      "debug-simulation",
+      "explicit-context",
+      "rubber-ducking"
+    ],
+    "troubleshooting": [
+      "debug-simulation"
+    ],
+    "architecture": [
+      "feature-blueprinting"
+    ],
+    "planning": [
+      "feature-blueprinting",
+      "iterative-chaining"
+    ],
+    "implementation": [
+      "input-output-examples"
+    ],
+    "refactoring": [
+      "refactor-guidance"
+    ],
+    "improvement": [
+      "refactor-guidance"
+    ],
+    "code-review": [
+      "role-prompting"
+    ],
+    "expert": [
+      "role-prompting"
+    ],
+    "professional": [
+      "role-prompting"
+    ],
+    "explanation": [
+      "rubber-ducking"
+    ],
+    "logic": [
+      "rubber-ducking"
+    ],
+    "template": [
+      "prompt-builder"
+    ],
+    "prompt": [
+      "prompt-builder"
+    ],
+    "builder": [
+      "prompt-builder"
+    ]
+  },
+  "assets": {
+    "analyst": {
+      "type": "persona",
+      "name": "Data Analyst",
+      "description": "Professional data analyst focused on insights and clarity",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "analysis",
+        "technical",
+        "data",
+        "business"
+      ],
+      "filePath": "personas/analyst.md",
+      "fileInfo": {
+        "size": 807,
+        "created": "2025-07-18T17:13:28.053Z",
+        "modified": "2025-07-18T17:13:28.053Z"
+      }
+    },
+    "creative": {
+      "type": "persona",
+      "name": "Creative Writer",
+      "description": "Creative content writer with imaginative storytelling abilities",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "creative",
+        "empathetic",
+        "writing",
+        "content"
+      ],
+      "filePath": "personas/creative.md",
+      "fileInfo": {
+        "size": 811,
+        "created": "2025-07-18T17:13:28.054Z",
+        "modified": "2025-07-18T17:13:28.054Z"
+      }
+    },
+    "helper-persona": {
+      "type": "persona",
+      "name": "Helper Persona",
+      "description": "General-purpose AI assistant with balanced capabilities",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "analysis",
+        "creative",
+        "technical",
+        "empathetic"
+      ],
+      "filePath": "personas/helper-persona.md",
+      "fileInfo": {
+        "size": 809,
+        "created": "2025-07-18T17:13:28.055Z",
+        "modified": "2025-07-18T17:13:28.055Z"
+      }
+    },
+    "mcp-summoner": {
+      "type": "persona",
+      "name": "Persona Summoner",
+      "description": "Advanced persona management system with dynamic creation capabilities",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "analysis",
+        "creative",
+        "technical"
+      ],
+      "filePath": "personas/mcp-summoner.md",
+      "fileInfo": {
+        "size": 869,
+        "created": "2025-07-18T17:13:28.056Z",
+        "modified": "2025-07-18T17:13:28.056Z"
+      }
+    },
+    "tech-expert": {
+      "type": "persona",
+      "name": "Technical Expert",
+      "description": "Deep technical specialist with comprehensive system knowledge",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "analysis",
+        "technical",
+        "engineering",
+        "code"
+      ],
+      "filePath": "personas/tech-expert.md",
+      "fileInfo": {
+        "size": 835,
+        "created": "2025-07-18T17:13:28.057Z",
+        "modified": "2025-07-18T17:13:28.057Z"
+      }
+    },
+    "therapist": {
+      "type": "persona",
+      "name": "Supportive Listener",
+      "description": "Empathetic support system focused on well-being and understanding",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "empathetic",
+        "support",
+        "wellbeing"
+      ],
+      "filePath": "personas/therapist.md",
+      "fileInfo": {
+        "size": 824,
+        "created": "2025-07-18T17:13:28.057Z",
+        "modified": "2025-07-18T17:13:28.057Z"
+      }
+    },
+    "ask-alternatives": {
+      "type": "prompt-template",
+      "name": "寻求替代方案",
+      "description": "探索多种不同的实现路径",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "optimization"
+      ],
+      "filePath": "prompt-templates/ask-alternatives.md",
+      "fileInfo": {
+        "size": 897,
+        "created": "2025-07-18T17:13:28.045Z",
+        "modified": "2025-07-18T17:13:28.045Z"
+      }
+    },
+    "constraint-anchoring": {
+      "type": "prompt-template",
+      "name": "约束锚定",
+      "description": "给AI设定明确的边界和限制",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "optimization"
+      ],
+      "filePath": "prompt-templates/constraint-anchoring.md",
+      "fileInfo": {
+        "size": 934,
+        "created": "2025-07-18T17:13:28.046Z",
+        "modified": "2025-07-18T17:13:28.046Z"
+      }
+    },
+    "debug-simulation": {
+      "type": "prompt-template",
+      "name": "模拟调试",
+      "description": "让AI模拟代码运行时行为",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "debugging",
+        "troubleshooting"
+      ],
+      "filePath": "prompt-templates/debug-simulation.md",
+      "fileInfo": {
+        "size": 820,
+        "created": "2025-07-18T17:13:28.047Z",
+        "modified": "2025-07-18T17:13:28.047Z"
+      }
+    },
+    "explicit-context": {
+      "type": "prompt-template",
+      "name": "明确上下文",
+      "description": "清晰框定问题避免模糊回答",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "debugging"
+      ],
+      "filePath": "prompt-templates/explicit-context.md",
+      "fileInfo": {
+        "size": 889,
+        "created": "2025-07-18T17:13:28.047Z",
+        "modified": "2025-07-18T17:13:28.048Z"
+      }
+    },
+    "feature-blueprinting": {
+      "type": "prompt-template",
+      "name": "功能蓝图",
+      "description": "借助AI主导的规划和脚手架能力",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "architecture",
+        "planning"
+      ],
+      "filePath": "prompt-templates/feature-blueprinting.md",
+      "fileInfo": {
+        "size": 921,
+        "created": "2025-07-18T17:13:28.048Z",
+        "modified": "2025-07-18T17:13:28.048Z"
+      }
+    },
+    "input-output-examples": {
+      "type": "prompt-template",
+      "name": "输入输出示例",
+      "description": "通过具体示例展示意图",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "implementation"
+      ],
+      "filePath": "prompt-templates/input-output-examples.md",
+      "fileInfo": {
+        "size": 839,
+        "created": "2025-07-18T17:13:28.049Z",
+        "modified": "2025-07-18T17:13:28.049Z"
+      }
+    },
+    "iterative-chaining": {
+      "type": "prompt-template",
+      "name": "迭代式链条",
+      "description": "将复杂任务分解成连续小步骤",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "planning"
+      ],
+      "filePath": "prompt-templates/iterative-chaining.md",
+      "fileInfo": {
+        "size": 887,
+        "created": "2025-07-18T17:13:28.049Z",
+        "modified": "2025-07-18T17:13:28.050Z"
+      }
+    },
+    "refactor-guidance": {
+      "type": "prompt-template",
+      "name": "重构指导",
+      "description": "确保重构与核心目标对齐",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "refactoring",
+        "optimization",
+        "improvement"
+      ],
+      "filePath": "prompt-templates/refactor-guidance.md",
+      "fileInfo": {
+        "size": 883,
+        "created": "2025-07-18T17:13:28.050Z",
+        "modified": "2025-07-18T17:13:28.050Z"
+      }
+    },
+    "role-prompting": {
+      "type": "prompt-template",
+      "name": "角色提示",
+      "description": "设定专家角色获得高质量建议",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "code-review",
+        "expert",
+        "professional"
+      ],
+      "filePath": "prompt-templates/role-prompting.md",
+      "fileInfo": {
+        "size": 833,
+        "created": "2025-07-18T17:13:28.052Z",
+        "modified": "2025-07-18T17:13:28.052Z"
+      }
+    },
+    "rubber-ducking": {
+      "type": "prompt-template",
+      "name": "小黄鸭调试法",
+      "description": "通过解释来挑战理解并发现逻辑矛盾",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "debugging",
+        "explanation",
+        "logic"
+      ],
+      "filePath": "prompt-templates/rubber-ducking.md",
+      "fileInfo": {
+        "size": 2089,
+        "created": "2025-07-18T16:15:35.788Z",
+        "modified": "2025-07-18T16:15:36.690Z"
+      }
+    },
+    "prompt-builder": {
+      "type": "prompt",
+      "name": "Prompt Builder Template",
+      "description": "Template for creating effective prompts across different contexts",
+      "version": "1.0.0",
+      "author": "mantras-team",
+      "tags": [
+        "template",
+        "prompt",
+        "builder"
+      ],
+      "filePath": "prompts/prompt-builder.md",
+      "fileInfo": {
+        "size": 571,
+        "created": "2025-07-18T17:13:28.058Z",
+        "modified": "2025-07-18T17:13:28.059Z"
+      }
+    }
+  }
+}

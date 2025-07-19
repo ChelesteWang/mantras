@@ -1,0 +1,43 @@
+{
+  "totalAssets": 17,
+  "assetsByType": {
+    "persona": 6,
+    "prompt-template": 10,
+    "prompt": 1
+  },
+  "assetsByAuthor": {
+    "mantras-team": 17
+  },
+  "assetsByTag": {
+    "analysis": 4,
+    "technical": 4,
+    "data": 1,
+    "business": 1,
+    "creative": 3,
+    "empathetic": 3,
+    "writing": 1,
+    "content": 1,
+    "engineering": 1,
+    "code": 1,
+    "support": 1,
+    "wellbeing": 1,
+    "optimization": 3,
+    "debugging": 3,
+    "troubleshooting": 1,
+    "architecture": 1,
+    "planning": 2,
+    "implementation": 1,
+    "refactoring": 1,
+    "improvement": 1,
+    "code-review": 1,
+    "expert": 1,
+    "professional": 1,
+    "explanation": 1,
+    "logic": 1,
+    "template": 1,
+    "prompt": 1,
+    "builder": 1
+  },
+  "averageDescriptionLength": 33,
+  "lastUpdated": "2025-07-19T03:13:42.418Z"
+}
