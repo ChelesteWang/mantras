@@ -1,4 +1,5 @@
-import { RemoteAssetRepository } from './asset-repository';
+import { BuildOptimizedAssetRepository } from './build-optimized-asset-repository';
+import { MarkdownAssetRepository } from './markdown-asset-repository';
 import { PersonaSummoner } from './persona-summoner';
 import { PROMPT_TEMPLATES } from './prompt-templates';
 import { initTool } from './tools/init.tool';
@@ -11,12 +12,17 @@ import { z } from "zod";
 // 解析命令行参数
 const program = new Command();
 program
-  .option('--personas <path>', 'Path to local assets JSON file')
+  .option('--assets-dir <path>', 'Path to assets directory', './assets')
+  .option('--use-build-assets', 'Use build-time optimized assets', false)
   .parse(process.argv);
 const options = program.opts();
 
-// 实例化资产仓库和persona召唤器
-const repository = new RemoteAssetRepository(options.personas);
+// 实例化资产仓库 - 优先使用构建时优化版本
+const fallbackRepository = new MarkdownAssetRepository(options.assetsDir);
+const repository = options.useBuildAssets 
+  ? new BuildOptimizedAssetRepository('./dist/assets/assets.json', fallbackRepository)
+  : fallbackRepository;
+
 const personaSummoner = new PersonaSummoner();
 
 // 实例化记忆工具
