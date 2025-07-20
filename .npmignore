@@ -1,0 +1,67 @@
+# .npmignore
+
+# Development files
+src/
+test/
+dev/
+coverage/
+.nyc_output/
+
+# Configuration files
+.eslintrc.json
+.prettierrc.json
+jest.config.cjs
+tsconfig.json
+tsup.config.ts
+
+# Development scripts
+scripts/
+tools/
+
+# Documentation (keep only README.md)
+docs/
+ref/
+CLAUDE.md
+
+# Build artifacts
+*.tsbuildinfo
+.cache/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+
+# Git files
+.git/
+.gitignore
+
+# CI/CD
+.github/
+.claude/
+
+# Templates (internal use)
+templates/
+
+# Keep these files for NPM
+# dist/
+# assets/
+# bin/
+# index.js
+# start-mcp.js
+# README.md
+# LICENSE
+# package.json

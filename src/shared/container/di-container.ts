@@ -28,29 +28,37 @@ export class DIContainer {
     if (this.services.has(key)) {
       throw new Error(`Service '${key}' is already registered`);
     }
-    
+
     this.services.set(key, definition);
   }
 
   /**
    * 注册单例服务
    */
-  registerSingleton<T>(key: string, factory: (...args: any[]) => T, dependencies: string[] = []): void {
+  registerSingleton<T>(
+    key: string,
+    factory: (...args: any[]) => T,
+    dependencies: string[] = []
+  ): void {
     this.register(key, {
       factory,
       singleton: true,
-      dependencies
+      dependencies,
     });
   }
 
   /**
    * 注册瞬态服务
    */
-  registerTransient<T>(key: string, factory: (...args: any[]) => T, dependencies: string[] = []): void {
+  registerTransient<T>(
+    key: string,
+    factory: (...args: any[]) => T,
+    dependencies: string[] = []
+  ): void {
     this.register(key, {
       factory,
       singleton: false,
-      dependencies
+      dependencies,
     });
   }
 
@@ -75,7 +83,7 @@ export class DIContainer {
 
     // 解析依赖
     const dependencies = this.resolveDependencies(definition.dependencies || []);
-    
+
     // 创建实例
     const instance = definition.factory(...dependencies);
 
@@ -96,12 +104,12 @@ export class DIContainer {
     const scope: ServiceScope = {
       id: id || `scope_${Date.now()}`,
       parent: this.currentScope,
-      services: new Map()
+      services: new Map(),
     };
 
     this.scopeStack.push(scope);
     this.currentScope = scope;
-    
+
     return scope;
   }
 
@@ -178,13 +186,13 @@ export class DIContainer {
       if (visiting.has(key)) {
         throw new Error(`Circular dependency detected: ${key}`);
       }
-      
+
       if (visited.has(key)) {
         return;
       }
 
       visiting.add(key);
-      
+
       const definition = this.services.get(key);
       if (definition && definition.dependencies) {
         definition.dependencies.forEach(dep => visit(dep));

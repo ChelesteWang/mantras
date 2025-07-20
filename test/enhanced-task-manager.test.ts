@@ -1,9 +1,9 @@
 import { describe, test, expect, beforeEach } from '@jest/globals';
-import { 
-  TaskQueueManager, 
-  EnhancedTaskManagerTool, 
-  TaskStatus, 
-  TaskPriority 
+import {
+  TaskQueueManager,
+  EnhancedTaskManagerTool,
+  TaskStatus,
+  TaskPriority,
 } from '../src/tools/enhanced-task-manager.tool';
 
 describe('Enhanced Task Manager Tool', () => {
@@ -23,7 +23,7 @@ describe('Enhanced Task Manager Tool', () => {
         status: TaskStatus.PENDING,
         priority: TaskPriority.MEDIUM,
         dependencies: [],
-        tags: ['test']
+        tags: ['test'],
       });
 
       expect(task.id).toBeDefined();
@@ -36,13 +36,13 @@ describe('Enhanced Task Manager Tool', () => {
 
     test('should decompose debug task correctly', () => {
       const tasks = taskManager.decomposeTask('调试JavaScript性能问题');
-      
+
       expect(tasks).toHaveLength(4);
       expect(tasks[0].title).toBe('问题分析');
       expect(tasks[1].title).toBe('解决方案设计');
       expect(tasks[2].title).toBe('实施修复');
       expect(tasks[3].title).toBe('测试验证');
-      
+
       // 检查依赖关系
       expect(tasks[1].dependencies).toContain('问题分析');
       expect(tasks[2].dependencies).toContain('解决方案设计');
@@ -51,7 +51,7 @@ describe('Enhanced Task Manager Tool', () => {
 
     test('should decompose implementation task correctly', () => {
       const tasks = taskManager.decomposeTask('实现用户认证系统');
-      
+
       expect(tasks).toHaveLength(5);
       expect(tasks[0].title).toBe('需求分析');
       expect(tasks[1].title).toBe('架构设计');
@@ -68,7 +68,7 @@ describe('Enhanced Task Manager Tool', () => {
         status: TaskStatus.PENDING,
         priority: TaskPriority.HIGH,
         dependencies: [],
-        tags: ['test']
+        tags: ['test'],
       });
 
       const task2 = taskManager.createTask({
@@ -77,7 +77,7 @@ describe('Enhanced Task Manager Tool', () => {
         status: TaskStatus.PENDING,
         priority: TaskPriority.MEDIUM,
         dependencies: [task1.id],
-        tags: ['test']
+        tags: ['test'],
       });
 
       // 检查队列
@@ -87,7 +87,7 @@ describe('Enhanced Task Manager Tool', () => {
 
       // 完成任务1
       taskManager.updateTask(task1.id, { status: TaskStatus.COMPLETED });
-      
+
       // 检查队列更新
       const updatedQueue = taskManager.getTaskQueue();
       expect(updatedQueue).toHaveLength(1);
@@ -102,7 +102,7 @@ describe('Enhanced Task Manager Tool', () => {
         status: TaskStatus.PENDING,
         priority: TaskPriority.HIGH,
         dependencies: [],
-        tags: ['test']
+        tags: ['test'],
       });
 
       taskManager.createTask({
@@ -111,7 +111,7 @@ describe('Enhanced Task Manager Tool', () => {
         status: TaskStatus.IN_PROGRESS,
         priority: TaskPriority.MEDIUM,
         dependencies: [],
-        tags: ['test']
+        tags: ['test'],
       });
 
       taskManager.createTask({
@@ -120,7 +120,7 @@ describe('Enhanced Task Manager Tool', () => {
         status: TaskStatus.COMPLETED,
         priority: TaskPriority.LOW,
         dependencies: [],
-        tags: ['test']
+        tags: ['test'],
       });
 
       const stats = taskManager.getTaskStatistics();
@@ -139,7 +139,7 @@ describe('Enhanced Task Manager Tool', () => {
       const result = await enhancedTool.createExecutionPlan({
         userRequest: '调试React应用性能问题',
         includeContext: true,
-        autoDecompose: true
+        autoDecompose: true,
       });
 
       expect(result.plan).toBeDefined();
@@ -153,7 +153,7 @@ describe('Enhanced Task Manager Tool', () => {
       // 先创建一个计划
       const createResult = await enhancedTool.createExecutionPlan({
         userRequest: '实现API接口',
-        autoDecompose: true
+        autoDecompose: true,
       });
 
       const planId = createResult.plan.id;
@@ -161,7 +161,7 @@ describe('Enhanced Task Manager Tool', () => {
       // 执行计划
       const executeResult = await enhancedTool.executePlan({
         planId,
-        autoProgress: true
+        autoProgress: true,
       });
 
       expect(executeResult.plan).toBeDefined();
@@ -178,11 +178,11 @@ describe('Enhanced Task Manager Tool', () => {
         status: TaskStatus.PENDING,
         priority: TaskPriority.MEDIUM,
         dependencies: [],
-        tags: ['test']
+        tags: ['test'],
       });
 
       const result = await enhancedTool.getTaskStatus({
-        taskId: task.id
+        taskId: task.id,
       });
 
       expect(result.tasks).toHaveLength(1);
@@ -199,7 +199,7 @@ describe('Enhanced Task Manager Tool', () => {
         status: TaskStatus.PENDING,
         priority: TaskPriority.HIGH,
         dependencies: [],
-        tags: ['base']
+        tags: ['base'],
       });
 
       const task2 = taskManager.createTask({
@@ -208,14 +208,14 @@ describe('Enhanced Task Manager Tool', () => {
         status: TaskStatus.PENDING,
         priority: TaskPriority.MEDIUM,
         dependencies: [task1.id],
-        tags: ['dependent']
+        tags: ['dependent'],
       });
 
       // 更新基础任务状态为完成
       const result = await enhancedTool.updateTaskStatus({
         taskId: task1.id,
         status: TaskStatus.COMPLETED,
-        notes: '任务已完成'
+        notes: '任务已完成',
       });
 
       expect(result.task).toBeDefined();
@@ -228,7 +228,7 @@ describe('Enhanced Task Manager Tool', () => {
     test('should handle non-existent plan execution', async () => {
       const result = await enhancedTool.executePlan({
         planId: 'non-existent-plan',
-        autoProgress: false
+        autoProgress: false,
       });
 
       expect(result.plan).toBeNull();
@@ -239,7 +239,7 @@ describe('Enhanced Task Manager Tool', () => {
     test('should handle non-existent task status update', async () => {
       const result = await enhancedTool.updateTaskStatus({
         taskId: 'non-existent-task',
-        status: TaskStatus.COMPLETED
+        status: TaskStatus.COMPLETED,
       });
 
       expect(result.task).toBeNull();
@@ -256,7 +256,7 @@ describe('Enhanced Task Manager Tool', () => {
         status: TaskStatus.PENDING,
         priority: TaskPriority.URGENT,
         dependencies: [],
-        tags: ['urgent']
+        tags: ['urgent'],
       });
 
       const lowTask = taskManager.createTask({
@@ -265,7 +265,7 @@ describe('Enhanced Task Manager Tool', () => {
         status: TaskStatus.PENDING,
         priority: TaskPriority.LOW,
         dependencies: [],
-        tags: ['low']
+        tags: ['low'],
       });
 
       const queue = taskManager.getTaskQueue();
@@ -280,7 +280,7 @@ describe('Enhanced Task Manager Tool', () => {
         status: TaskStatus.PENDING,
         priority: TaskPriority.HIGH,
         dependencies: ['non-existent-dependency'],
-        tags: ['blocked']
+        tags: ['blocked'],
       });
 
       const executableTasks = taskManager.getExecutableTasks();

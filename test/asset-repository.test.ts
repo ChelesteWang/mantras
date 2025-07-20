@@ -1,4 +1,3 @@
-import { RemoteAssetRepository } from '../src/core/assets/asset-repository';
 import { Asset } from '../src/types';
 
 // First, get the actual module to ensure we have the real defaultAssets
@@ -69,7 +68,7 @@ describe('RemoteAssetRepository', () => {
     const assets = await repo.getAssets();
 
     expect(fs.readFile).toHaveBeenCalledWith(localFilePath, 'utf-8');
-    const localAsset = assets.find((a: { id: string; }) => a.id === 'local-1');
+    const localAsset = assets.find((a: { id: string }) => a.id === 'local-1');
     const defaultAsset = assets.find((a: Asset) => a.id === 'analyst');
     expect(localAsset).toBeDefined();
     expect(localAsset?.name).toBe('Local Asset 1');
@@ -95,19 +94,31 @@ describe('RemoteAssetRepository', () => {
     const fs = require('fs/promises');
     const { RemoteAssetRepository } = require('../src/core/assets/asset-repository');
     const mixedRemoteAssets: Asset[] = [
-        { id: 'remote-1', name: 'Remote Asset 1', type: 'persona', description: '', systemPrompt: '' },
-        { id: 'local-1', name: 'Original Local Asset', type: 'persona', description: '', systemPrompt: '' },
+      {
+        id: 'remote-1',
+        name: 'Remote Asset 1',
+        type: 'persona',
+        description: '',
+        systemPrompt: '',
+      },
+      {
+        id: 'local-1',
+        name: 'Original Local Asset',
+        type: 'persona',
+        description: '',
+        systemPrompt: '',
+      },
     ];
     jest.spyOn(global, 'fetch').mockResolvedValue({
-        ok: true,
-        json: async () => mixedRemoteAssets,
+      ok: true,
+      json: async () => mixedRemoteAssets,
     } as Response);
     fs.readFile.mockResolvedValue(JSON.stringify(mockLocalAssets));
 
     const repo = new RemoteAssetRepository(localFilePath);
     const assets = await repo.getAssets();
 
-    const remoteAsset = assets.find((a: { id: string; }) => a.id === 'remote-1');
+    const remoteAsset = assets.find((a: { id: string }) => a.id === 'remote-1');
     expect(remoteAsset).toBeDefined();
 
     const localAsset = assets.find((a: Asset) => a.id === 'local-1');

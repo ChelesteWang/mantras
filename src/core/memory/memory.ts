@@ -34,7 +34,7 @@ export class SessionMemory {
   private contextMemory: ContextMemory = {
     activeProjects: [],
     recentFiles: [],
-    preferences: {}
+    preferences: {},
   };
   private maxConversationHistory = 100; // 最大对话历史条数
   private maxMemoryEntries = 500; // 最大记忆条目数
@@ -59,7 +59,7 @@ export class SessionMemory {
     this.contextMemory = {
       activeProjects: [],
       recentFiles: [],
-      preferences: {}
+      preferences: {},
     };
   }
 
@@ -68,16 +68,20 @@ export class SessionMemory {
   }
 
   // 对话历史管理
-  addConversation(role: 'user' | 'assistant' | 'system', content: string, metadata?: Record<string, any>): void {
+  addConversation(
+    role: 'user' | 'assistant' | 'system',
+    content: string,
+    metadata?: Record<string, any>
+  ): void {
     const entry: ConversationEntry = {
       role,
       content,
       timestamp: new Date(),
-      metadata
+      metadata,
     };
-    
+
     this.conversationHistory.push(entry);
-    
+
     // 保持历史记录在限制范围内
     if (this.conversationHistory.length > this.maxConversationHistory) {
       this.conversationHistory = this.conversationHistory.slice(-this.maxConversationHistory);
@@ -112,17 +116,17 @@ export class SessionMemory {
       content,
       importance: Math.max(1, Math.min(10, importance)), // 确保在1-10范围内
       tags,
-      metadata
+      metadata,
     };
-    
+
     this.memoryEntries.push(entry);
-    
+
     // 按重要性排序并保持在限制范围内
     this.memoryEntries.sort((a, b) => b.importance - a.importance);
     if (this.memoryEntries.length > this.maxMemoryEntries) {
       this.memoryEntries = this.memoryEntries.slice(0, this.maxMemoryEntries);
     }
-    
+
     return id;
   }
 
@@ -141,17 +145,17 @@ export class SessionMemory {
   searchMemories(query: string): MemoryEntry[] {
     const queryLower = query.toLowerCase();
     const results = new Set<MemoryEntry>(); // 使用 Set 避免重复
-    
+
     this.memoryEntries.forEach(entry => {
       const contentStr = JSON.stringify(entry.content).toLowerCase();
       const tagsStr = entry.tags.join(' ').toLowerCase();
-      
+
       // 内容匹配或标签匹配
       if (contentStr.includes(queryLower) || tagsStr.includes(queryLower)) {
         results.add(entry);
       }
     });
-    
+
     return Array.from(results);
   }
 
@@ -180,12 +184,12 @@ export class SessionMemory {
     // 移除重复项并添加到开头
     this.contextMemory.recentFiles = this.contextMemory.recentFiles.filter(f => f !== filePath);
     this.contextMemory.recentFiles.unshift(filePath);
-    
+
     // 保持最近文件列表在合理范围内
     if (this.contextMemory.recentFiles.length > 20) {
       this.contextMemory.recentFiles = this.contextMemory.recentFiles.slice(0, 20);
     }
-    
+
     this.addMemory('context', { recentFile: filePath }, 4, ['file', 'recent']);
   }
 
@@ -201,30 +205,30 @@ export class SessionMemory {
   // 智能记忆检索
   getRelevantMemories(context: string, limit: number = 10): MemoryEntry[] {
     const contextLower = context.toLowerCase();
-    
+
     // 计算相关性分数
     const scoredMemories = this.memoryEntries.map(entry => {
       let score = entry.importance; // 基础分数为重要性
-      
+
       // 内容匹配加分
       const contentStr = JSON.stringify(entry.content).toLowerCase();
       if (contentStr.includes(contextLower)) {
         score += 5;
       }
-      
+
       // 标签匹配加分
-      const matchingTags = entry.tags.filter(tag => 
-        contextLower.includes(tag.toLowerCase()) || tag.toLowerCase().includes(contextLower)
+      const matchingTags = entry.tags.filter(
+        tag => contextLower.includes(tag.toLowerCase()) || tag.toLowerCase().includes(contextLower)
       );
       score += matchingTags.length * 2;
-      
+
       // 时间衰减（越新的记忆分数越高）
       const daysSinceCreation = (Date.now() - entry.timestamp.getTime()) / (1000 * 60 * 60 * 24);
       score += Math.max(0, 5 - daysSinceCreation * 0.1);
-      
+
       return { entry, score };
     });
-    
+
     // 按分数排序并返回前N个
     return scoredMemories
       .sort((a, b) => b.score - a.score)
@@ -243,21 +247,24 @@ export class SessionMemory {
   } {
     const memoryByType: Record<string, number> = {};
     let totalImportance = 0;
-    
+
     this.memoryEntries.forEach(entry => {
       memoryByType[entry.type] = (memoryByType[entry.type] || 0) + 1;
       totalImportance += entry.importance;
     });
-    
+
     const timestamps = this.memoryEntries.map(e => e.timestamp);
-    
+
     return {
       totalMemories: this.memoryEntries.length,
       conversationCount: this.conversationHistory.length,
       memoryByType,
-      averageImportance: this.memoryEntries.length > 0 ? totalImportance / this.memoryEntries.length : 0,
-      oldestMemory: timestamps.length > 0 ? new Date(Math.min(...timestamps.map(t => t.getTime()))) : undefined,
-      newestMemory: timestamps.length > 0 ? new Date(Math.max(...timestamps.map(t => t.getTime()))) : undefined
+      averageImportance:
+        this.memoryEntries.length > 0 ? totalImportance / this.memoryEntries.length : 0,
+      oldestMemory:
+        timestamps.length > 0 ? new Date(Math.min(...timestamps.map(t => t.getTime()))) : undefined,
+      newestMemory:
+        timestamps.length > 0 ? new Date(Math.max(...timestamps.map(t => t.getTime()))) : undefined,
     };
   }
 
@@ -272,7 +279,7 @@ export class SessionMemory {
       memory: Object.fromEntries(this.memory),
       conversationHistory: [...this.conversationHistory],
       memoryEntries: [...this.memoryEntries],
-      contextMemory: { ...this.contextMemory }
+      contextMemory: { ...this.contextMemory },
     };
   }
 
@@ -288,13 +295,13 @@ export class SessionMemory {
     if (data.conversationHistory) {
       this.conversationHistory = data.conversationHistory.map(entry => ({
         ...entry,
-        timestamp: new Date(entry.timestamp)
+        timestamp: new Date(entry.timestamp),
       }));
     }
     if (data.memoryEntries) {
       this.memoryEntries = data.memoryEntries.map(entry => ({
         ...entry,
-        timestamp: new Date(entry.timestamp)
+        timestamp: new Date(entry.timestamp),
       }));
     }
     if (data.contextMemory) {
@@ -306,12 +313,12 @@ export class SessionMemory {
   cleanupOldMemories(daysToKeep: number = 30): number {
     const cutoff = new Date(Date.now() - daysToKeep * 24 * 60 * 60 * 1000);
     const initialCount = this.memoryEntries.length;
-    
+
     // 保留重要记忆（重要性 >= 8）和最近的记忆
-    this.memoryEntries = this.memoryEntries.filter(entry => 
-      entry.importance >= 8 || entry.timestamp > cutoff
+    this.memoryEntries = this.memoryEntries.filter(
+      entry => entry.importance >= 8 || entry.timestamp > cutoff
     );
-    
+
     return initialCount - this.memoryEntries.length;
   }
 

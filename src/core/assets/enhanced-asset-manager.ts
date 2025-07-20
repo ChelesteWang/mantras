@@ -23,19 +23,19 @@ export class EnhancedAssetManager extends UnifiedAssetManager {
   async loadFromStructuredDirectory(): Promise<void> {
     try {
       const assetTypes: AssetType[] = ['persona', 'prompt-template', 'tool'];
-      
+
       for (const type of assetTypes) {
         const typeDir = path.join(this.assetsDirectory, `${type}s`);
-        
+
         try {
           const files = await fs.readdir(typeDir);
           const jsonFiles = files.filter(file => file.endsWith('.json'));
-          
+
           for (const file of jsonFiles) {
             const filePath = path.join(typeDir, file);
             const content = await fs.readFile(filePath, 'utf-8');
             const asset = JSON.parse(content);
-            
+
             // 验证并注册资产
             this.registerAsset(asset);
             logger.info(`Loaded ${type}: ${asset.id}`);
@@ -45,7 +45,10 @@ export class EnhancedAssetManager extends UnifiedAssetManager {
         }
       }
     } catch (error) {
-      logger.error('Failed to load from structured directory:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to load from structured directory:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   }
@@ -56,23 +59,26 @@ export class EnhancedAssetManager extends UnifiedAssetManager {
   async saveToStructuredDirectory(): Promise<void> {
     try {
       const assetTypes: AssetType[] = ['persona', 'prompt-template', 'tool'];
-      
+
       for (const type of assetTypes) {
         const typeDir = path.join(this.assetsDirectory, `${type}s`);
         await fs.mkdir(typeDir, { recursive: true });
-        
+
         const assets = this.getAssetsByType(type);
-        
+
         for (const asset of assets) {
           const filePath = path.join(typeDir, `${asset.id}.json`);
           const content = JSON.stringify(asset, null, 2);
           await fs.writeFile(filePath, content, 'utf-8');
         }
-        
+
         logger.info(`Saved ${assets.length} ${type}s to ${typeDir}`);
       }
     } catch (error) {
-      logger.error('Failed to save to structured directory:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to save to structured directory:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   }
@@ -84,28 +90,31 @@ export class EnhancedAssetManager extends UnifiedAssetManager {
     try {
       const templatePath = path.join(this.templatesDirectory, `${type}.template.json`);
       let templateContent = await fs.readFile(templatePath, 'utf-8');
-      
+
       // 替换模板变量
       for (const [key, value] of Object.entries(templateVars)) {
         const placeholder = `{{${key}}}`;
         templateContent = templateContent.replace(new RegExp(placeholder, 'g'), String(value));
       }
-      
+
       const asset = JSON.parse(templateContent);
-      
+
       // 验证资产
       this.registerAsset(asset);
-      
+
       // 保存到文件
       const typeDir = path.join(this.assetsDirectory, `${type}s`);
       await fs.mkdir(typeDir, { recursive: true });
       const filePath = path.join(typeDir, `${asset.id}.json`);
       await fs.writeFile(filePath, JSON.stringify(asset, null, 2), 'utf-8');
-      
+
       logger.info(`Created new ${type}: ${asset.id}`);
       return asset;
     } catch (error) {
-      logger.error(`Failed to create ${type} from template:`, error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        `Failed to create ${type} from template:`,
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   }
@@ -152,7 +161,7 @@ export class EnhancedAssetManager extends UnifiedAssetManager {
         if (!asset.personality) errors.push('Missing personality definition');
         if (!asset.capabilities) errors.push('Missing capabilities definition');
         break;
-      
+
       case 'prompt-template':
         if (!asset.template) errors.push('Missing template content');
         if (!asset.technique) errors.push('Missing technique');
@@ -175,7 +184,7 @@ export class EnhancedAssetManager extends UnifiedAssetManager {
   } {
     const assets = this.getAllAssets();
     const stats = this.getAssetStats();
-    
+
     const topUsed = assets
       .filter(asset => asset.metadata?.usageCount > 0)
       .sort((a, b) => (b.metadata?.usageCount || 0) - (a.metadata?.usageCount || 0))
@@ -183,7 +192,7 @@ export class EnhancedAssetManager extends UnifiedAssetManager {
       .map(asset => ({
         id: asset.id,
         name: asset.name,
-        usageCount: asset.metadata?.usageCount || 0
+        usageCount: asset.metadata?.usageCount || 0,
       }));
 
     const unused = assets
@@ -191,14 +200,14 @@ export class EnhancedAssetManager extends UnifiedAssetManager {
       .map(asset => ({
         id: asset.id,
         name: asset.name,
-        type: asset.type
+        type: asset.type,
       }));
 
     return {
       totalAssets: assets.length,
       byType: stats,
       topUsed,
-      unused
+      unused,
     };
   }
 
@@ -212,13 +221,13 @@ export class EnhancedAssetManager extends UnifiedAssetManager {
     if (!dryRun) {
       for (const assetId of toRemove) {
         this.removeAsset(assetId);
-        
+
         // 从文件系统删除
         const asset = this.getAssetById(assetId);
         if (asset) {
           const typeDir = path.join(this.assetsDirectory, `${asset.type}s`);
           const filePath = path.join(typeDir, `${asset.id}.json`);
-          
+
           try {
             await fs.unlink(filePath);
             logger.info(`Deleted unused asset file: ${filePath}`);
@@ -238,26 +247,26 @@ export class EnhancedAssetManager extends UnifiedAssetManager {
   async createBackup(backupDir: string): Promise<void> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
     const backupPath = path.join(backupDir, `assets-backup-${timestamp}`);
-    
+
     await fs.mkdir(backupPath, { recursive: true });
-    
+
     // 导出所有资产
     await this.exportByType(backupPath);
-    
+
     // 创建备份元数据
     const metadata = {
       timestamp,
       totalAssets: this.getAllAssets().length,
       stats: this.getAssetStats(),
-      version: '2.0.0'
+      version: '2.0.0',
     };
-    
+
     await fs.writeFile(
       path.join(backupPath, 'backup-metadata.json'),
       JSON.stringify(metadata, null, 2),
       'utf-8'
     );
-    
+
     logger.info(`Backup created at: ${backupPath}`);
   }
 }

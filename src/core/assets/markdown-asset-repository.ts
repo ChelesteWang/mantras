@@ -26,27 +26,29 @@ export class MarkdownAssetRepository implements AssetRepository {
 
     try {
       const assets = await this.loadFromMarkdownFiles();
-      
+
       // 更新缓存
       this.cache.clear();
       for (const asset of assets) {
         this.cache.set(asset.id, asset);
       }
       this.lastFetch = Date.now();
-      
+
       logger.info(`Loaded ${assets.length} assets from Markdown files`);
       return assets;
     } catch (error) {
-      logger.error('Failed to load assets from Markdown files, falling back to default assets:', 
-        error instanceof Error ? error : new Error(String(error)));
-      
+      logger.error(
+        'Failed to load assets from Markdown files, falling back to default assets:',
+        error instanceof Error ? error : new Error(String(error))
+      );
+
       // 回退到硬编码资产
       this.cache.clear();
       for (const asset of defaultAssets) {
         this.cache.set(asset.id, asset);
       }
       this.lastFetch = Date.now();
-      
+
       return defaultAssets;
     }
   }
@@ -58,17 +60,13 @@ export class MarkdownAssetRepository implements AssetRepository {
 
   private async loadFromMarkdownFiles(): Promise<Asset[]> {
     const allAssets: Asset[] = [];
-    
+
     // 定义要扫描的资产类型目录
-    const assetTypeDirs = [
-      'personas',
-      'prompt-templates', 
-      'prompts'
-    ];
+    const assetTypeDirs = ['personas', 'prompt-templates', 'prompts'];
 
     for (const typeDir of assetTypeDirs) {
       const dirPath = path.join(this.assetsDir, typeDir);
-      
+
       try {
         const assets = await AssetLoader.loadFromDirectory(dirPath);
         allAssets.push(...assets);
@@ -88,7 +86,7 @@ export class MarkdownAssetRepository implements AssetRepository {
   }
 
   private isCacheValid(): boolean {
-    return this.cache.size > 0 && (Date.now() - this.lastFetch < CACHE_TTL_MS);
+    return this.cache.size > 0 && Date.now() - this.lastFetch < CACHE_TTL_MS;
   }
 
   /**
@@ -107,7 +105,7 @@ export class MarkdownAssetRepository implements AssetRepository {
     return {
       size: this.cache.size,
       lastFetch: this.lastFetch > 0 ? new Date(this.lastFetch) : null,
-      isValid: this.isCacheValid()
+      isValid: this.isCacheValid(),
     };
   }
 }

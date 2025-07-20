@@ -69,7 +69,7 @@ describe('PersonaSummoner', () => {
       const request: SummonRequest = { personaId: 'analyst' };
       const originalPersona = summoner.getPersonaById('analyst');
       const result = summoner.summonPersona(request);
-      
+
       expect(result.persona).toEqual(originalPersona);
       expect(result.metadata.customized).toBe(false);
     });
@@ -78,11 +78,11 @@ describe('PersonaSummoner', () => {
       const request: SummonRequest = {
         personaId: 'analyst',
         customParams: {
-          systemPrompt: 'You are a super analyst.'
-        }
+          systemPrompt: 'You are a super analyst.',
+        },
       };
       const result = summoner.summonPersona(request);
-      
+
       expect(result.persona.systemPrompt).toBe('You are a super analyst.');
       expect(result.metadata.customized).toBe(true);
     });
@@ -136,13 +136,24 @@ describe('PersonaSummoner', () => {
       expect(synthesized.name).toBe('Creative Coder');
       expect(synthesized.capabilities.creative).toBe(true);
       expect(synthesized.capabilities.technical).toBe(true);
-      expect(synthesized.personality.traits).toEqual(['creative', 'vivid', 'engaging', 'storyteller', 'technical', 'detailed', 'accurate', 'structured']);
+      expect(synthesized.personality.traits).toEqual([
+        'creative',
+        'vivid',
+        'engaging',
+        'storyteller',
+        'technical',
+        'detailed',
+        'accurate',
+        'structured',
+      ]);
     });
 
     it('should synthesize a persona with a default name if no custom name is provided', () => {
       const synthesized = summoner.synthesizePersona(['analyst', 'creative']);
       expect(synthesized.name).toBe('Synthesized (Data Analyst + Creative Writer)');
-      expect(loggerMock.info).toHaveBeenCalledWith('Synthesized persona: Synthesized (Data Analyst + Creative Writer)');
+      expect(loggerMock.info).toHaveBeenCalledWith(
+        'Synthesized persona: Synthesized (Data Analyst + Creative Writer)'
+      );
     });
 
     it('should throw an error if synthesizing with non-existent persona IDs', () => {
@@ -162,7 +173,7 @@ describe('PersonaSummoner', () => {
     it('should convert a persona to the Asset format', () => {
       const persona = summoner.getPersonaById('analyst');
       if (!persona) throw new Error('Test setup failed: Analyst persona not found');
-      
+
       const asset = summoner.toAsset(persona);
       expect(asset.id).toBe('analyst');
       expect(asset.type).toBe('persona');

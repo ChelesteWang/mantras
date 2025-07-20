@@ -1,4 +1,11 @@
-import { Asset, AssetRepository, AssetType, Persona, PromptTemplate, ActionableTool } from '../../types';
+import {
+  Asset,
+  AssetRepository,
+  AssetType,
+  Persona,
+  PromptTemplate,
+  ActionableTool,
+} from '../../types';
 import { AssetFactory } from './asset-factory';
 import { AssetLoader, AssetSerializer } from './asset-loader';
 import { logger } from '../../infrastructure/logging';
@@ -10,7 +17,8 @@ export class UnifiedAssetManager {
   private assets: Map<string, Asset> = new Map();
   private assetsByType: Map<AssetType, Map<string, Asset>> = new Map();
   private repository: AssetRepository;
-  private changeListeners: Set<(asset: Asset, action: 'added' | 'updated' | 'removed') => void> = new Set();
+  private changeListeners: Set<(asset: Asset, action: 'added' | 'updated' | 'removed') => void> =
+    new Set();
 
   constructor(repository: AssetRepository) {
     this.repository = repository;
@@ -27,14 +35,18 @@ export class UnifiedAssetManager {
   /**
    * 添加变更监听器
    */
-  addChangeListener(listener: (asset: Asset, action: 'added' | 'updated' | 'removed') => void): void {
+  addChangeListener(
+    listener: (asset: Asset, action: 'added' | 'updated' | 'removed') => void
+  ): void {
     this.changeListeners.add(listener);
   }
 
   /**
    * 移除变更监听器
    */
-  removeChangeListener(listener: (asset: Asset, action: 'added' | 'updated' | 'removed') => void): void {
+  removeChangeListener(
+    listener: (asset: Asset, action: 'added' | 'updated' | 'removed') => void
+  ): void {
     this.changeListeners.delete(listener);
   }
 
@@ -43,7 +55,10 @@ export class UnifiedAssetManager {
       try {
         listener(asset, action);
       } catch (error) {
-        logger.error('Error in asset change listener:', error instanceof Error ? error : new Error(String(error)));
+        logger.error(
+          'Error in asset change listener:',
+          error instanceof Error ? error : new Error(String(error))
+        );
       }
     });
   }
@@ -63,7 +78,10 @@ export class UnifiedAssetManager {
 
       logger.info(`Loaded ${assets.length} assets`);
     } catch (error) {
-      logger.error('Failed to load assets:', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to load assets:',
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   }
@@ -81,9 +99,9 @@ export class UnifiedAssetManager {
     }
 
     const isUpdate = this.assets.has(asset.id);
-    
+
     this.assets.set(asset.id, asset);
-    
+
     const typeMap = this.assetsByType.get(asset.type);
     if (typeMap) {
       typeMap.set(asset.id, asset);
@@ -105,7 +123,7 @@ export class UnifiedAssetManager {
     }
 
     this.assets.delete(id);
-    
+
     const typeMap = this.assetsByType.get(asset.type);
     if (typeMap) {
       typeMap.delete(id);
@@ -137,7 +155,7 @@ export class UnifiedAssetManager {
    */
   getAssetsByType<T extends Asset>(type: AssetType): T[] {
     const typeMap = this.assetsByType.get(type);
-    return typeMap ? Array.from(typeMap.values()) as T[] : [];
+    return typeMap ? (Array.from(typeMap.values()) as T[]) : [];
   }
 
   /**
@@ -182,10 +200,11 @@ export class UnifiedAssetManager {
     const searchIn = type ? this.getAssetsByType(type) : this.getAllAssets();
     const lowerQuery = query.toLowerCase();
 
-    return searchIn.filter(asset => 
-      asset.name.toLowerCase().includes(lowerQuery) ||
-      asset.description?.toLowerCase().includes(lowerQuery) ||
-      asset.id.toLowerCase().includes(lowerQuery)
+    return searchIn.filter(
+      asset =>
+        asset.name.toLowerCase().includes(lowerQuery) ||
+        asset.description?.toLowerCase().includes(lowerQuery) ||
+        asset.id.toLowerCase().includes(lowerQuery)
     );
   }
 
@@ -194,10 +213,10 @@ export class UnifiedAssetManager {
    */
   getAssetStats(): Record<AssetType, number> {
     const stats: Record<AssetType, number> = {
-      'persona': 0,
-      'prompt': 0,
-      'tool': 0,
-      'prompt-template': 0
+      persona: 0,
+      prompt: 0,
+      tool: 0,
+      'prompt-template': 0,
     };
 
     this.assetsByType.forEach((map, type) => {
@@ -219,15 +238,15 @@ export class UnifiedAssetManager {
       case 'persona':
         const persona = asset as Persona;
         return !!(persona.systemPrompt && persona.personality && persona.capabilities);
-      
+
       case 'prompt-template':
         const template = asset as PromptTemplate;
         return !!(template.template && template.technique && template.parameters);
-      
+
       case 'tool':
         const tool = asset as ActionableTool;
         return !!(tool.parameters && tool.execute);
-      
+
       default:
         return true;
     }
@@ -248,7 +267,7 @@ export class UnifiedAssetManager {
     try {
       const assets = await AssetLoader.loadFromFile(filePath);
       const validAssets = AssetLoader.validateAndFilter(assets);
-      
+
       for (const asset of validAssets) {
         this.registerAsset(asset, true); // 跳过验证，因为已经验证过了
       }
@@ -256,8 +275,10 @@ export class UnifiedAssetManager {
       logger.info(`Imported ${validAssets.length} assets from ${filePath}`);
       return validAssets.length;
     } catch (error) {
-      logger.error(`Failed to import assets from ${filePath}:`, 
-        error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        `Failed to import assets from ${filePath}:`,
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   }
@@ -269,7 +290,7 @@ export class UnifiedAssetManager {
     try {
       const assets = await AssetLoader.loadFromDirectory(dirPath);
       const validAssets = AssetLoader.validateAndFilter(assets);
-      
+
       for (const asset of validAssets) {
         this.registerAsset(asset, true);
       }
@@ -277,8 +298,10 @@ export class UnifiedAssetManager {
       logger.info(`Imported ${validAssets.length} assets from directory ${dirPath}`);
       return validAssets.length;
     } catch (error) {
-      logger.error(`Failed to import assets from directory ${dirPath}:`, 
-        error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        `Failed to import assets from directory ${dirPath}:`,
+        error instanceof Error ? error : new Error(String(error))
+      );
       throw error;
     }
   }
@@ -312,7 +335,7 @@ export class UnifiedAssetManager {
     return {
       timestamp: new Date().toISOString(),
       assets: this.getAllAssets(),
-      stats: this.getAssetStats()
+      stats: this.getAssetStats(),
     };
   }
 

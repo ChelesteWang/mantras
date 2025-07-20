@@ -2,8 +2,8 @@
  * 工具注册系统 - 统一管理 MCP 工具的注册和配置
  */
 
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from "zod";
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
 
 export interface ToolMetadata {
   category: string;
@@ -83,18 +83,11 @@ export class ToolRegistry {
   registerToServer(server: McpServer): void {
     this.tools.forEach(tool => {
       // 将 Zod schema 转换为 MCP 期望的格式
-      const schemaObject = tool.schema instanceof z.ZodObject 
-        ? tool.schema.shape 
-        : {};
+      const schemaObject = tool.schema instanceof z.ZodObject ? tool.schema.shape : {};
 
-      server.tool(
-          tool.name,
-          tool.description,
-          schemaObject,
-          async (args: any) => {
-            return this.executeWithMiddleware(tool, args);
-          }
-        );
+      server.tool(tool.name, tool.description, schemaObject, async (args: any) => {
+        return this.executeWithMiddleware(tool, args);
+      });
     });
   }
 
@@ -113,13 +106,13 @@ export class ToolRegistry {
       toolName: tool.name,
       args,
       timestamp: new Date(),
-      requestId: this.generateRequestId()
+      requestId: this.generateRequestId(),
     };
 
     const startTime = Date.now();
     let result: ToolExecutionResult = {
       success: false,
-      duration: 0
+      duration: 0,
     };
 
     try {
@@ -139,7 +132,7 @@ export class ToolRegistry {
       result = {
         success: true,
         data,
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       };
 
       // 执行后置中间件
@@ -152,17 +145,16 @@ export class ToolRegistry {
       return {
         content: [
           {
-            type: "text",
-            text: typeof data === 'string' ? data : JSON.stringify(data, null, 2)
-          }
-        ]
+            type: 'text',
+            text: typeof data === 'string' ? data : JSON.stringify(data, null, 2),
+          },
+        ],
       };
-
     } catch (error) {
       result = {
         success: false,
         error: error instanceof Error ? error : new Error(String(error)),
-        duration: Date.now() - startTime
+        duration: Date.now() - startTime,
       };
 
       // 执行错误中间件
@@ -176,7 +168,7 @@ export class ToolRegistry {
     } finally {
       // 记录执行历史
       this.executionHistory.push(result);
-      
+
       // 限制历史记录数量
       if (this.executionHistory.length > 1000) {
         this.executionHistory = this.executionHistory.slice(-500);
@@ -209,9 +201,7 @@ export class ToolRegistry {
    * 按标签获取工具
    */
   getToolsByTag(tag: string): ToolDefinition[] {
-    return this.getAllTools().filter(tool => 
-      tool.metadata.tags?.includes(tag)
-    );
+    return this.getAllTools().filter(tool => tool.metadata.tags?.includes(tag));
   }
 
   /**
@@ -219,10 +209,11 @@ export class ToolRegistry {
    */
   searchTools(query: string): ToolDefinition[] {
     const lowerQuery = query.toLowerCase();
-    return this.getAllTools().filter(tool =>
-      tool.name.toLowerCase().includes(lowerQuery) ||
-      tool.description.toLowerCase().includes(lowerQuery) ||
-      tool.metadata.tags?.some(tag => tag.toLowerCase().includes(lowerQuery))
+    return this.getAllTools().filter(
+      tool =>
+        tool.name.toLowerCase().includes(lowerQuery) ||
+        tool.description.toLowerCase().includes(lowerQuery) ||
+        tool.metadata.tags?.some(tag => tag.toLowerCase().includes(lowerQuery))
     );
   }
 
@@ -232,20 +223,22 @@ export class ToolRegistry {
   getToolStats(): ToolStats {
     const tools = this.getAllTools();
     const categories = new Map<string, number>();
-    
+
     tools.forEach(tool => {
       const category = tool.metadata.category;
       categories.set(category, (categories.get(category) || 0) + 1);
     });
 
     const recentExecutions = this.executionHistory.slice(-100);
-    const successRate = recentExecutions.length > 0 
-      ? recentExecutions.filter(r => r.success).length / recentExecutions.length 
-      : 0;
+    const successRate =
+      recentExecutions.length > 0
+        ? recentExecutions.filter(r => r.success).length / recentExecutions.length
+        : 0;
 
-    const avgDuration = recentExecutions.length > 0
-      ? recentExecutions.reduce((sum, r) => sum + r.duration, 0) / recentExecutions.length
-      : 0;
+    const avgDuration =
+      recentExecutions.length > 0
+        ? recentExecutions.reduce((sum, r) => sum + r.duration, 0) / recentExecutions.length
+        : 0;
 
     return {
       totalTools: tools.length,
@@ -254,7 +247,7 @@ export class ToolRegistry {
       totalExecutions: this.executionHistory.length,
       successRate,
       averageDuration: avgDuration,
-      deprecatedTools: tools.filter(t => t.metadata.deprecated).length
+      deprecatedTools: tools.filter(t => t.metadata.deprecated).length,
     };
   }
 

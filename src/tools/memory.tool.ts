@@ -8,9 +8,17 @@ export class MemoryManagementTool implements ActionableTool {
   type = 'tool' as const;
   name = 'Memory Management';
   description = 'Manage agent memory including conversations, context, and long-term memories';
-  
+
   parameters = z.object({
-    action: z.enum(['add_memory', 'search_memories', 'get_stats', 'add_conversation', 'get_conversation_history', 'set_context', 'get_context']),
+    action: z.enum([
+      'add_memory',
+      'search_memories',
+      'get_stats',
+      'add_conversation',
+      'get_conversation_history',
+      'set_context',
+      'get_context',
+    ]),
     sessionId: z.string().optional(),
     memoryType: z.enum(['conversation', 'context', 'preference', 'fact', 'task']).optional(),
     content: z.any().optional(),
@@ -20,20 +28,39 @@ export class MemoryManagementTool implements ActionableTool {
     role: z.enum(['user', 'assistant', 'system']).optional(),
     limit: z.number().optional(),
     contextUpdates: z.record(z.any()).optional(),
-    metadata: z.record(z.any()).optional()
+    metadata: z.record(z.any()).optional(),
   });
 
   constructor(private personaSummoner: PersonaSummoner) {}
 
   async execute(args: z.infer<typeof this.parameters>): Promise<any> {
-    const { action, sessionId, memoryType, content, importance, tags, query, role, limit, contextUpdates, metadata } = args;
+    const {
+      action,
+      sessionId,
+      memoryType,
+      content,
+      importance,
+      tags,
+      query,
+      role,
+      limit,
+      contextUpdates,
+      metadata,
+    } = args;
 
     switch (action) {
       case 'add_memory':
         if (!sessionId || !memoryType || content === undefined) {
           throw new Error('sessionId, memoryType, and content are required for add_memory action');
         }
-        return this.addMemory(sessionId, memoryType, content, importance || 5, tags || [], metadata);
+        return this.addMemory(
+          sessionId,
+          memoryType,
+          content,
+          importance || 5,
+          tags || [],
+          metadata
+        );
 
       case 'search_memories':
         if (!query) {
@@ -73,7 +100,14 @@ export class MemoryManagementTool implements ActionableTool {
     }
   }
 
-  private addMemory(sessionId: string, type: any, content: any, importance: number, tags: string[], metadata?: Record<string, any>): any {
+  private addMemory(
+    sessionId: string,
+    type: any,
+    content: any,
+    importance: number,
+    tags: string[],
+    metadata?: Record<string, any>
+  ): any {
     const session = this.personaSummoner.getSession(sessionId);
     if (!session) {
       throw new Error(`Session ${sessionId} not found`);
@@ -83,7 +117,7 @@ export class MemoryManagementTool implements ActionableTool {
     return {
       success: true,
       memoryId,
-      message: `Memory added to session ${sessionId}`
+      message: `Memory added to session ${sessionId}`,
     };
   }
 
@@ -95,12 +129,12 @@ export class MemoryManagementTool implements ActionableTool {
       }
       return {
         sessionId,
-        memories: session.memory.searchMemories(query)
+        memories: session.memory.searchMemories(query),
       };
     } else {
       return {
         allSessions: true,
-        memories: this.personaSummoner.searchMemoriesAcrossSessions(query)
+        memories: this.personaSummoner.searchMemoriesAcrossSessions(query),
       };
     }
   }
@@ -113,18 +147,23 @@ export class MemoryManagementTool implements ActionableTool {
       }
       return {
         sessionId,
-        stats: session.memory.getMemoryStats()
+        stats: session.memory.getMemoryStats(),
       };
     } else {
       return this.personaSummoner.getMemoryStatistics();
     }
   }
 
-  private addConversation(sessionId: string, role: 'user' | 'assistant' | 'system', content: string, metadata?: Record<string, any>): any {
+  private addConversation(
+    sessionId: string,
+    role: 'user' | 'assistant' | 'system',
+    content: string,
+    metadata?: Record<string, any>
+  ): any {
     this.personaSummoner.addConversationToSession(sessionId, role, content, metadata);
     return {
       success: true,
-      message: `Conversation added to session ${sessionId}`
+      message: `Conversation added to session ${sessionId}`,
     };
   }
 
@@ -132,7 +171,7 @@ export class MemoryManagementTool implements ActionableTool {
     const history = this.personaSummoner.getSessionConversationHistory(sessionId, limit);
     return {
       sessionId,
-      conversationHistory: history
+      conversationHistory: history,
     };
   }
 
@@ -143,7 +182,7 @@ export class MemoryManagementTool implements ActionableTool {
     }
 
     session.memory.updateContext(contextUpdates);
-    
+
     // 为重要的上下文更新添加记忆
     Object.entries(contextUpdates).forEach(([key, value]) => {
       session.memory.addMemory('context', { [key]: value }, 6, ['context', key]);
@@ -152,7 +191,7 @@ export class MemoryManagementTool implements ActionableTool {
     return {
       success: true,
       message: `Context updated for session ${sessionId}`,
-      updatedContext: session.memory.getContext()
+      updatedContext: session.memory.getContext(),
     };
   }
 
@@ -164,7 +203,7 @@ export class MemoryManagementTool implements ActionableTool {
 
     return {
       sessionId,
-      context: session.memory.getContext()
+      context: session.memory.getContext(),
     };
   }
 }
@@ -175,16 +214,18 @@ export class MemoryAnalysisTool implements ActionableTool {
   type = 'tool' as const;
   name = 'Memory Analysis';
   description = 'Analyze and provide insights about agent memory patterns and content';
-  
+
   parameters = z.object({
     action: z.enum(['analyze_patterns', 'get_insights', 'find_connections', 'memory_timeline']),
     sessionId: z.string().optional(),
-    timeRange: z.object({
-      start: z.string().optional(),
-      end: z.string().optional()
-    }).optional(),
+    timeRange: z
+      .object({
+        start: z.string().optional(),
+        end: z.string().optional(),
+      })
+      .optional(),
     minImportance: z.number().min(1).max(10).optional(),
-    tags: z.array(z.string()).optional()
+    tags: z.array(z.string()).optional(),
   });
 
   constructor(private personaSummoner: PersonaSummoner) {}
@@ -211,7 +252,7 @@ export class MemoryAnalysisTool implements ActionableTool {
   }
 
   private analyzePatterns(sessionId?: string, timeRange?: { start?: string; end?: string }): any {
-    const stats = sessionId 
+    const stats = sessionId
       ? this.getSessionStats(sessionId)
       : this.personaSummoner.getMemoryStatistics();
 
@@ -219,18 +260,18 @@ export class MemoryAnalysisTool implements ActionableTool {
       mostCommonTypes: this.getMostCommonTypes(stats),
       averageImportance: this.getAverageImportance(stats),
       activityPatterns: this.getActivityPatterns(stats),
-      topTags: this.getTopTags(sessionId)
+      topTags: this.getTopTags(sessionId),
     };
 
     return {
       sessionId: sessionId || 'all',
       timeRange,
-      patterns
+      patterns,
     };
   }
 
   private getInsights(sessionId?: string, minImportance: number = 7): any {
-    const memories = sessionId 
+    const memories = sessionId
       ? this.getSessionMemories(sessionId, minImportance)
       : this.getAllImportantMemories(minImportance);
 
@@ -238,18 +279,18 @@ export class MemoryAnalysisTool implements ActionableTool {
       keyTopics: this.extractKeyTopics(memories),
       importantFacts: this.extractImportantFacts(memories),
       preferences: this.extractPreferences(memories),
-      recommendations: this.generateRecommendations(memories)
+      recommendations: this.generateRecommendations(memories),
     };
 
     return {
       sessionId: sessionId || 'all',
       minImportance,
-      insights
+      insights,
     };
   }
 
   private findConnections(sessionId?: string, tags?: string[]): any {
-    const memories = sessionId 
+    const memories = sessionId
       ? this.getSessionMemoriesByTags(sessionId, tags)
       : this.getAllMemoriesByTags(tags);
 
@@ -258,12 +299,12 @@ export class MemoryAnalysisTool implements ActionableTool {
     return {
       sessionId: sessionId || 'all',
       tags,
-      connections
+      connections,
     };
   }
 
   private getMemoryTimeline(sessionId?: string, timeRange?: { start?: string; end?: string }): any {
-    const memories = sessionId 
+    const memories = sessionId
       ? this.getSessionMemoriesInRange(sessionId, timeRange)
       : this.getAllMemoriesInRange(timeRange);
 
@@ -274,13 +315,13 @@ export class MemoryAnalysisTool implements ActionableTool {
         type: memory.type,
         importance: memory.importance,
         tags: memory.tags,
-        summary: this.summarizeMemory(memory)
+        summary: this.summarizeMemory(memory),
       }));
 
     return {
       sessionId: sessionId || 'all',
       timeRange,
-      timeline
+      timeline,
     };
   }
 
@@ -311,7 +352,7 @@ export class MemoryAnalysisTool implements ActionableTool {
     if (!session) {
       throw new Error(`Session ${sessionId} not found`);
     }
-    
+
     if (!tags || tags.length === 0) {
       return session.memory.getMemoryStats().totalMemories > 0 ? [] : [];
     }
@@ -321,17 +362,20 @@ export class MemoryAnalysisTool implements ActionableTool {
 
   private getAllMemoriesByTags(tags?: string[]): any[] {
     if (!tags || tags.length === 0) return [];
-    
+
     const globalMemory = this.personaSummoner.getMemoryManager().getGlobalMemory();
     return tags.flatMap(tag => globalMemory.getMemoriesByTag(tag));
   }
 
-  private getSessionMemoriesInRange(sessionId: string, timeRange?: { start?: string; end?: string }): any[] {
+  private getSessionMemoriesInRange(
+    sessionId: string,
+    _timeRange?: { start?: string; end?: string }
+  ): any[] {
     // Implementation would filter memories by time range
     return this.getSessionMemories(sessionId, 1);
   }
 
-  private getAllMemoriesInRange(timeRange?: { start?: string; end?: string }): any[] {
+  private getAllMemoriesInRange(_timeRange?: { start?: string; end?: string }): any[] {
     // Implementation would filter memories by time range
     return this.getAllImportantMemories(1);
   }
@@ -348,22 +392,21 @@ export class MemoryAnalysisTool implements ActionableTool {
     return {
       totalMemories: stats.totalMemories || 0,
       conversationCount: stats.conversationCount || 0,
-      timeSpan: stats.oldestMemory && stats.newestMemory 
-        ? new Date(stats.newestMemory).getTime() - new Date(stats.oldestMemory).getTime()
-        : 0
+      timeSpan:
+        stats.oldestMemory && stats.newestMemory
+          ? new Date(stats.newestMemory).getTime() - new Date(stats.oldestMemory).getTime()
+          : 0,
     };
   }
 
-  private getTopTags(sessionId?: string): string[] {
+  private getTopTags(_sessionId?: string): string[] {
     // Implementation would analyze tag frequency
     return [];
   }
 
   private extractKeyTopics(memories: any[]): string[] {
     // Implementation would extract key topics from memory content
-    return memories
-      .filter(m => m.type === 'context' && m.content.topic)
-      .map(m => m.content.topic);
+    return memories.filter(m => m.type === 'context' && m.content.topic).map(m => m.content.topic);
   }
 
   private extractImportantFacts(memories: any[]): any[] {
@@ -376,16 +419,18 @@ export class MemoryAnalysisTool implements ActionableTool {
 
   private generateRecommendations(memories: any[]): string[] {
     const recommendations = [];
-    
+
     if (memories.length > 50) {
       recommendations.push('Consider cleaning up old memories to improve performance');
     }
-    
+
     const lowImportanceCount = memories.filter(m => m.importance < 5).length;
     if (lowImportanceCount > memories.length * 0.5) {
-      recommendations.push('Many memories have low importance scores - consider reviewing importance criteria');
+      recommendations.push(
+        'Many memories have low importance scores - consider reviewing importance criteria'
+      );
     }
-    
+
     return recommendations;
   }
 
@@ -394,7 +439,7 @@ export class MemoryAnalysisTool implements ActionableTool {
     return {
       sharedTags: this.findSharedTags(memories),
       relatedContent: this.findRelatedContent(memories),
-      temporalConnections: this.findTemporalConnections(memories)
+      temporalConnections: this.findTemporalConnections(memories),
     };
   }
 
@@ -408,12 +453,12 @@ export class MemoryAnalysisTool implements ActionableTool {
     return tagCounts;
   }
 
-  private findRelatedContent(memories: any[]): any[] {
+  private findRelatedContent(_memories: any[]): any[] {
     // Implementation would find content similarities
     return [];
   }
 
-  private findTemporalConnections(memories: any[]): any[] {
+  private findTemporalConnections(_memories: any[]): any[] {
     // Implementation would find time-based patterns
     return [];
   }

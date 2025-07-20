@@ -33,7 +33,6 @@ jest.mock('winston', () => ({
 const { logger }: { logger: Logger } = require('../src/infrastructure/logging/logger');
 
 describe('WinstonLogger Singleton', () => {
-
   beforeEach(() => {
     // Clear all mock calls before each test
     jest.clearAllMocks();

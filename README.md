@@ -16,7 +16,7 @@
   "mcpServers": {
     "mantras": {
       "command": "npx",
-      "args": ["mantras@latest"]
+      "args": ["mantras-mcp@latest"]
     }
   }
 }
@@ -44,7 +44,7 @@ npm start
 
 #### 全局安装
 ```bash
-npm install -g mantras
+npm install -g mantras-mcp
 ```
 
 ```json
