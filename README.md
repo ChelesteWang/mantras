@@ -327,5 +327,3 @@ npm run build
 - 👥 所有贡献者和用户的反馈和支持
 
 ---
-
-**🚀 立即开始**: `npm install && npm run build && npm start`
