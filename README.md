@@ -313,9 +313,11 @@ npm run build
 
 ## 🙏 致谢
 
-- [Model Context Protocol](https://modelcontextprotocol.io/) - 强大的 AI 集成协议
-- [《程序员的提示工程实战手册》](ref/prompt-engineering-playbook-zh.md) - 提示工程最佳实践
-- 所有贡献者和用户的反馈和支持
+- 🤝 [Persona Summoner](https://github.com/yinwm/persona-summoner) - 轻量级 AI 人格召唤服务，友联项目
+- 🚀 [PromptX](https://github.com/Deepractice/PromptX) - 领先的 AI 上下文工程平台，革命性交互设计
+- 🔗 [Model Context Protocol](https://modelcontextprotocol.io/) - 强大的 AI 集成协议
+- 📚 [《程序员的提示工程实战手册》](ref/prompt-engineering-playbook-zh.md) - 提示工程最佳实践
+- 👥 所有贡献者和用户的反馈和支持
 
 ---
 
