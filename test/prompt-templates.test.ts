@@ -1,5 +1,8 @@
-import { PROMPT_TEMPLATES, getTemplatesByCategory, getTemplateByTechnique } from '../src/core/templates/prompt-templates';
-import { PromptTemplate } from '../src/types';
+import {
+  PROMPT_TEMPLATES,
+  getTemplatesByCategory,
+  getTemplateByTechnique,
+} from '../src/core/templates/prompt-templates';
 
 describe('Prompt Engineering Templates', () => {
   test('should have 10 core templates', () => {
@@ -31,7 +34,7 @@ describe('Prompt Engineering Templates', () => {
       'refactor_guidance',
       'ask_alternatives',
       'rubber_ducking',
-      'constraint_anchoring'
+      'constraint_anchoring',
     ];
 
     const actualTechniques = PROMPT_TEMPLATES.map(t => t.technique);
@@ -43,12 +46,12 @@ describe('Prompt Engineering Templates', () => {
   test('should have valid categories', () => {
     const validCategories = [
       'code-review',
-      'debugging', 
+      'debugging',
       'implementation',
       'planning',
       'architecture',
       'refactoring',
-      'optimization'
+      'optimization',
     ];
 
     PROMPT_TEMPLATES.forEach(template => {
@@ -81,18 +84,21 @@ describe('Prompt Engineering Templates', () => {
   test('role prompting template should work correctly', () => {
     const template = getTemplateByTechnique('role_prompting');
     expect(template).toBeDefined();
-    
+
     const inputs = {
       language: 'JavaScript',
       goal: '性能优化',
-      code: 'function slow() { return 1; }'
+      code: 'function slow() { return 1; }',
     };
-    
+
     let result = template!.template;
     template!.parameters.forEach((param: string) => {
-      result = result.replace(new RegExp(`{${param}}`, 'g'), inputs[param as keyof typeof inputs] || '');
+      result = result.replace(
+        new RegExp(`{${param}}`, 'g'),
+        inputs[param as keyof typeof inputs] || ''
+      );
     });
-    
+
     expect(result).toContain('JavaScript');
     expect(result).toContain('性能优化');
     expect(result).toContain('function slow()');

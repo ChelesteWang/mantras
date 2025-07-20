@@ -25,11 +25,11 @@ export interface ToolMetadata {
   readonly rateLimit?: RateLimitConfig;
 }
 
-export type ToolCategory = 
-  | 'analysis' 
-  | 'resource_discovery' 
-  | 'scoring' 
-  | 'comparison' 
+export type ToolCategory =
+  | 'analysis'
+  | 'resource_discovery'
+  | 'scoring'
+  | 'comparison'
   | 'suggestions'
   | 'transformation'
   | 'validation';
@@ -61,7 +61,7 @@ export abstract class MCPError extends Error {
       message: this.message,
       statusCode: this.statusCode,
       timestamp: this.timestamp,
-      context: this.context
+      context: this.context,
     };
   }
 }
@@ -84,17 +84,17 @@ export class RateLimitExceededError extends MCPError {
 // 验证工具
 export class RuntimeValidator {
   static validateInput<T>(
-    input: unknown, 
+    input: unknown,
     schema: z.ZodSchema<T>
   ): { success: true; data: T } | { success: false; error: ToolValidationError } {
     try {
       const validated = schema.parse(input);
       return { success: true, data: validated };
     } catch (error) {
-      const validationError = new ToolValidationError(
-        'Input validation failed',
-        { originalError: error, input }
-      );
+      const validationError = new ToolValidationError('Input validation failed', {
+        originalError: error,
+        input,
+      });
       return { success: false, error: validationError };
     }
   }
@@ -137,7 +137,7 @@ export abstract class StandardMCPTool<TInput, TOutput> {
   abstract readonly description: string;
   abstract readonly schema: z.ZodSchema<TInput>;
   abstract readonly metadata: ToolMetadata;
-  
+
   private rateLimiter?: RateLimiter;
 
   constructor() {
@@ -153,17 +153,14 @@ export abstract class StandardMCPTool<TInput, TOutput> {
 
   async execute(rawInput: unknown): Promise<ToolExecutionResult<TOutput>> {
     const startTime = Date.now();
-    
+
     try {
       // 速率限制检查
       if (this.rateLimiter && !this.rateLimiter.tryAcquire()) {
-        throw new RateLimitExceededError(
-          `Rate limit exceeded for tool: ${this.name}`,
-          { 
-            tool: this.name,
-            remainingRequests: this.rateLimiter.getRemainingRequests()
-          }
-        );
+        throw new RateLimitExceededError(`Rate limit exceeded for tool: ${this.name}`, {
+          tool: this.name,
+          remainingRequests: this.rateLimiter.getRemainingRequests(),
+        });
       }
 
       // 输入验证
@@ -176,14 +173,14 @@ export abstract class StandardMCPTool<TInput, TOutput> {
           metadata: {
             tool: this.name,
             timestamp: new Date().toISOString(),
-            version: this.metadata.version
-          }
+            version: this.metadata.version,
+          },
         };
       }
 
       // 执行核心逻辑
       const result = await this.executeCore(validationResult.data);
-      
+
       return {
         success: true,
         data: result,
@@ -191,17 +188,17 @@ export abstract class StandardMCPTool<TInput, TOutput> {
         metadata: {
           tool: this.name,
           timestamp: new Date().toISOString(),
-          version: this.metadata.version
-        }
+          version: this.metadata.version,
+        },
       };
-      
     } catch (error) {
-      const mcpError = error instanceof MCPError 
-        ? error 
-        : new ToolExecutionError(
-            `Tool execution failed: ${error instanceof Error ? error.message : String(error)}`,
-            { tool: this.name, originalError: error }
-          );
+      const mcpError =
+        error instanceof MCPError
+          ? error
+          : new ToolExecutionError(
+              `Tool execution failed: ${error instanceof Error ? error.message : String(error)}`,
+              { tool: this.name, originalError: error }
+            );
 
       return {
         success: false,
@@ -210,8 +207,8 @@ export abstract class StandardMCPTool<TInput, TOutput> {
         metadata: {
           tool: this.name,
           timestamp: new Date().toISOString(),
-          version: this.metadata.version
-        }
+          version: this.metadata.version,
+        },
       };
     }
   }
@@ -227,7 +224,7 @@ export abstract class StandardMCPTool<TInput, TOutput> {
       name: this.name,
       description: this.description,
       metadata: this.metadata,
-      schema: this.schema._def // Zod schema 定义
+      schema: this.schema._def, // Zod schema 定义
     };
   }
 
@@ -237,9 +234,9 @@ export abstract class StandardMCPTool<TInput, TOutput> {
       // 子类可以重写此方法进行特定的健康检查
       return { healthy: true };
     } catch (error) {
-      return { 
-        healthy: false, 
-        details: error instanceof Error ? error.message : String(error)
+      return {
+        healthy: false,
+        details: error instanceof Error ? error.message : String(error),
       };
     }
   }
@@ -262,12 +259,12 @@ export class EnhancedToolRegistry {
       totalDuration: 0,
       averageDuration: 0,
       successRate: 0,
-      lastExecuted: null
+      lastExecuted: null,
     });
   }
 
   async executeTool<TOutput>(
-    toolName: string, 
+    toolName: string,
     input: unknown
   ): Promise<ToolExecutionResult<TOutput>> {
     const tool = this.tools.get(toolName);
@@ -277,7 +274,7 @@ export class EnhancedToolRegistry {
 
     const result = await tool.execute(input);
     this.updateMetrics(toolName, result);
-    
+
     return result as ToolExecutionResult<TOutput>;
   }
 
@@ -295,21 +292,23 @@ export class EnhancedToolRegistry {
 
   getMetrics(toolName?: string): ToolMetrics | Map<string, ToolMetrics> {
     if (toolName) {
-      return this.executionMetrics.get(toolName) || {
-        totalExecutions: 0,
-        successCount: 0,
-        totalDuration: 0,
-        averageDuration: 0,
-        successRate: 0,
-        lastExecuted: null
-      };
+      return (
+        this.executionMetrics.get(toolName) || {
+          totalExecutions: 0,
+          successCount: 0,
+          totalDuration: 0,
+          averageDuration: 0,
+          successRate: 0,
+          lastExecuted: null,
+        }
+      );
     }
     return new Map(this.executionMetrics);
   }
 
   async healthCheckAll(): Promise<Map<string, { healthy: boolean; details?: string }>> {
     const results = new Map<string, { healthy: boolean; details?: string }>();
-    
+
     for (const [name, tool] of this.tools) {
       try {
         const health = await tool.healthCheck();
@@ -317,11 +316,11 @@ export class EnhancedToolRegistry {
       } catch (error) {
         results.set(name, {
           healthy: false,
-          details: `Health check failed: ${error instanceof Error ? error.message : String(error)}`
+          details: `Health check failed: ${error instanceof Error ? error.message : String(error)}`,
         });
       }
     }
-    
+
     return results;
   }
 
@@ -332,11 +331,11 @@ export class EnhancedToolRegistry {
     metrics.totalExecutions++;
     metrics.totalDuration += result.duration;
     metrics.averageDuration = metrics.totalDuration / metrics.totalExecutions;
-    
+
     if (result.success) {
       metrics.successCount++;
     }
-    
+
     metrics.successRate = metrics.successCount / metrics.totalExecutions;
     metrics.lastExecuted = new Date().toISOString();
   }
@@ -360,9 +359,11 @@ export class ExampleAnalysisTool extends StandardMCPTool<
   readonly description = '示例分析工具，展示标准化实现模式';
   readonly schema = z.object({
     input: z.string().min(1).describe('要分析的输入内容'),
-    options: z.object({
-      includeMetadata: z.boolean().optional().describe('是否包含元数据')
-    }).optional()
+    options: z
+      .object({
+        includeMetadata: z.boolean().optional().describe('是否包含元数据'),
+      })
+      .optional(),
   });
   readonly metadata: ToolMetadata = {
     category: 'analysis',
@@ -370,8 +371,8 @@ export class ExampleAnalysisTool extends StandardMCPTool<
     tags: ['example', 'analysis'],
     rateLimit: {
       maxRequests: 100,
-      windowMs: 60000 // 1分钟
-    }
+      windowMs: 60000, // 1分钟
+    },
   };
 
   protected async executeCore(input: {
@@ -380,16 +381,16 @@ export class ExampleAnalysisTool extends StandardMCPTool<
   }): Promise<{ analysis: string; metadata?: object }> {
     // 模拟分析处理
     await new Promise(resolve => setTimeout(resolve, 10));
-    
+
     const result: { analysis: string; metadata?: object } = {
-      analysis: `分析结果: ${input.input.length} 个字符`
+      analysis: `分析结果: ${input.input.length} 个字符`,
     };
 
     if (input.options?.includeMetadata) {
       result.metadata = {
         processedAt: new Date().toISOString(),
         inputLength: input.input.length,
-        processingTime: 10
+        processingTime: 10,
       };
     }
 

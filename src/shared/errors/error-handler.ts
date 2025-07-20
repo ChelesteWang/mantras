@@ -6,29 +6,29 @@ export enum ErrorCode {
   // 验证错误
   VALIDATION_ERROR = 'VALIDATION_ERROR',
   SCHEMA_VALIDATION_ERROR = 'SCHEMA_VALIDATION_ERROR',
-  
+
   // 业务逻辑错误
   BUSINESS_LOGIC_ERROR = 'BUSINESS_LOGIC_ERROR',
   RESOURCE_NOT_FOUND = 'RESOURCE_NOT_FOUND',
   RESOURCE_ALREADY_EXISTS = 'RESOURCE_ALREADY_EXISTS',
   PERMISSION_DENIED = 'PERMISSION_DENIED',
-  
+
   // 基础设施错误
   INFRASTRUCTURE_ERROR = 'INFRASTRUCTURE_ERROR',
   DATABASE_ERROR = 'DATABASE_ERROR',
   NETWORK_ERROR = 'NETWORK_ERROR',
   EXTERNAL_SERVICE_ERROR = 'EXTERNAL_SERVICE_ERROR',
-  
+
   // 系统错误
   INTERNAL_ERROR = 'INTERNAL_ERROR',
   CONFIGURATION_ERROR = 'CONFIGURATION_ERROR',
   RATE_LIMIT_EXCEEDED = 'RATE_LIMIT_EXCEEDED',
-  
+
   // 工具相关错误
   TOOL_NOT_FOUND = 'TOOL_NOT_FOUND',
   TOOL_EXECUTION_ERROR = 'TOOL_EXECUTION_ERROR',
   PERSONA_NOT_FOUND = 'PERSONA_NOT_FOUND',
-  SESSION_NOT_FOUND = 'SESSION_NOT_FOUND'
+  SESSION_NOT_FOUND = 'SESSION_NOT_FOUND',
 }
 
 export interface ErrorContext {
@@ -55,7 +55,7 @@ export interface ErrorResponse {
 export abstract class BaseError extends Error {
   abstract readonly code: ErrorCode;
   abstract readonly statusCode: number;
-  
+
   public readonly timestamp: string;
   public readonly context?: ErrorContext;
 
@@ -64,7 +64,7 @@ export abstract class BaseError extends Error {
     this.name = this.constructor.name;
     this.timestamp = new Date().toISOString();
     this.context = context;
-    
+
     // 确保堆栈跟踪正确
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
@@ -77,7 +77,7 @@ export abstract class BaseError extends Error {
       message: this.message,
       timestamp: this.timestamp,
       requestId: this.context?.requestId,
-      suggestions: this.getSuggestions()
+      suggestions: this.getSuggestions(),
     };
   }
 
@@ -93,7 +93,11 @@ export class ValidationError extends BaseError {
   readonly code = ErrorCode.VALIDATION_ERROR;
   readonly statusCode = 400;
 
-  constructor(message: string, public readonly field?: string, context?: ErrorContext) {
+  constructor(
+    message: string,
+    public readonly field?: string,
+    context?: ErrorContext
+  ) {
     super(message, context);
   }
 
@@ -101,7 +105,7 @@ export class ValidationError extends BaseError {
     return [
       '请检查输入参数的格式和类型',
       '确保所有必需字段都已提供',
-      '参考 API 文档了解正确的参数格式'
+      '参考 API 文档了解正确的参数格式',
     ];
   }
 }
@@ -114,11 +118,7 @@ export class BusinessLogicError extends BaseError {
   readonly statusCode = 422;
 
   protected getSuggestions(): string[] {
-    return [
-      '请检查业务规则和约束条件',
-      '确保操作符合当前业务状态',
-      '联系管理员了解业务规则详情'
-    ];
+    return ['请检查业务规则和约束条件', '确保操作符合当前业务状态', '联系管理员了解业务规则详情'];
   }
 }
 
@@ -142,7 +142,7 @@ export class ResourceNotFoundError extends BaseError {
     return [
       `确认 ${this.resourceType} ID '${this.resourceId}' 是否正确`,
       `检查 ${this.resourceType} 是否已被删除`,
-      '使用列表 API 查看可用的资源'
+      '使用列表 API 查看可用的资源',
     ];
   }
 }
@@ -155,11 +155,7 @@ export class InfrastructureError extends BaseError {
   readonly statusCode = 500;
 
   protected getSuggestions(): string[] {
-    return [
-      '请稍后重试',
-      '如果问题持续存在，请联系技术支持',
-      '检查系统状态页面了解服务状态'
-    ];
+    return ['请稍后重试', '如果问题持续存在，请联系技术支持', '检查系统状态页面了解服务状态'];
   }
 }
 
@@ -179,10 +175,7 @@ export class RateLimitError extends BaseError {
   }
 
   protected getSuggestions(): string[] {
-    const suggestions = [
-      '请降低请求频率',
-      '考虑实现请求缓存以减少 API 调用'
-    ];
+    const suggestions = ['请降低请求频率', '考虑实现请求缓存以减少 API 调用'];
 
     if (this.retryAfter) {
       suggestions.unshift(`请在 ${this.retryAfter} 秒后重试`);
@@ -199,11 +192,7 @@ export class ToolExecutionError extends BaseError {
   readonly code = ErrorCode.TOOL_EXECUTION_ERROR;
   readonly statusCode = 500;
 
-  constructor(
-    toolName: string,
-    originalError: Error,
-    context?: ErrorContext
-  ) {
+  constructor(toolName: string, originalError: Error, context?: ErrorContext) {
     super(`Tool '${toolName}' execution failed: ${originalError.message}`, context);
     this.toolName = toolName;
     this.originalError = originalError;
@@ -216,7 +205,7 @@ export class ToolExecutionError extends BaseError {
     return [
       `检查工具 '${this.toolName}' 的输入参数`,
       '确认工具所需的依赖服务正常运行',
-      '查看工具文档了解使用要求'
+      '查看工具文档了解使用要求',
     ];
   }
 }
@@ -262,10 +251,10 @@ export class GlobalErrorHandler {
         name: error.name,
         message: error.message,
         code: error.code,
-        stack: error.stack
+        stack: error.stack,
       },
       context,
-      timestamp: error.timestamp
+      timestamp: error.timestamp,
     };
 
     // 根据错误严重程度选择日志级别
@@ -377,7 +366,7 @@ export function createErrorContext(
   return {
     operation,
     component,
-    ...options
+    ...options,
   };
 }
 
@@ -393,7 +382,10 @@ export function HandleErrors(component: string) {
         return await originalMethod.apply(this, args);
       } catch (error) {
         const context = createErrorContext(propertyKey, component);
-        throw GlobalErrorHandler.handle(error instanceof Error ? error : new Error(String(error)), context);
+        throw GlobalErrorHandler.handle(
+          error instanceof Error ? error : new Error(String(error)),
+          context
+        );
       }
     };
 

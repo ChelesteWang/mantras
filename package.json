@@ -1,5 +1,5 @@
 {
-  "name": "mantras",
+  "name": "mantras-mcp",
   "version": "2.0.0",
   "description": "企业级 MCP 服务器：AI 资产管理、Persona 召唤和提示工程增强功能。包含17个已验证资产、专业CLI工具和完整的质量控制系统。",
   "main": "index.js",
@@ -43,11 +43,48 @@
     "memory:demo": "tsx bin/memory-demo.ts",
     "memory:test": "npm test -- enhanced-memory.test.ts",
     "persona:demo": "tsx bin/persona-demo.ts",
-    "persona:test": "npm test -- persona-summoner.test.ts"
+    "persona:test": "npm test -- persona-summoner.test.ts",
+    "prepublishOnly": "npm run build && npm run test && npm run quality:check",
+    "prepack": "npm run build",
+    "postpack": "echo 'Package ready for publishing!'",
+    "publish:dry": "npm publish --dry-run",
+    "publish:beta": "npm publish --tag beta",
+    "publish:latest": "npm publish"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ai",
+    "persona",
+    "prompt-engineering",
+    "claude",
+    "cursor",
+    "ai-assistant",
+    "typescript",
+    "llm"
+  ],
+  "author": "Mantras Team",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/mantras.git"
+  },
+  "homepage": "https://github.com/your-username/mantras#readme",
+  "bugs": {
+    "url": "https://github.com/your-username/mantras/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "assets",
+    "bin",
+    "index.js",
+    "start-mcp.js",
+    "README.md",
+    "LICENSE"
+  ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.15.1",
     "commander": "^14.0.0",
@@ -56,10 +93,17 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
     "jest": "^30.0.4",
+    "prettier": "^3.2.5",
     "ts-jest": "^29.4.0",
     "tsup": "^8.5.0",
-    "tsx": "^4.19.2"
+    "tsx": "^4.19.2",
+    "typescript": "^5.3.3"
   },
   "tsup": {
     "entry": [

@@ -10,7 +10,7 @@ export class AssetFactory {
   static createPersona(config: Omit<Persona, 'type'>): Persona {
     return {
       type: 'persona' as const,
-      ...config
+      ...config,
     } as Persona;
   }
 
@@ -20,7 +20,7 @@ export class AssetFactory {
   static createPromptTemplate(config: Omit<PromptTemplate, 'type'>): PromptTemplate {
     return {
       type: 'prompt-template' as const,
-      ...config
+      ...config,
     } as PromptTemplate;
   }
 
@@ -30,7 +30,7 @@ export class AssetFactory {
   static createTool(config: Omit<ActionableTool, 'type'>): ActionableTool {
     return {
       type: 'tool' as const,
-      ...config
+      ...config,
     } as ActionableTool;
   }
 
@@ -94,7 +94,7 @@ export class AssetFactory {
 
     return {
       valid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -114,7 +114,7 @@ export class AssetFactory {
       ...override,
       // 确保ID和类型不被覆盖
       id: base.id,
-      type: base.type
+      type: base.type,
     };
   }
 }

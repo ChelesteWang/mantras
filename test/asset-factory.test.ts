@@ -1,5 +1,5 @@
 import { AssetFactory } from '../src/core/assets/asset-factory';
-import { Asset, Persona, PromptTemplate, ActionableTool } from '../src/types';
+import { Asset, Persona } from '../src/types';
 
 describe('AssetFactory - Complete Coverage', () => {
   describe('fromRawData', () => {
@@ -14,19 +14,19 @@ describe('AssetFactory - Complete Coverage', () => {
           role: 'Test',
           traits: ['test'],
           communicationStyle: 'test',
-          knowledgeDomains: ['test']
+          knowledgeDomains: ['test'],
         },
         capabilities: {
           analysis: true,
           creative: false,
           technical: false,
-          empathetic: false
+          empathetic: false,
         },
         constraints: {
           maxResponseLength: 1000,
           tone: 'test',
-          allowedTopics: ['test']
-        }
+          allowedTopics: ['test'],
+        },
       };
 
       const result = AssetFactory.fromRawData(rawData);
@@ -43,7 +43,7 @@ describe('AssetFactory - Complete Coverage', () => {
         technique: 'test',
         template: 'Test {param}',
         parameters: ['param'],
-        category: 'test'
+        category: 'test',
       };
 
       const result = AssetFactory.fromRawData(rawData);
@@ -58,7 +58,7 @@ describe('AssetFactory - Complete Coverage', () => {
         name: 'Test Tool',
         description: 'Test',
         parameters: { type: 'object' },
-        execute: async () => 'result'
+        execute: async () => 'result',
       };
 
       const result = AssetFactory.fromRawData(rawData);
@@ -69,22 +69,20 @@ describe('AssetFactory - Complete Coverage', () => {
     it('should throw error for missing type', () => {
       const rawData = {
         id: 'test',
-        name: 'Test'
+        name: 'Test',
       };
 
-      expect(() => AssetFactory.fromRawData(rawData))
-        .toThrow('Asset type is required');
+      expect(() => AssetFactory.fromRawData(rawData)).toThrow('Asset type is required');
     });
 
     it('should throw error for unknown type', () => {
       const rawData = {
         id: 'test',
         type: 'unknown',
-        name: 'Test'
+        name: 'Test',
       };
 
-      expect(() => AssetFactory.fromRawData(rawData))
-        .toThrow('Unknown asset type: unknown');
+      expect(() => AssetFactory.fromRawData(rawData)).toThrow('Unknown asset type: unknown');
     });
   });
 
@@ -92,7 +90,7 @@ describe('AssetFactory - Complete Coverage', () => {
     it('should detect missing ID', () => {
       const asset = {
         type: 'persona',
-        name: 'Test'
+        name: 'Test',
       } as Asset;
 
       const result = AssetFactory.validateAsset(asset);
@@ -103,7 +101,7 @@ describe('AssetFactory - Complete Coverage', () => {
     it('should detect missing name', () => {
       const asset = {
         id: 'test',
-        type: 'persona'
+        type: 'persona',
       } as Asset;
 
       const result = AssetFactory.validateAsset(asset);
@@ -114,7 +112,7 @@ describe('AssetFactory - Complete Coverage', () => {
     it('should detect missing type', () => {
       const asset = {
         id: 'test',
-        name: 'Test'
+        name: 'Test',
       } as Asset;
 
       const result = AssetFactory.validateAsset(asset);
@@ -130,8 +128,8 @@ describe('AssetFactory - Complete Coverage', () => {
         technique: 'test',
         template: 'test',
         parameters: 'not-array',
-        category: 'test'
-      } as any;
+        category: 'test',
+      } as unknown as Asset;
 
       const result = AssetFactory.validateAsset(template);
       expect(result.valid).toBe(false);
@@ -144,8 +142,8 @@ describe('AssetFactory - Complete Coverage', () => {
         type: 'tool',
         name: 'Test',
         parameters: {},
-        execute: 'not-function'
-      } as any;
+        execute: 'not-function',
+      } as unknown as Asset;
 
       const result = AssetFactory.validateAsset(tool);
       expect(result.valid).toBe(false);
@@ -164,28 +162,28 @@ describe('AssetFactory - Complete Coverage', () => {
           role: 'Original',
           traits: ['original'],
           communicationStyle: 'original',
-          knowledgeDomains: ['original']
+          knowledgeDomains: ['original'],
         },
         capabilities: {
           analysis: true,
           creative: false,
           technical: false,
-          empathetic: false
+          empathetic: false,
         },
         constraints: {
           maxResponseLength: 1000,
           tone: 'original',
-          allowedTopics: ['original']
-        }
+          allowedTopics: ['original'],
+        },
       });
 
       const override: Partial<Persona> = {
         name: 'New Name',
-        description: 'New Description'
+        description: 'New Description',
       };
 
       const result = AssetFactory.mergeAssets(base, override);
-      
+
       expect(result.id).toBe('original-id'); // ID preserved
       expect(result.type).toBe('persona'); // Type preserved
       expect(result.name).toBe('New Name'); // Override applied

@@ -24,12 +24,12 @@ describe('Prompt Templates - Complete Coverage', () => {
     it('should have valid categories', () => {
       const validCategories = [
         'code-review',
-        'debugging', 
+        'debugging',
         'implementation',
         'planning',
         'architecture',
         'refactoring',
-        'optimization'
+        'optimization',
       ];
 
       PROMPT_TEMPLATES.forEach(template => {
@@ -57,10 +57,10 @@ describe('Prompt Templates - Complete Coverage', () => {
     it('should have valid technique names', () => {
       const techniques = PROMPT_TEMPLATES.map(t => t.technique);
       const uniqueTechniques = new Set(techniques);
-      
+
       // Should have multiple different techniques
       expect(uniqueTechniques.size).toBeGreaterThan(1);
-      
+
       // Each technique should be a non-empty string
       techniques.forEach(technique => {
         expect(typeof technique).toBe('string');
@@ -80,7 +80,7 @@ describe('Prompt Templates - Complete Coverage', () => {
     it('should have debugging templates', () => {
       const debugTemplates = PROMPT_TEMPLATES.filter(t => t.category === 'debugging');
       expect(debugTemplates.length).toBeGreaterThan(0);
-      
+
       const debugSimulation = debugTemplates.find(t => t.id === 'debug-simulation');
       expect(debugSimulation).toBeDefined();
       expect(debugSimulation?.parameters).toContain('code');
@@ -97,7 +97,7 @@ describe('Prompt Templates - Complete Coverage', () => {
     it('should have templates in all major categories', () => {
       const categories = PROMPT_TEMPLATES.map(t => t.category);
       const uniqueCategories = new Set(categories);
-      
+
       expect(uniqueCategories.has('debugging')).toBe(true);
       expect(uniqueCategories.has('optimization')).toBe(true);
       expect(uniqueCategories.has('refactoring')).toBe(true);
@@ -106,7 +106,7 @@ describe('Prompt Templates - Complete Coverage', () => {
 
     it('should have balanced distribution across categories', () => {
       const categoryCount = new Map<string, number>();
-      
+
       PROMPT_TEMPLATES.forEach(template => {
         const count = categoryCount.get(template.category) || 0;
         categoryCount.set(template.category, count + 1);

@@ -15,10 +15,7 @@ export class BuildOptimizedAssetRepository implements AssetRepository {
   private buildAssetsPath: string;
   private fallbackRepository?: AssetRepository;
 
-  constructor(
-    buildAssetsPath = './dist/assets/assets.json',
-    fallbackRepository?: AssetRepository
-  ) {
+  constructor(buildAssetsPath = './dist/assets/assets.json', fallbackRepository?: AssetRepository) {
     this.buildAssetsPath = buildAssetsPath;
     this.fallbackRepository = fallbackRepository;
   }
@@ -31,17 +28,18 @@ export class BuildOptimizedAssetRepository implements AssetRepository {
     try {
       // 优先尝试加载构建时生成的资产
       const assets = await this.loadBuildTimeAssets();
-      
+
       // 更新缓存
       this.updateCache(assets);
-      
+
       logger.info(`Loaded ${assets.length} assets from build-time data`);
       return assets;
-      
     } catch (error) {
-      logger.warn('Failed to load build-time assets, trying fallback:', 
-        error instanceof Error ? error.message : String(error));
-      
+      logger.warn(
+        'Failed to load build-time assets, trying fallback:',
+        error instanceof Error ? error.message : String(error)
+      );
+
       // 回退到备用仓库
       if (this.fallbackRepository) {
         const assets = await this.fallbackRepository.getAssets();
@@ -49,7 +47,7 @@ export class BuildOptimizedAssetRepository implements AssetRepository {
         logger.info(`Loaded ${assets.length} assets from fallback repository`);
         return assets;
       }
-      
+
       throw new Error('No assets available from build-time or fallback sources');
     }
   }
@@ -70,7 +68,7 @@ export class BuildOptimizedAssetRepository implements AssetRepository {
     // 读取构建时生成的资产数据
     const content = await fs.readFile(this.buildAssetsPath, 'utf-8');
     const assets = JSON.parse(content);
-    
+
     if (!Array.isArray(assets)) {
       throw new Error('Invalid build-time assets format: expected array');
     }
@@ -85,7 +83,7 @@ export class BuildOptimizedAssetRepository implements AssetRepository {
 
   private validateAsset(asset: any): void {
     const requiredFields = ['id', 'type', 'name', 'description'];
-    
+
     for (const field of requiredFields) {
       if (!asset[field]) {
         throw new Error(`Asset ${asset.id || 'unknown'} missing required field: ${field}`);
@@ -102,7 +100,7 @@ export class BuildOptimizedAssetRepository implements AssetRepository {
   }
 
   private isCacheValid(): boolean {
-    return this.cache.size > 0 && (Date.now() - this.lastFetch < CACHE_TTL_MS);
+    return this.cache.size > 0 && Date.now() - this.lastFetch < CACHE_TTL_MS;
   }
 
   /**
@@ -117,9 +115,9 @@ export class BuildOptimizedAssetRepository implements AssetRepository {
   /**
    * 获取缓存统计信息
    */
-  getCacheStats(): { 
-    size: number; 
-    lastFetch: Date | null; 
+  getCacheStats(): {
+    size: number;
+    lastFetch: Date | null;
     isValid: boolean;
     source: 'build-time' | 'fallback' | 'none';
   } {
@@ -127,7 +125,7 @@ export class BuildOptimizedAssetRepository implements AssetRepository {
       size: this.cache.size,
       lastFetch: this.lastFetch > 0 ? new Date(this.lastFetch) : null,
       isValid: this.isCacheValid(),
-      source: this.cache.size > 0 ? 'build-time' : 'none'
+      source: this.cache.size > 0 ? 'build-time' : 'none',
     };
   }
 

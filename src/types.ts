@@ -13,10 +13,10 @@ export interface Asset {
 // 提示模板接口
 export interface PromptTemplate extends Asset {
   type: 'prompt-template';
-  technique: string;        // 对应手册中的技巧
-  template: string;         // 模板内容
-  parameters: string[];     // 参数列表
-  category: string;         // 分类
+  technique: string; // 对应手册中的技巧
+  template: string; // 模板内容
+  parameters: string[]; // 参数列表
+  category: string; // 分类
 }
 
 // 资产仓库接口

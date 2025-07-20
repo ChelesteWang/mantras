@@ -1,5 +1,3 @@
-import { z } from 'zod';
-
 /**
  * 任务状态枚举
  */
@@ -9,7 +7,7 @@ export enum TaskStatus {
   COMPLETED = 'completed',
   FAILED = 'failed',
   BLOCKED = 'blocked',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 /**
@@ -19,7 +17,7 @@ export enum TaskPriority {
   LOW = 'low',
   MEDIUM = 'medium',
   HIGH = 'high',
-  URGENT = 'urgent'
+  URGENT = 'urgent',
 }
 
 /**
@@ -73,7 +71,7 @@ export class TaskQueueManager {
       ...taskData,
       id: `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     this.tasks.set(task.id, task);
@@ -91,7 +89,7 @@ export class TaskQueueManager {
     const updatedTask = {
       ...task,
       ...updates,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     // 状态变更时更新时间戳
@@ -136,12 +134,14 @@ export class TaskQueueManager {
   /**
    * 创建执行计划
    */
-  createExecutionPlan(planData: Omit<ExecutionPlan, 'id' | 'createdAt' | 'updatedAt'>): ExecutionPlan {
+  createExecutionPlan(
+    planData: Omit<ExecutionPlan, 'id' | 'createdAt' | 'updatedAt'>
+  ): ExecutionPlan {
     const plan: ExecutionPlan = {
       ...planData,
       id: `plan_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     // 将计划中的任务添加到任务管理器
@@ -171,7 +171,7 @@ export class TaskQueueManager {
   /**
    * 分解复杂任务为子任务
    */
-  decomposeTask(description: string, context?: string): Task[] {
+  decomposeTask(description: string, _context?: string): Task[] {
     // 基于描述和上下文智能分解任务
     const subtasks: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>[] = [];
 
@@ -184,7 +184,7 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.HIGH,
           dependencies: [],
-          tags: ['analysis', 'debugging']
+          tags: ['analysis', 'debugging'],
         },
         {
           title: '解决方案设计',
@@ -192,7 +192,7 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.MEDIUM,
           dependencies: [],
-          tags: ['design', 'debugging']
+          tags: ['design', 'debugging'],
         },
         {
           title: '实施修复',
@@ -200,7 +200,7 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.HIGH,
           dependencies: [],
-          tags: ['implementation', 'debugging']
+          tags: ['implementation', 'debugging'],
         },
         {
           title: '测试验证',
@@ -208,10 +208,13 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.MEDIUM,
           dependencies: [],
-          tags: ['testing', 'verification']
+          tags: ['testing', 'verification'],
         }
       );
-    } else if (description.toLowerCase().includes('implement') || description.toLowerCase().includes('实现')) {
+    } else if (
+      description.toLowerCase().includes('implement') ||
+      description.toLowerCase().includes('实现')
+    ) {
       subtasks.push(
         {
           title: '需求分析',
@@ -219,7 +222,7 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.HIGH,
           dependencies: [],
-          tags: ['analysis', 'requirements']
+          tags: ['analysis', 'requirements'],
         },
         {
           title: '架构设计',
@@ -227,7 +230,7 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.HIGH,
           dependencies: [],
-          tags: ['architecture', 'design']
+          tags: ['architecture', 'design'],
         },
         {
           title: '核心实现',
@@ -235,7 +238,7 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.HIGH,
           dependencies: [],
-          tags: ['implementation', 'core']
+          tags: ['implementation', 'core'],
         },
         {
           title: '测试编写',
@@ -243,7 +246,7 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.MEDIUM,
           dependencies: [],
-          tags: ['testing', 'quality']
+          tags: ['testing', 'quality'],
         },
         {
           title: '文档更新',
@@ -251,7 +254,7 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.LOW,
           dependencies: [],
-          tags: ['documentation']
+          tags: ['documentation'],
         }
       );
     } else {
@@ -263,7 +266,7 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.MEDIUM,
           dependencies: [],
-          tags: ['analysis']
+          tags: ['analysis'],
         },
         {
           title: '方案设计',
@@ -271,7 +274,7 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.MEDIUM,
           dependencies: [],
-          tags: ['design']
+          tags: ['design'],
         },
         {
           title: '执行实施',
@@ -279,7 +282,7 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.HIGH,
           dependencies: [],
-          tags: ['implementation']
+          tags: ['implementation'],
         },
         {
           title: '结果验证',
@@ -287,7 +290,7 @@ export class TaskQueueManager {
           status: TaskStatus.PENDING,
           priority: TaskPriority.MEDIUM,
           dependencies: [],
-          tags: ['verification']
+          tags: ['verification'],
         }
       );
     }
@@ -306,7 +309,7 @@ export class TaskQueueManager {
   getExecutableTasks(): Task[] {
     return this.getAllTasks().filter(task => {
       if (task.status !== TaskStatus.PENDING) return false;
-      
+
       // 检查所有依赖是否已完成
       return task.dependencies.every(depId => {
         const depTask = this.getTaskByTitle(depId) || this.getTask(depId);
@@ -330,19 +333,19 @@ export class TaskQueueManager {
    */
   private updateTaskQueue(): void {
     const executableTasks = this.getExecutableTasks();
-    
+
     // 按优先级和创建时间排序
     executableTasks.sort((a, b) => {
       const priorityOrder = {
         [TaskPriority.URGENT]: 4,
         [TaskPriority.HIGH]: 3,
         [TaskPriority.MEDIUM]: 2,
-        [TaskPriority.LOW]: 1
+        [TaskPriority.LOW]: 1,
       };
-      
+
       const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
       if (priorityDiff !== 0) return priorityDiff;
-      
+
       return a.createdAt.getTime() - b.createdAt.getTime();
     });
 
@@ -371,8 +374,8 @@ export class TaskQueueManager {
     const byPriority = {} as Record<TaskPriority, number>;
 
     // 初始化计数器
-    Object.values(TaskStatus).forEach(status => byStatus[status] = 0);
-    Object.values(TaskPriority).forEach(priority => byPriority[priority] = 0);
+    Object.values(TaskStatus).forEach(status => (byStatus[status] = 0));
+    Object.values(TaskPriority).forEach(priority => (byPriority[priority] = 0));
 
     // 统计
     tasks.forEach(task => {
@@ -385,10 +388,9 @@ export class TaskQueueManager {
       byStatus,
       byPriority,
       executable: this.getExecutableTasks().length,
-      blocked: tasks.filter(task => 
-        task.status === TaskStatus.PENDING && 
-        !this.getExecutableTasks().includes(task)
-      ).length
+      blocked: tasks.filter(
+        task => task.status === TaskStatus.PENDING && !this.getExecutableTasks().includes(task)
+      ).length,
     };
   }
 }
@@ -418,55 +420,55 @@ export class EnhancedTaskManagerTool {
     recommendations: string[];
     nextActions: string[];
   }> {
-    const { userRequest, includeContext = false, autoDecompose = true } = input;
+    const { userRequest, autoDecompose = true } = input;
 
     // 自动分解任务
-    const tasks = autoDecompose 
+    const tasks = autoDecompose
       ? this.taskManager.decomposeTask(userRequest)
-      : [this.taskManager.createTask({
-          title: userRequest,
-          description: userRequest,
-          status: TaskStatus.PENDING,
-          priority: TaskPriority.MEDIUM,
-          dependencies: [],
-          tags: ['user-request']
-        })];
+      : [
+          this.taskManager.createTask({
+            title: userRequest,
+            description: userRequest,
+            status: TaskStatus.PENDING,
+            priority: TaskPriority.MEDIUM,
+            dependencies: [],
+            tags: ['user-request'],
+          }),
+        ];
 
     // 创建执行计划
     const plan = this.taskManager.createExecutionPlan({
       title: `执行计划: ${userRequest}`,
       description: userRequest,
       tasks,
-      status: 'active'
+      status: 'active',
     });
 
     // 生成建议
     const recommendations = [
       '建议按照任务依赖顺序执行',
       '定期检查任务状态和进度',
-      '遇到阻塞时及时调整计划'
+      '遇到阻塞时及时调整计划',
     ];
 
     // 生成下一步行动
     const executableTasks = this.taskManager.getExecutableTasks();
-    const nextActions = executableTasks.length > 0
-      ? [`开始执行: ${executableTasks[0].title}`]
-      : ['所有任务已完成或被阻塞'];
+    const nextActions =
+      executableTasks.length > 0
+        ? [`开始执行: ${executableTasks[0].title}`]
+        : ['所有任务已完成或被阻塞'];
 
     return {
       plan,
       recommendations,
-      nextActions
+      nextActions,
     };
   }
 
   /**
    * 执行计划
    */
-  async executePlan(input: {
-    planId: string;
-    autoProgress?: boolean;
-  }): Promise<{
+  async executePlan(input: { planId: string; autoProgress?: boolean }): Promise<{
     plan: ExecutionPlan | null;
     currentTask: Task | null;
     progress: {
@@ -484,12 +486,13 @@ export class EnhancedTaskManagerTool {
         plan: null,
         currentTask: null,
         progress: { completed: 0, total: 0, percentage: 0 },
-        nextSteps: ['计划不存在']
+        nextSteps: ['计划不存在'],
       };
     }
 
     // 获取当前可执行任务
-    const executableTasks = this.taskManager.getExecutableTasks()
+    const executableTasks = this.taskManager
+      .getExecutableTasks()
       .filter(task => plan.tasks.some(planTask => planTask.id === task.id));
 
     const currentTask = executableTasks[0] || null;
@@ -504,7 +507,8 @@ export class EnhancedTaskManagerTool {
     const progress = {
       completed: completedTasks.length,
       total: plan.tasks.length,
-      percentage: plan.tasks.length > 0 ? Math.round((completedTasks.length / plan.tasks.length) * 100) : 0
+      percentage:
+        plan.tasks.length > 0 ? Math.round((completedTasks.length / plan.tasks.length) * 100) : 0,
     };
 
     // 生成下一步建议
@@ -518,7 +522,7 @@ export class EnhancedTaskManagerTool {
       plan,
       currentTask,
       progress,
-      nextSteps
+      nextSteps,
     };
   }
 
@@ -547,41 +551,37 @@ export class EnhancedTaskManagerTool {
     return {
       tasks,
       statistics: this.taskManager.getTaskStatistics(),
-      queue: this.taskManager.getTaskQueue()
+      queue: this.taskManager.getTaskQueue(),
     };
   }
 
   /**
    * 更新任务状态
    */
-  async updateTaskStatus(input: {
-    taskId: string;
-    status: TaskStatus;
-    notes?: string;
-  }): Promise<{
+  async updateTaskStatus(input: { taskId: string; status: TaskStatus; notes?: string }): Promise<{
     task: Task | null;
     affectedTasks: Task[];
     recommendations: string[];
   }> {
     const { taskId, status, notes } = input;
-    
-    const task = this.taskManager.updateTask(taskId, { 
+
+    const task = this.taskManager.updateTask(taskId, {
       status,
-      metadata: notes ? { ...this.taskManager.getTask(taskId)?.metadata, notes } : undefined
+      metadata: notes ? { ...this.taskManager.getTask(taskId)?.metadata, notes } : undefined,
     });
 
     if (!task) {
       return {
         task: null,
         affectedTasks: [],
-        recommendations: ['任务不存在']
+        recommendations: ['任务不存在'],
       };
     }
 
     // 查找受影响的任务（依赖此任务的其他任务）
-    const affectedTasks = this.taskManager.getAllTasks().filter(t => 
-      t.dependencies.includes(taskId) || t.dependencies.includes(task.title)
-    );
+    const affectedTasks = this.taskManager
+      .getAllTasks()
+      .filter(t => t.dependencies.includes(taskId) || t.dependencies.includes(task.title));
 
     // 生成建议
     const recommendations: string[] = [];
@@ -595,7 +595,7 @@ export class EnhancedTaskManagerTool {
     return {
       task,
       affectedTasks,
-      recommendations
+      recommendations,
     };
   }
 }

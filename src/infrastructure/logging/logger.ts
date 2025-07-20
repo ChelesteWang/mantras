@@ -11,13 +11,13 @@ export interface Logger {
 // Create a class that implements our Logger interface and uses the winston instance.
 export class WinstonLogger implements Logger {
   private logger: WinstonLoggerInstance;
-  
+
   constructor() {
     this.logger = createLogger({
       level: process.env.LOG_LEVEL || 'info',
       format: format.combine(
         format.timestamp({
-          format: 'YYYY-MM-DD HH:mm:ss'
+          format: 'YYYY-MM-DD HH:mm:ss',
         }),
         format.errors({ stack: true }),
         format.splat(),
@@ -26,18 +26,17 @@ export class WinstonLogger implements Logger {
       defaultMeta: { service: 'mantras-app' },
       transports: [
         new transports.File({ filename: 'error.log', level: 'error' }),
-        new transports.File({ filename: 'combined.log' })
-      ]
+        new transports.File({ filename: 'combined.log' }),
+      ],
     });
 
     // If we're not in production, log to the console as well with a simple format.
     if (process.env.NODE_ENV !== 'production') {
-      this.logger.add(new transports.Console({
-        format: format.combine(
-          format.colorize(),
-          format.simple()
-        )
-      }));
+      this.logger.add(
+        new transports.Console({
+          format: format.combine(format.colorize(), format.simple()),
+        })
+      );
     }
   }
 
