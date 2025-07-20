@@ -1,4 +1,4 @@
-import { Logger } from '../src/logger';
+import { Logger } from '../src/infrastructure/logging/logger';
 
 // Define a reusable mock logger instance
 const mockWinstonLogger = {
@@ -30,7 +30,7 @@ jest.mock('winston', () => ({
 
 // Import the logger singleton *after* the mock has been defined.
 // This ensures it gets created with the mocked winston.
-const { logger }: { logger: Logger } = require('../src/logger');
+const { logger }: { logger: Logger } = require('../src/infrastructure/logging/logger');
 
 describe('WinstonLogger Singleton', () => {
 

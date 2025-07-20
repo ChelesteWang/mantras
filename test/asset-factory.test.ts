@@ -1,4 +1,4 @@
-import { AssetFactory } from '../src/asset-factory';
+import { AssetFactory } from '../src/core/assets/asset-factory';
 import { Asset, Persona, PromptTemplate, ActionableTool } from '../src/types';
 
 describe('AssetFactory - Complete Coverage', () => {

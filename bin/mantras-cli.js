@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { UnifiedAssetManager } from '../dist/unified-asset-manager.js';
-import { RemoteAssetRepository } from '../dist/asset-repository.js';
-import { AssetFactory } from '../dist/asset-factory.js';
-import { logger } from '../dist/logger.js';
+import { UnifiedAssetManager } from '../dist/core/assets/unified-asset-manager.js';
+import { RemoteAssetRepository } from '../dist/core/assets/asset-repository.js';
+import { AssetFactory } from '../dist/core/assets/asset-factory.js';
+import { logger } from '../dist/infrastructure/logging/logger.js';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 

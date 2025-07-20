@@ -1,0 +1,24 @@
+{
+  "timestamp": "2025-07-19T04:08:18.681Z",
+  "errors": [
+    "缺少必需依赖: zod"
+  ],
+  "warnings": [
+    "部分测试失败，请检查测试用例"
+  ],
+  "suggestions": [
+    "建议创建: src/tools/asset.tools.ts",
+    "建议创建: src/tools/persona.tools.ts",
+    "建议创建: src/tools/mantra.tools.ts",
+    "建议创建: src/tools/memory.tools.ts",
+    "建议添加依赖: inversify",
+    "建议添加依赖: reflect-metadata",
+    "建议添加依赖: node-cache",
+    "建议添加依赖: pino"
+  ],
+  "summary": {
+    "totalIssues": 2,
+    "criticalIssues": 1,
+    "passed": false
+  }
+}

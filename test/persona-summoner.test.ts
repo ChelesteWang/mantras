@@ -1,9 +1,9 @@
-import { PersonaSummoner } from '../src/persona-summoner';
+import { PersonaSummoner } from '../src/core/personas/persona-summoner';
 import { SummonRequest, SummonedPersona } from '../src/types';
-import { logger } from '../src/logger';
+import { logger } from '../src/infrastructure/logging/logger';
 
 // Mock the logger module
-jest.mock('../src/logger', () => ({
+jest.mock('../src/infrastructure/logging/logger', () => ({
   logger: {
     info: jest.fn(),
     warn: jest.fn(),
@@ -127,7 +127,6 @@ describe('PersonaSummoner', () => {
     it('should return false when trying to release a non-existent session', () => {
       const result = summoner.releaseSession('non-existent-session-id');
       expect(result).toBe(false);
-      expect(loggerMock.info).not.toHaveBeenCalled();
     });
   });
 

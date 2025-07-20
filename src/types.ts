@@ -53,7 +53,7 @@ export interface SummonRequest {
   customParams?: Record<string, any>;
 }
 
-import { SessionMemory } from './memory';
+import { SessionMemory } from './core/memory/memory';
 
 export interface SummonedPersona {
   persona: Persona;

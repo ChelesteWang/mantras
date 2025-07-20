@@ -1,6 +1,6 @@
 import { ActionableTool } from '../types';
 import { z } from 'zod';
-import { PersonaSummoner } from '../persona-summoner';
+import { PersonaSummoner } from '../core/personas/persona-summoner';
 
 // 记忆管理工具
 export class MemoryManagementTool implements ActionableTool {

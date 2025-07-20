@@ -1,11 +1,11 @@
-import { RemoteAssetRepository } from '../src/asset-repository';
+import { RemoteAssetRepository } from '../src/core/assets/asset-repository';
 import { Asset } from '../src/types';
 
 // First, get the actual module to ensure we have the real defaultAssets
-const originalAssetSources = jest.requireActual('../src/asset-sources');
+const originalAssetSources = jest.requireActual('../src/core/assets/asset-sources');
 
 // Mock the asset-sources module to provide a predictable remote URL for testing fetch logic
-jest.mock('../src/asset-sources', () => ({
+jest.mock('../src/core/assets/asset-sources', () => ({
   ...originalAssetSources,
   ASSET_SOURCES: ['http://fake-url.com/assets.json'], // Override only the sources
 }));
@@ -32,7 +32,7 @@ describe('RemoteAssetRepository', () => {
   });
 
   it('should fetch assets from a remote source successfully', async () => {
-    const { RemoteAssetRepository } = require('../src/asset-repository');
+    const { RemoteAssetRepository } = require('../src/core/assets/asset-repository');
     const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: async () => mockRemoteAssets,
@@ -46,8 +46,8 @@ describe('RemoteAssetRepository', () => {
   });
 
   it('should fall back to default assets when remote fetch fails and no local file is provided', async () => {
-    const { RemoteAssetRepository } = require('../src/asset-repository');
-    const { defaultAssets } = require('../src/asset-sources');
+    const { RemoteAssetRepository } = require('../src/core/assets/asset-repository');
+    const { defaultAssets } = require('../src/core/assets/asset-sources');
     const fetchSpy = jest.spyOn(global, 'fetch').mockRejectedValue(new Error('Network error'));
 
     const repo = new RemoteAssetRepository(); // No local file path
@@ -60,8 +60,8 @@ describe('RemoteAssetRepository', () => {
 
   it('should load and merge local assets when remote fetch fails', async () => {
     const fs = require('fs/promises');
-    const { RemoteAssetRepository } = require('../src/asset-repository');
-    const { defaultAssets } = require('../src/asset-sources');
+    const { RemoteAssetRepository } = require('../src/core/assets/asset-repository');
+    const { defaultAssets } = require('../src/core/assets/asset-sources');
     jest.spyOn(global, 'fetch').mockRejectedValue(new Error('Network error'));
     fs.readFile.mockResolvedValue(JSON.stringify(mockLocalAssets));
 
@@ -78,7 +78,7 @@ describe('RemoteAssetRepository', () => {
   });
 
   it('should return cached assets on subsequent calls', async () => {
-    const { RemoteAssetRepository } = require('../src/asset-repository');
+    const { RemoteAssetRepository } = require('../src/core/assets/asset-repository');
     const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: async () => mockRemoteAssets,
@@ -93,7 +93,7 @@ describe('RemoteAssetRepository', () => {
 
   it('should merge remote and local assets, with local taking precedence', async () => {
     const fs = require('fs/promises');
-    const { RemoteAssetRepository } = require('../src/asset-repository');
+    const { RemoteAssetRepository } = require('../src/core/assets/asset-repository');
     const mixedRemoteAssets: Asset[] = [
         { id: 'remote-1', name: 'Remote Asset 1', type: 'persona', description: '', systemPrompt: '' },
         { id: 'local-1', name: 'Original Local Asset', type: 'persona', description: '', systemPrompt: '' },
@@ -116,7 +116,7 @@ describe('RemoteAssetRepository', () => {
   });
 
   it('should get an asset by its ID', async () => {
-    const { RemoteAssetRepository } = require('../src/asset-repository');
+    const { RemoteAssetRepository } = require('../src/core/assets/asset-repository');
     jest.spyOn(global, 'fetch').mockResolvedValue({
       ok: true,
       json: async () => mockRemoteAssets,
@@ -132,7 +132,7 @@ describe('RemoteAssetRepository', () => {
   });
 
   it('should log an error when remote fetch fails with an Error instance', async () => {
-    const { RemoteAssetRepository } = require('../src/asset-repository');
+    const { RemoteAssetRepository } = require('../src/core/assets/asset-repository');
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(global, 'fetch').mockRejectedValue(new Error('Network failure'));
 
@@ -146,7 +146,7 @@ describe('RemoteAssetRepository', () => {
   });
 
   it('should log an unknown error when remote fetch fails with a non-Error', async () => {
-    const { RemoteAssetRepository } = require('../src/asset-repository');
+    const { RemoteAssetRepository } = require('../src/core/assets/asset-repository');
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(global, 'fetch').mockRejectedValue('some string error');
 
@@ -161,7 +161,7 @@ describe('RemoteAssetRepository', () => {
 
   it('should log an error when reading local assets fails', async () => {
     const fs = require('fs/promises');
-    const { RemoteAssetRepository } = require('../src/asset-repository');
+    const { RemoteAssetRepository } = require('../src/core/assets/asset-repository');
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(global, 'fetch').mockResolvedValue({ ok: true, json: async () => [] } as Response);
     fs.readFile.mockRejectedValue(new Error('Read error'));
