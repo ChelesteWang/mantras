@@ -10,6 +10,8 @@ import { PROMPT_TEMPLATES } from '../../core/templates/prompt-templates';
 import { initTool } from '../../tools/init.tool';
 import { MemoryManagementTool, MemoryAnalysisTool } from '../../tools/memory.tool';
 import { createImprovedIntentAnalysisTools } from '../../tools/improved-intent-analysis';
+import { EnhancedTaskManagerTool, TaskStatus, TaskPriority } from '../../tools/enhanced-task-manager.tool';
+
 import { Command } from 'commander';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -213,6 +215,9 @@ class MantrasApplication {
       return new MemoryAnalysisTool(personaSummoner);
     });
     
+    // 注册增强任务管理工具
+    this.container.registerSingleton('EnhancedTaskManagerTool', () => new EnhancedTaskManagerTool());
+    
     console.log('✅ Services registered successfully');
   }
 
@@ -225,6 +230,7 @@ class MantrasApplication {
     const personaSummoner = this.container.resolve('PersonaSummoner') as PersonaSummoner;
     const memoryManagementTool = this.container.resolve('MemoryManagementTool') as MemoryManagementTool;
     const memoryAnalysisTool = this.container.resolve('MemoryAnalysisTool') as MemoryAnalysisTool;
+    const enhancedTaskManagerTool = this.container.resolve('EnhancedTaskManagerTool') as EnhancedTaskManagerTool;
 
     // 注册 init 工具 - 系统初始化和概览
     this.server.tool(
@@ -616,76 +622,94 @@ class MantrasApplication {
 
     this.server.tool(
       "create_execution_plan",
-      "Create an execution plan for a complex task",
+      "Create an enhanced execution plan for complex tasks with queue-based task management",
       {
         userRequest: z.string().describe("The user's request or task description"),
-        includeContext: z.boolean().optional().describe("Whether to include project context")
+        includeContext: z.boolean().optional().describe("Whether to include project context"),
+        autoDecompose: z.boolean().optional().describe("Whether to automatically decompose the task into subtasks")
       },
-      async ({ userRequest, includeContext = false }) => {
-        // 简化的执行计划生成
-        const planId = `plan_${Date.now()}`;
-        
-        // 基于用户请求分析任务类型
-        const taskType = userRequest.toLowerCase().includes('debug') ? 'debugging' :
-                        userRequest.toLowerCase().includes('refactor') ? 'refactoring' :
-                        userRequest.toLowerCase().includes('implement') ? 'implementation' :
-                        userRequest.toLowerCase().includes('review') ? 'code-review' : 'general';
-        
-        // 推荐相关的提示模板
-        const relevantTemplates = PROMPT_TEMPLATES.filter(t => 
-          t.category === taskType || 
-          userRequest.toLowerCase().includes(t.technique.replace('_', ' '))
-        );
-        
-        const plan = {
-          id: planId,
-          userRequest,
-          taskType,
-          recommendedTemplates: relevantTemplates.map(t => ({
-            id: t.id,
-            name: t.name,
-            technique: t.technique,
-            description: t.description
-          })),
-          steps: [
-            "1. 分析问题和需求",
-            "2. 选择合适的提示模板",
-            "3. 准备必要的输入参数",
-            "4. 应用模板生成提示",
-            "5. 执行和验证结果"
-          ],
-          createdAt: new Date().toISOString()
-        };
-        
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(plan, null, 2)
-            }
-          ]
-        };
+      async ({ userRequest, includeContext = false, autoDecompose = true }) => {
+        try {
+          const result = await enhancedTaskManagerTool.createExecutionPlan({
+            userRequest,
+            includeContext,
+            autoDecompose
+          });
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  success: true,
+                  plan: result.plan,
+                  recommendations: result.recommendations,
+                  nextActions: result.nextActions,
+                  message: "增强执行计划已创建，包含队列式任务管理功能"
+                }, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  success: false,
+                  error: error instanceof Error ? error.message : "Unknown error",
+                  message: "创建执行计划时发生错误"
+                }, null, 2)
+              }
+            ]
+          };
+        }
       }
     );
 
     this.server.tool(
       "execute_plan",
-      "Execute a previously created execution plan",
+      "Execute a previously created execution plan with queue-based task management",
       {
-        planId: z.string().describe("The ID of the plan to execute")
+        planId: z.string().describe("The ID of the plan to execute"),
+        autoProgress: z.boolean().optional().describe("Whether to automatically progress to the next available task")
       },
-      async ({ planId }) => {
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({
-                message: `Plan ${planId} execution started. Please use the recommended templates from the plan.`,
-                status: "ready_for_template_application"
-              }, null, 2)
-            }
-          ]
-        };
+      async ({ planId, autoProgress = false }) => {
+        try {
+          const result = await enhancedTaskManagerTool.executePlan({
+            planId,
+            autoProgress
+          });
+
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  success: true,
+                  plan: result.plan,
+                  currentTask: result.currentTask,
+                  progress: result.progress,
+                  nextSteps: result.nextSteps,
+                  message: result.plan ? "计划执行中，使用队列式任务管理" : "计划不存在"
+                }, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  success: false,
+                  error: error instanceof Error ? error.message : "Unknown error",
+                  message: "执行计划时发生错误"
+                }, null, 2)
+              }
+            ]
+          };
+        }
       }
     );
 
@@ -728,6 +752,96 @@ class MantrasApplication {
             }
           ]
         };
+      }
+    );
+
+    // 新增任务管理工具
+    this.server.tool(
+      "get_task_status",
+      "Get status of tasks and execution plans",
+      {
+        taskId: z.string().optional().describe("Specific task ID to check"),
+        planId: z.string().optional().describe("Specific plan ID to check")
+      },
+      async ({ taskId, planId }) => {
+        try {
+          const result = await enhancedTaskManagerTool.getTaskStatus({ taskId, planId });
+          
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  success: true,
+                  tasks: result.tasks,
+                  statistics: result.statistics,
+                  queue: result.queue,
+                  message: "任务状态获取成功"
+                }, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  success: false,
+                  error: error instanceof Error ? error.message : "Unknown error",
+                  message: "获取任务状态时发生错误"
+                }, null, 2)
+              }
+            ]
+          };
+        }
+      }
+    );
+
+    this.server.tool(
+      "update_task_status",
+      "Update the status of a specific task",
+      {
+        taskId: z.string().describe("The ID of the task to update"),
+        status: z.enum(['pending', 'in_progress', 'completed', 'failed', 'blocked', 'cancelled']).describe("New status for the task"),
+        notes: z.string().optional().describe("Optional notes about the status change")
+      },
+      async ({ taskId, status, notes }) => {
+        try {
+          const result = await enhancedTaskManagerTool.updateTaskStatus({
+            taskId,
+            status: status as TaskStatus,
+            notes
+          });
+          
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  success: true,
+                  task: result.task,
+                  affectedTasks: result.affectedTasks,
+                  recommendations: result.recommendations,
+                  message: result.task ? "任务状态更新成功" : "任务不存在"
+                }, null, 2)
+              }
+            ]
+          };
+        } catch (error) {
+          return {
+            content: [
+              {
+                type: "text",
+                text: JSON.stringify({
+                  success: false,
+                  error: error instanceof Error ? error.message : "Unknown error",
+                  message: "更新任务状态时发生错误"
+                }, null, 2)
+              }
+            ]
+          };
+        }
       }
     );
 

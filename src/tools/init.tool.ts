@@ -73,13 +73,16 @@ export const initTool: ActionableTool = {
         },
         
         executionPlanning: {
-          description: "Create and execute complex task plans",
+          description: "Enhanced queue-based task management and execution planning",
           features: [
-            "Automatic plan generation",
+            "Automatic task decomposition",
+            "Queue-based task management", 
+            "Dependency tracking",
+            "Status monitoring",
             "Context-aware planning",
             "Step-by-step execution"
           ],
-          tools: ["create_execution_plan", "execute_plan", "get_project_context"]
+          tools: ["create_execution_plan", "execute_plan", "get_project_context", "get_task_status", "update_task_status"]
         }
       },
 
