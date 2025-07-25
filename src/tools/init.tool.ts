@@ -1,4 +1,4 @@
-import { ActionableTool } from '../types.js';
+import { ActionableTool } from '../types';
 
 export const initTool: ActionableTool = {
   id: 'init',

@@ -74,7 +74,7 @@
     "url": "https://github.com/your-username/mantras/issues"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=16.0.0"
   },
   "files": [
     "dist",
@@ -87,7 +87,7 @@
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.15.1",
-    "commander": "^14.0.0",
+    "commander": "^11.1.0",
     "cosmiconfig": "^9.0.0",
     "winston": "^3.17.0"
   },
